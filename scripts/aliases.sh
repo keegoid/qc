@@ -1,0 +1,83 @@
+#!/bin/bash
+echo "# --------------------------------------------"
+echo "# Add some useful shell aliases.              "
+echo "#                                             "
+echo "# Author : Keegan Mullaney                    "
+echo "# Company: KM Authorized LLC                  "
+echo "# Website: http://kmauthorized.com            "
+echo "#                                             "
+echo "# MIT: http://kma.mit-license.org             "
+echo "# --------------------------------------------"
+
+# check if user exists
+pause "Press enter to check if user $USER_NAME exists"
+if user_exists $USER_NAME; then
+   # append aliases to .bashrc if not done already
+   pause "Press enter to add useful aliases for $USER_NAME..."
+   if grep -q "alias wget" /home/$USER_NAME/.bashrc; then
+      echo "already added aliases for $USER_NAME..."
+   else
+      # alias useful shell commands
+      cat << 'EOF' >> /home/$USER_NAME/.bashrc
+
+# add color
+alias grep='grep --color=auto'
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+
+# make directories and parents
+alias mkdir='mkdir -pv'
+
+# list open ports
+alias ports='netstat -tulanp'
+
+# shortcut for firewall-cmd in CentOS 7
+alias fctl='firewall-cmd'
+
+# shortcut for systemctl in CentOS 7
+alias sctl='systemctl'
+
+# display headers
+alias header='curl -I'
+ 
+# display headers that support compression 
+alias headerc='curl -I --compress'
+
+# delete protection
+alias rm='rm -I --preserve-root'
+ 
+# confirm operation
+alias mv='mv -i'
+alias cp='cp -i'
+alias ln='ln -i'
+
+# become root
+alias su='/bin/su'
+
+# reboot and shutdown
+alias reboot='sudo /sbin/reboot'
+alias shutdown='sudo /sbin/shutdown'
+
+# list memory info
+alias meminfo='free -m -l -t'
+
+# nginx test
+alias nginxtest='sudo /usr/local/nginx/sbin/nginx -t'
+
+# OS version
+alias osversion='cat /etc/*release*'
+
+# resume downloads
+alias wget='wget -c'
+
+# print aliases
+alias aliases="cat /home/$USER_NAME/.bashrc"
+EOF
+      echo "/home/$USER_NAME/.bashrc was updated"
+else
+   echo "error: $USER_NAME does not exist, skipping .bashrc file"
+fi
+
+echo
+script_name "          done with "
+echo "*********************************************"
