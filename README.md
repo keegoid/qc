@@ -10,18 +10,18 @@ Quickly configures a fresh install of [Ubuntu 14.04 x64][ubuntu] for a workstati
 
 ## What it can do
 
-- update Ubuntu and install useful programs
+- update [Ubuntu][ubuntu] and install useful programs
 - configure [git][git] for pushing and pulling with [GitHub][gh]
-- generate an [RSA key][sshkey] for remote [SSH sessions][ssh] if none exists (note: this is not a [GPG key][gpgkey])
+- generate an [RSA key][sshkey] for remote [SSH sessions][ssh] (this is not a [GPG key][gpgkey])
 - add some [shell aliases][sa]
-- configure some terminal settings
+- configure some [terminal][lc] settings
 
 ## Usage
 
 ### Clone or download this project
 
-- HTTPS: `git clone https://github.com/keegoid/config-ubuntu-workstation.git`
-- SSH: `git clone git@github.com:keegoid/config-ubuntu-workstation.git`
+- HTTPS: `git clone https://github.com/keegoid/ubuntu-workstation-setup.git`
+- SSH: `git clone git@github.com:keegoid/ubuntu-workstation-setup.git`
 
 ### Set variables for run.sh script
 
