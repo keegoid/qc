@@ -12,26 +12,15 @@ echo "# --------------------------------------------"
 
 source vars.sh
 
-# check to make sure script is being run as root
-is_root && echo "root user detected, proceeding..." || die "\033[40m\033[1;31mERROR: root check FAILED (you must be root to use this script). Quitting...\033[0m\n"
-
 # source function libraries
 for lib in $LIBS; do
-   [ -d "$LIB_DIR" ] && { source "$LIB_DIR/$lib" > /dev/null 2>&1 && echo "sourced: $LIB_DIR/$lib" || echo "can't find: $LIB_DIR/$lib"; }
+   [ -d "$LIBS_DIR" ] && { source "$LIBS_DIR/$lib" > /dev/null 2>&1 && echo "sourced: $LIBS_DIR/$lib" || echo "can't find: $LIBS_DIR/$lib"; }
 done
 
 # make sure curl is installed
-hash curl 2>/dev/null || { echo >&2 "curl will be installed."; apt-get -y install curl; }
+[ -z "$(apt-cache policy curl | grep '(none)')" ] || { echo >&2 "curl will be installed."; sudo apt-get -y install curl; }
 
-# create Linux non-root user
-echo
-pause "Press enter to create user \"$USER_NAME\" if it doesn't exist..."
-/usr/sbin/adduser $USER_NAME
-
-# check if user exists
-if ! user_exists $USER_NAME; then
-   die "\033[40m\033[1;31mERROR: $USER_NAME does not exist. Quitting...\033[0m\nQuitting..."
-fi
+pause
 
 # local repository location
 #echo
@@ -98,6 +87,20 @@ function terminal_go()
    pause
 }
 
+# code to run before exit
+function finish_up()
+{
+   # set ownership
+   sudo chown -cR $USER_NAME:$USER_NAME "$WORKING_DIR"
+   echo
+   echo "# --------------------------------------------------------------------"
+   echo "# Lastly: execute sudo ./sudoers.sh to increase the sudo timeout.     "
+   echo "# --------------------------------------------------------------------"
+   echo
+   echo "Thanks for using the ubuntu-workstation-setup script."
+   echo
+}
+
 # display the menu
 display_menu()
 {
@@ -124,7 +127,7 @@ select_options()
       3) ssh_go;;
       4) aliases_go;;
       5) terminal_go;;
-      6) exit 0;;
+      6) finish_up && exit 0;;
       *) echo -e "${RED}Error...${STD}" && sleep 2
    esac
 }
@@ -141,17 +144,4 @@ while true; do
    display_menu
    select_options
 done
-
-# set ownership
-echo
-#chown -cR $USER_NAME:$USER_NAME "$REPOS"
-chown -cR $USER_NAME:$USER_NAME "$WORKING_DIR"
-
-echo
-echo "# --------------------------------------------------------------------"
-echo "# Execute sudo ./sudoers.sh to increase the sudo timeout.             "
-echo "# --------------------------------------------------------------------"
-
-echo
-echo "Thanks for using the ubuntu-workstation-setup script."
 

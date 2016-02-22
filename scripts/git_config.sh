@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "# --------------------------------------------"
-echo "# Configure git for $USER_NAME.               "
+echo "# Configure global git settings.              "
 echo "#                                             "
 echo "# Author : Keegan Mullaney                    "
 echo "# Website: http://keegoid.com                 "
@@ -12,6 +12,3 @@ echo "# --------------------------------------------"
 # configure git
 configure_git "$REAL_NAME" "$EMAIL_ADDRESS" "$GIT_EDITOR"
 
-echo
-script_name "          done with "
-echo "*********************************************"

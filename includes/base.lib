@@ -132,10 +132,10 @@ function run_script()
    cd "$project_dir/scripts"
    echo "changing directory to $_"
    # make sure dos2unix is installed
-   hash dos2unix 2>/dev/null || { echo >&2 "dos2unix will be installed."; apt-get -y install dos2unix; }
+   [ -z "$(apt-cache policy dos2unix | grep '(none)')" ] || { echo >&2 "dos2unix will be installed."; sudo apt-get -y install dos2unix; }
    dos2unix -k ${script} && echo "carriage returns removed"
    chmod +x ${script} && echo "execute permissions set"
-   chown $(logname):$(logname) ${script} && echo "owner set to $(logname)"
+#   sudo chown $(logname):$(logname) ${script} && echo "owner set to $(logname)"
    read -p "Press enter to run: ${script}"
    . ./${script}
    echo
@@ -165,9 +165,10 @@ function locate_repos()
    fi
 
    # if repos directory is made, set ownership
-   if mkdir -p "$repos"; then
-      chown $u:$u "$repos"
-   fi
+   mkdir -p "$repos"
+#   if mkdir -p "$repos"; then
+#      chown $u:$u "$repos"
+#   fi
    echo -n $repos
 }
 
@@ -307,7 +308,7 @@ function get_public_key()
    # import key if it doesn't exist
    if ! apt-key list | grep "$key_id" > /dev/null 2>&1; then
       echo "Installing GPG public key with ID $key_id from $key_file..."
-      apt-key add "$key_file"
+      sudo apt-key add "$key_file"
    fi
    # change directory back to previous one
    echo -n "changing directory back to " && cd -

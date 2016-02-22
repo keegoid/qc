@@ -97,12 +97,12 @@ function install_apt()
    local repo="$2"
    # install applications in the list
    for apt in $names; do
-      hash "$apt" 2>/dev/null; then
+      if [ -z "$(apt-cache policy $apt | grep '(none)')" ]; then
          echo "$apt is already installed"
       else
          echo
          read -p "Press enter to install $apt..."
-         [ -z "${repo}" ] && apt-get -y install "$apt" || { apt-add-repository "${repo}"; apt-get update; apt-get -y install "$apt"; }
+         [ -z "${repo}" ] && sudo apt-get -y install "$apt" || { sudo apt-add-repository "${repo}"; sudo apt-get update; sudo apt-get -y install "$apt"; }
       fi
    done
 }
@@ -165,7 +165,7 @@ function install_gem()
 {
    local names="$1"
    # install Ruby and RubyGems
-   if hash "rubypick" 2>/dev/null; then
+   if [ -z "$(apt-cache policy rubypick | grep '(none)')" ]; then
       echo "rubypick is already installed"
    else
       echo
@@ -195,7 +195,7 @@ function install_pip()
 {
    local names="$1"
    # install Ruby and RubyGems
-   if hash "pip" 2>/dev/null; then
+   if [ -z "$(apt-cache policy pip | grep '(none)')" ]; then
       echo "pip is already installed"
    else
       echo

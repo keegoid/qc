@@ -1,46 +1,28 @@
 #!/bin/bash
-echo "# --------------------------------------------"
-echo "# Set global variables for run.sh script.     "
-echo "#                                             "
-echo "# Author : Keegan Mullaney                    "
-echo "# Website: http://keegoid.com                 "
-echo "# Email  : keeganmullaney@gmail.com           "
-echo "#                                             "
-echo "# http://keegoid.mit-license.org              "
-echo "# --------------------------------------------"
+# --------------------------------------------
+# Set global variables for run.sh script.
+#
+# Author : Keegan Mullaney
+# Website: http://keegoid.com
+# Email  : keeganmullaney@gmail.com
+#
+# http://keegoid.mit-license.org
+# --------------------------------------------
 
-# --------------------------------------------------
+# --------------------------------------------
 # EDIT THESE VARIABLES WITH YOUR INFO
 USER_NAME='kmullaney' # your Linux user
 REAL_NAME='Keegan Mullaney'
 EMAIL_ADDRESS='keegan@kmauthorized.com'
 SSH_KEY_COMMENT='coding key'
 GITHUB_USER='keegoid' # your GitHub username
-GIT_EDITOR='nano'
+GIT_EDITOR='vi'
 PROXY_ADDRESS='127.0.0.1:8787' # default uses Lantern, make sure it is installed first
-
-# programs to install
-WORKSTATION_PROGRAMS='deluge git gnupg2 gufw lynx nautilus-open-terminal npm pip python-gpgme xclip vagrant virtualbox virtualbox-guest-additions-iso vlc'
-
-# gems to install
-GEM_PROGRAMS='gist'
-
-# pips to install
-PIP_PROGRAMS='jrnl[encrypted]'
-
-# npms to install
-NPM_PROGRAMS='doctoc keybase-installer'
-
-# what to allow from the Internet
-SERVICES=''
-TCP_PORTS=''
-UDP_PORTS=''
-
-# whitelisted IPs
-TRUSTED_IPV4_HOSTS=""
-
-TRUSTED_IPV6_HOSTS=""
-# --------------------------------------------------
+APT_PROGRAMS='deluge git gnupg2 gufw lynx nautilus-open-terminal npm pip python-gpgme xclip vagrant virtualbox virtualbox-guest-additions-iso vlc' # apts to install
+GEM_PROGRAMS='gist' # gems to install
+PIP_PROGRAMS='jrnl[encrypted]' # pips to install
+NPM_PROGRAMS='doctoc keybase-installer' # npms to install
+# --------------------------------------------
 
 # for screen error messages
 RED='\033[0;41;30m'

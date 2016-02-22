@@ -9,9 +9,12 @@ echo "#                                             "
 echo "# http://keegoid.mit-license.org              "
 echo "# --------------------------------------------"
 
-# generate an RSA SSH keypair if none exists
-gen_ssh_keys "/home/$USER_NAME/.ssh" "$SSH_KEY_COMMENT" $SSH $USER_NAME
+# if user doesn't exist, add new user
+if [ "$(user_exists $USER_NAME)" = false ]; then
+   echo
+   sudo /usr/sbin/adduser $USER_NAME
+fi
 
-echo
-script_name "          done with "
-echo "*********************************************"
+# generate an RSA SSH keypair if none exists
+gen_ssh_keys "/home/$USER_NAME/.ssh" "$SSH_KEY_COMMENT" true $USER_NAME
+
