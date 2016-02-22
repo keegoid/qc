@@ -3,10 +3,10 @@ echo "# --------------------------------------------"
 echo "# Install and update programs.                "
 echo "#                                             "
 echo "# Author : Keegan Mullaney                    "
-echo "# Company: KM Authorized LLC                  "
-echo "# Website: http://kmauthorized.com            "
+echo "# Website: http://keegoid.com                 "
+echo "# Email  : keeganmullaney@gmail.com           "
 echo "#                                             "
-echo "# MIT: http://kma.mit-license.org             "
+echo "# http://keegoid.mit-license.org              "
 echo "# --------------------------------------------"
 
 # update programs maintained by the package manager
