@@ -10,14 +10,21 @@ echo "# http://keegoid.mit-license.org              "
 echo "# --------------------------------------------"
 
 # update programs maintained by the package manager
-pause "Press enter to update Linux..."
-sudo apt-get -y install upgrade
+#pause "Press enter to update Ubuntu sources..."
+#sudo apt-get -y update
+pause "Press enter to upgrade programs..."
+sudo apt-get -y upgrade
 
 # install programs with apt-get
-install_apt "$APT_PROGRAMS"
+install_apt "$WORKSTATION_PROGRAMS"
+
+# install programs with apt-get
+if [ "$IS_SERVER" = true ]; then
+   install_apt "$SERVER_PROGRAMS"
+fi
 
 # install gems
-install_gem "$GEM_PROGRAMS"
+#install_gem "$GEM_PROGRAMS"
 
 # install pips
 install_pip "$PIP_PROGRAMS"
@@ -26,9 +33,8 @@ install_pip "$PIP_PROGRAMS"
 install_npm "$NPM_PROGRAMS" true
 
 # install keybase
-pause "Press enter to run the keybase installer..."
-keybase-installer
-pause "Press enter to test the keybase command..."
+pause "Press enter to install keybase..."
+install_keybase
 keybase version
 
 #if $DROPBOX; then

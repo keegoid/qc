@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "# --------------------------------------------"
 echo "# Quickly configures a fresh install of       "
-echo "# Ubuntu 14.04 x64 for a workstation.         "
+echo "# Ubuntu 14.04 x64.                           "
 echo "#                                             "
 echo "# Author : Keegan Mullaney                    "
 echo "# Website: http://keegoid.com                 "
@@ -97,7 +97,7 @@ function finish_up()
    echo "# Lastly: execute sudo ./sudoers.sh to increase the sudo timeout.     "
    echo "# --------------------------------------------------------------------"
    echo
-   echo "Thanks for using the ubuntu-workstation-setup script."
+   echo "Thanks for using this ubuntu-quick-config script."
    echo
 }
 

@@ -25,7 +25,7 @@ fi
 
 # terminal history lookup
 pause "Press enter to add terminal history lookup for $USER_NAME..."
-[ -e /home/$USER_NAME/.inputrc ] || cat "" > /home/$USER_NAME/.inputrc
+[ -e /home/$USER_NAME/.inputrc ] || printf "" > /home/$USER_NAME/.inputrc
 if grep -q "backward-char" /home/$USER_NAME/.inputrc; then
    echo "already added terminal history lookup for $USER_NAME..."
 else
@@ -43,35 +43,39 @@ fi
 
 # proxy for terminal traffic
 PROXY=false
-echo
-echo "Do you wish to use a proxy for terminal operations?"
-select yn in "Yes" "No"; do
-   case $yn in
-      "Yes") PROXY=true;;
-       "No") break;;
-          *) echo "case not found, try again..."
-             continue;;
-   esac
-   break
-done
+#echo
+#echo "Do you wish to use a proxy for terminal operations?"
+#select yn in "Yes" "No"; do
+#   case $yn in
+#      "Yes") PROXY=true;;
+#       "No") break;;
+#          *) echo "case not found, try again..."
+#             continue;;
+#   esac
+#   break
+#done
 
 if [ "$PROXY" = true ]; then
    # set proxy address and port in .bashrc
-   if grep -q "http_proxy" /home/$USER_NAME/.bashrc; then
+   if grep -q "http_proxy" /etc/environment; then
       echo "already set proxy for $USER_NAME..."
    else
       # check if trying to use lantern proxy without lantern installed
-      if [ -n "$(apt-cache policy lantern | grep '(none)')" ] && [ "$PROXY_ADDRESS" = '127.0.0.1:8787' ]; then
+      if ! dpkg-query -W lantern >/dev/null 2>&1 && [ "$PROXY_ADDRESS" = 'http://127.0.0.1:8787' ]; then
          echo "error: Lantern is not installed, skipping proxy..."
          echo "download Lantern from getlantern.org and run this script again"
       else
-         echo "setting http_proxy var to: http://$PROXY_ADDRESS"
+         echo "setting http_proxy var to: $PROXY_ADDRESS"
+         echo "" >> /home/$USER_NAME/.bashrc
          echo "# proxy for terminal (set by $USER_NAME)" >> /home/$USER_NAME/.bashrc
-         echo "http_proxy=\"http://$PROXY_ADDRESS\"" >> /home/$USER_NAME/.bashrc
+         echo "http_proxy=$PROXY_ADDRESS" >> /home/$USER_NAME/.bashrc
+         echo "http_proxy=$PROXY_ADDRESS" | sudo tee --append /etc/environment > /dev/null
+         echo "Acquire::http::proxy $PROXY_ADDRESS;" | sudo tee /etc/apt/apt.conf > /dev/null
+         echo "" | sudo tee /etc/apt/apt.conf > /dev/null
       fi
    fi
 else
-   echo
-   echo "skipping proxy..."
+#   echo
+#   echo "skipping proxy..."
 fi
 

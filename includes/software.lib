@@ -97,7 +97,7 @@ function install_apt()
    local repo="$2"
    # install applications in the list
    for apt in $names; do
-      if [ -z "$(apt-cache policy $apt | grep '(none)')" ]; then
+      if dpkg-query -W "$apt" >/dev/null 2>&1; then
          echo "$apt is already installed"
       else
          echo
@@ -118,14 +118,16 @@ function install_npm()
    
    [ -z "${global}" ] && global=true
    
+   # make sure npm is installed
+   install_apt "npm"
    # install npm packages in the list
    for app in $names; do
       if npm ls -gs | grep -qw "$app"; then
-         echo "npm $app is already installed"
+         echo "$app is already installed"
       else
          echo
          read -p "Press enter to install $app..."
-         [ $global ] && npm install -g "$app" || npm install "$app"
+         [ $global ] && sudo npm install -g "$app" || sudo npm install "$app"
       fi
    done
 }
@@ -164,22 +166,12 @@ function source_rvm()
 function install_gem()
 {
    local names="$1"
-   # install Ruby and RubyGems
-   if [ -z "$(apt-cache policy rubypick | grep '(none)')" ]; then
-      echo "rubypick is already installed"
-   else
-      echo
-      read -p "Press enter to install Ruby and RubyGems with rubypick..."
-      install_apt "rubypick"
-   fi
-   # update gem package manager
-   echo
-   read -p "Press enter to update the gem package manager..."
-   gem update --system
+   # make sure ruby and rubygems are installed
+   install_apt "ruby rubygems"
    # install gems in the list
    for app in $names; do
       if $(gem list "$app" -i); then
-         echo "gem $app is already installed"
+         echo "$app is already installed"
       else
          echo
          read -p "Press enter to install $app..."
@@ -194,27 +186,27 @@ function install_gem()
 function install_pip()
 {
    local names="$1"
-   # install Ruby and RubyGems
-   if [ -z "$(apt-cache policy pip | grep '(none)')" ]; then
-      echo "pip is already installed"
-   else
-      echo
-      read -p "Press enter to install pip..."
-      install_apt "pip"
-   fi
-   # upgrade pip
-   echo
-   read -p "Press enter to upgrade pip..."
-   pip install pip --upgrade
+   # make sure python-pip and python-gpgme are installed
+   install_apt "python-pip python-gpgme"
    # install pips in the list
    for app in $names; do
-      if [ -n "$(pip list | grep $app)" ]; then
-         echo "pip $app is already installed"
+      app=$(trim_longest_right_pattern "$app" "[")
+      if pip list | grep "$app" >/dev/null 2>&1; then
+         echo "$app is already installed"
       else
          echo
          read -p "Press enter to install $app..."
-         pip install "$app"
+         sudo pip install "$app"
       fi
    done
+}
+
+# purpose: to install keybase
+function install_keybase()
+{
+   # change to Downloads directory to download file and then back to original directory
+   cd /tmp
+   curl -O https://dist.keybase.io/linux/deb/keybase-latest-amd64.deb && sudo dpkg -i keybase-latest-amd64.deb
+   cd -
 }
 

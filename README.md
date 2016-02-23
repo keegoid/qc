@@ -1,7 +1,7 @@
-ubuntu-workstation-setup
-========================
+ubuntu-quick-config
+===================
 
-Quickly configures a fresh install of [Ubuntu 14.04 x64][ubuntu] for a workstation.
+Quickly configures a fresh install of [Ubuntu 14.04 x64][ubuntu].
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -11,29 +11,34 @@ Quickly configures a fresh install of [Ubuntu 14.04 x64][ubuntu] for a workstati
 ## What it can do
 
 - update [Ubuntu][ubuntu] and install useful programs
-- configure [git][git] for pushing and pulling with [GitHub][gh]
+- configure [git][git] global settings
 - generate an [RSA key][sshkey] for remote [SSH sessions][ssh] (this is not a [GPG key][gpgkey])
-- add some [shell aliases][sa]
-- configure some [terminal][lc] settings
+- add useful [shell aliases][sa]
+- make the [terminal][lc] easier to read and use
 
 ## Usage
 
 ### Clone or download this project
 
-- HTTPS: `git clone https://github.com/keegoid/ubuntu-workstation-setup.git`
-- SSH: `git clone git@github.com:keegoid/ubuntu-workstation-setup.git`
+- HTTPS: `git clone https://github.com/keegoid/ubuntu-quick-config.git`
+- SSH: `git clone git@github.com:keegoid/ubuntu-quick-config.git`
 
 ### Set variables for run.sh script
 
 Open **vars.sh** with your favorite text editor and **edit the input variables** at the top to reflect your information.
 
-### Run run.sh
+### Run it
+
+Run the main program with `./run.sh`
+
+If it doesn't work, you might need to do this:
 
 ```bash
-sudo chmod +x run.sh
-sudo dos2unix -k run.sh
-sudo ./run.sh
+chmod +x run.sh
+dos2unix -k run.sh
 ```
+
+Also run `./sudoers.sh` if you want to increase the sudo timeout which is set to 15 minutes by default.
 
 ## SSH Keys
 

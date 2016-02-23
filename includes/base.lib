@@ -130,11 +130,11 @@ function run_script()
    local project_dir="$PWD"
    # reset back to root poject directory to run scripts
    cd "$project_dir/scripts"
-   echo "changing directory to $_"
+#   echo "changing directory to $_"
    # make sure dos2unix is installed
-   [ -z "$(apt-cache policy dos2unix | grep '(none)')" ] || { echo >&2 "dos2unix will be installed."; sudo apt-get -y install dos2unix; }
-   dos2unix -k ${script} && echo "carriage returns removed"
-   chmod +x ${script} && echo "execute permissions set"
+   dpkg-query -W dos2unix >/dev/null 2>&1 || { echo >&2 "dos2unix will be installed."; sudo apt-get -y install dos2unix; }
+   dos2unix -k -q ${script}
+   chmod +x ${script}
 #   sudo chown $(logname):$(logname) ${script} && echo "owner set to $(logname)"
    read -p "Press enter to run: ${script}"
    . ./${script}
@@ -190,8 +190,6 @@ function gen_ssh_keys()
 
    if [ "$use_ssh" = true ]; then
       # move id_rsa to new user account or create new SSH keypair if none exists
-      echo
-      pause "Press enter to continue to SSH keys..."
       echo
       echo "Note: ${ssh_dir}/id_rsa is for public/private key pairs to establish"
       echo "outgoing SSH connections to remote systems"
