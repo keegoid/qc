@@ -120,6 +120,8 @@ function install_npm()
    
    # make sure npm is installed
    install_apt "npm"
+   # symlink nodejs to path   
+   sudo ln -s "$(which nodejs)" /usr/bin/node
    # install npm packages in the list
    for app in $names; do
       if npm ls -gs | grep -qw "$app"; then
