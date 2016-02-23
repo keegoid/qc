@@ -6,6 +6,15 @@ Quickly configures a fresh install of [Ubuntu 14.04 x64][tt].
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [What it can do](#what-it-can-do)
+- [Usage](#usage)
+  - [Clone or download this project](#clone-or-download-this-project)
+  - [Set variables for run.sh script](#set-variables-for-runsh-script)
+  - [Run it](#run-it)
+- [SSH Keys](#ssh-keys)
+- [License](#license)
+
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## What it can do
