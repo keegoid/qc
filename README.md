@@ -1,7 +1,7 @@
 ubuntu-quick-config
 ===================
 
-Quickly configures a fresh install of [Ubuntu 14.04 x64][ubuntu].
+Quickly configures a fresh install of [Ubuntu 14.04 x64][tt].
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -55,7 +55,8 @@ clear
 SEE: http://keegoid.mit-license.org
 
 
-[ubuntu]:   https://wiki.ubuntu.com/TrustyTahr/ReleaseNotes
+[ubuntu]:   http://www.ubuntu.com/global
+[tt]:       https://wiki.ubuntu.com/TrustyTahr/ReleaseNotes
 [lc]:       http://en.wikipedia.org/wiki/Linux_console
 [lp]:       https://lastpass.com/f?3202156
 [ss]:       http://en.wikipedia.org/wiki/Shell_script
