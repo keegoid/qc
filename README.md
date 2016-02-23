@@ -55,7 +55,7 @@ clear
 SEE: http://keegoid.mit-license.org
 
 
-[ubuntu]:   http://www.ubuntu.com/global
+[ubuntu]:   https://wiki.ubuntu.com/TrustyTahr/ReleaseNotes
 [lc]:       http://en.wikipedia.org/wiki/Linux_console
 [lp]:       https://lastpass.com/f?3202156
 [ss]:       http://en.wikipedia.org/wiki/Shell_script
