@@ -114,14 +114,9 @@ function install_apt()
 # purpose: to install npm packages from a list
 # arguments:
 #   $1 -> npm list (space-separated)
-#   $2 -> install globally or into current directory (true for global, optional)
 function install_npm()
 {
    local names="$1"
-   local global=$2
-   
-   [ -z "${global}" ] && global=true
-   
    # make sure npm is installed
    install_apt "npm"
    # symlink nodejs to path
@@ -133,7 +128,7 @@ function install_npm()
       if ! npm ls -gs | grep -qw "$app"; then
          echo
          read -p "Press enter to install $app..."
-         [ $global ] && sudo npm install -g "$app" || sudo npm install "$app"
+         sudo npm install -g "$app"
       fi
    done
 }
