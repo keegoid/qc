@@ -18,14 +18,17 @@ for lib in $LIBS; do
 done
 
 # make sure curl is installed
-[ -z "$(apt-cache policy curl | grep '(none)')" ] || { echo >&2 "curl will be installed."; sudo apt-get -y install curl; }
-
-pause
+install_apt "curl"
 
 # local repository location
+# use Dropbox for Repos directory?
+#DROPBOX=confirm "Are you using Dropbox for your repositories?"
 #echo
 #REPOS=$(locate_repos $USER_NAME $DROPBOX)
 #echo "repository location: $REPOS"
+
+# config for server
+IS_SERVER=$(confirm "Is this a server?")
 
 # install software and update system
 function updates_go()
@@ -106,7 +109,13 @@ display_menu()
 {
    clear
    echo "~~~~~~~~~~~~~~~~~~~~~~~"	
-   echo "   M A I N - M E N U   "
+   if [ "$IS_SERVER" = true ]; then
+      echo "   M A I N - M E N U   "
+      echo "        server         "
+   else
+      echo "   M A I N - M E N U   "
+      echo "      workstation      "
+   fi
    echo "~~~~~~~~~~~~~~~~~~~~~~~"
    echo "1. INSTALLS & UPDATES"
    echo "2. GIT CONFIG"
@@ -120,7 +129,7 @@ display_menu()
 select_options()
 {
    local choice
-   read -p "Enter choice [1 - 6]: " choice
+   read -r -p "Enter choice [1 - 6]: " choice
    case $choice in
       1) updates_go;;
       2) git_go;;

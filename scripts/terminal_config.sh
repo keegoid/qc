@@ -42,18 +42,7 @@ cat "/home/$USER_NAME/.inputrc"
 fi
 
 # proxy for terminal traffic
-PROXY=false
-#echo
-#echo "Do you wish to use a proxy for terminal operations?"
-#select yn in "Yes" "No"; do
-#   case $yn in
-#      "Yes") PROXY=true;;
-#       "No") break;;
-#          *) echo "case not found, try again..."
-#             continue;;
-#   esac
-#   break
-#done
+#PROXY=$(confirm "Do you wish to use a proxy for terminal operations?")
 
 if [ "$PROXY" = true ]; then
    # set proxy address and port in .bashrc

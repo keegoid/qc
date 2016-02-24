@@ -10,8 +10,8 @@ echo "# http://keegoid.mit-license.org              "
 echo "# --------------------------------------------"
 
 # update programs maintained by the package manager
-#pause "Press enter to update Ubuntu sources..."
-#sudo apt-get -y update
+pause "Press enter to update Ubuntu sources..."
+sudo apt-get -y update
 pause "Press enter to upgrade programs..."
 sudo apt-get -y upgrade
 
@@ -37,7 +37,7 @@ pause "Press enter to install keybase..."
 install_keybase
 keybase version
 
-#if $DROPBOX; then
+#if [ "$DROPBOX" = true ]; then
 #   echo
 #   echo "To install Dropbox, please do so manually at: "
 #   echo "https://www.dropbox.com/install?os=lnx"

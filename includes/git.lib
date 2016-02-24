@@ -9,10 +9,6 @@
 # http://keegoid.mit-license.org
 # --------------------------------------------
 
-# set variables 
-declare -r TRUE=0
-declare -r FALSE=1
- 
 # purpose: to set global git defaults
 # arguments:
 #   $1 -> code author's name
@@ -128,7 +124,7 @@ function clone_repo()
 #   $2 -> name of origin repository
 #   $3 -> set remote upstream or origin (true for upstream)
 #   $4 -> use SSH protocal for git operations? (optional)
-# return: true or false
+# return: false if no upstream repo
 function set_remote_repo()
 {
    local github_user="$1"
@@ -138,10 +134,9 @@ function set_remote_repo()
 
    [ -z "${use_ssh}" ] && use_ssh=false
    
-   if [ "$set_upstream" = true ] && [ "${github_user}" = 'keegoid' ]; then
-      echo
-      echo "upstream doesn't exist for $github_user, skipping..."
-      return $FALSE
+   if [ "${set_upstream}" = true ] && [ "${github_user}" = 'keegoid' ]; then
+#      echo "upstream doesn't exist for $github_user, skipping..."
+      echo false
    fi
 
    if git config --list | grep -q "${address}"; then
@@ -168,7 +163,6 @@ function set_remote_repo()
          fi
       fi
    fi
-   return $TRUE
 }
 
 # purpose: create a branch for custom changes so master can receive upstream updates
@@ -208,32 +202,6 @@ function create_branch()
    echo "*************************************************************************"
 }
 
-# purpose: commit changes with git
-# arguments: none
-# return: true or false
-#function git_status()
-#{
-#   local commit=$FALSE
-
-   # print git status
-#   echo
-#   read -p "Press enter to view git status..."
-#   git status
-
-   # commit changes with git
-#   if git status | egrep -qw "Changes not staged for commit|Changes to be committed"; then
-#      echo
-#      echo "*** NOTE ***"
-#      read -p "Enter a commit message and press enter to commit changes: " msg
-#      git commit -am "$msg"
-#      commit=$TRUE
-#   else
-#      echo "skipping commit..."
-#   fi
-   
-#   return $commit
-#}
-
 # purpose: add remote upstream repository, fetch and merge changes
 # arguments: none
 function merge_upstream()
@@ -258,7 +226,7 @@ function merge_upstream()
 # arguments: none
 #function commit_and_push()
 #{
-#   local commit=$FALSE
+#   local commit=false
 
 #   commit=$(git_status)
 

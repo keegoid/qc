@@ -37,31 +37,3 @@ LIBS_DIR='includes'
 # save current directory
 WORKING_DIR="$PWD"
 
-# config for server
-IS_SERVER=false
-echo
-echo "Is this a server?"
-select yn in "Yes" "No"; do
-   case $yn in
-      "Yes") IS_SERVER=true;;
-       "No") break;;
-          *) echo "case not found, try again..."
-             continue;;
-   esac
-   break
-done
-
-# use Dropbox for Repos directory?
-#DROPBOX=false
-#echo
-#echo "Are you using Dropbox for your repositories?"
-#select yn in "Yes" "No"; do
-#   case $yn in
-#      "Yes") DROPBOX=true;;
-#       "No") break;;
-#          *) echo "case not found..."
-#             continue;;
-#   esac
-#   break
-#done
-

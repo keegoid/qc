@@ -9,10 +9,8 @@
 # http://keegoid.mit-license.org
 # --------------------------------------------
 
-# set variables 
-declare -r TRUE=0
-declare -r FALSE=1
- 
+# note: true=0 and false=1 in bash
+
 # purpose: converts a string to lower case
 # arguments:
 #   $1 -> string to convert to lower case
@@ -41,11 +39,11 @@ function die()
 # return: true or die with message
 function is_root() 
 {
-#   [ $(id -u) -eq 0 ] && return $TRUE || return $FALSE
-   [ "$EUID" -eq 0 ] && return $TRUE || return $FALSE
+#   [ $(id -u) -eq 0 ] && echo true || echo false
+   [ "$EUID" -eq 0 ] && echo true || echo false
 }
  
-# purpose: return true $user exits in /etc/passwd
+# purpose: return true if $user exits in /etc/passwd
 # arguments:
 #   $1 -> username to check in /etc/passwd
 # return: true or false
@@ -54,11 +52,47 @@ function user_exists()
    local u="$1"
    # -q (quiet), -w (only match whole words, otherwise "user" would match "user1" and "user2")
    if grep -qw "^${u}" /etc/passwd; then
-      echo "user $u exists in /etc/passwd"
-      return $TRUE
+      #echo "user $u exists in /etc/passwd"
+      echo true
    else
-      echo "user $u does not exists in /etc/passwd"
-      return $FALSE
+      #echo "user $u does not exists in /etc/passwd"
+      echo false
+   fi
+}
+
+# purpose: prompt user with binary option
+# arguments:
+#   $1 -> text string to prompt user
+#   #2 -> default to no? (optional)
+# return: true or false
+function confirm()
+{
+   local text="$1"
+   local preferNo="$2"
+
+   # check preference
+   if [ -n "${preferNo}" ] && [ "${preferNo}" = false ]; then
+      # prompt user with preference for Yes
+      read -rp "${text} [Y/n] " response
+      case $response in
+         [nN][oO]|[nN])
+            echo false
+            ;;
+         *)
+            echo true
+            ;;
+      esac
+   else
+      # prompt user with preference for No
+      read -rp "${text} [y/N] " response
+      case $response in
+         [yY][eE][sS]|[yY]) 
+            echo true
+            ;;
+         *) 
+            echo false
+            ;;
+      esac
    fi
 }
 
@@ -275,7 +309,7 @@ function authorized_ssh_keys()
       echo "*** NOTE ***"
       echo "Paste (using ctrl+shift+v) your public ssh-rsa key from your workstation"
       echo "to SSH into this server."
-      read -e -p "Paste it here: " ssh_rsa
+      read -ep "Paste it here: " ssh_rsa
       echo "${ssh_rsa}" > "${ssh_dir}/authorized_keys"
       echo "public SSH key saved to ${ssh_dir}/authorized_keys"
       chmod -c 0600 "${ssh_dir}/authorized_keys"
@@ -293,11 +327,11 @@ function get_public_key()
    local url="$1"
    local apt_keys="$HOME/apt_keys"
 
-   [ -z "${url}" ] && return $FALSE
+   [ -z "${url}" ] && echo false && return
    pause "Press enter to download and import the GPG Key..."
    mkdir -pv "$apt_keys"
    cd "$apt_keys"
-   echo "changing directory to $_"
+#   echo "changing directory to $_"
    # download keyfile
    wget -nc "$url"
    local key_file=$(trim_longest_left_pattern "${url}" /)
@@ -310,6 +344,5 @@ function get_public_key()
    fi
    # change directory back to previous one
    echo -n "changing directory back to " && cd -
-   return $TRUE
 }
 

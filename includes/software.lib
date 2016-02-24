@@ -11,10 +11,6 @@
 # http://keegoid.mit-license.org
 # --------------------------------------------
 
-# set variables 
-declare -r TRUE=0
-declare -r FALSE=1
- 
 # names and versions of repositories/software
 SN=( EPEL   REMI   NGINX   OPENSSL   ZLIB   PCRE   FRICKLE   RUBY  )
 SV=( 7-5    7      1.9.9   1.0.2f    1.2.8  8.38   2.3       2.3.0 )
@@ -97,9 +93,7 @@ function install_apt()
    local repo="$2"
    # install applications in the list
    for apt in $names; do
-      if dpkg-query -W "$apt" >/dev/null 2>&1; then
-         echo "$apt is already installed"
-      else
+      if ! dpkg-query -W "$apt" >/dev/null 2>&1; then
          echo
          read -p "Press enter to install $apt..."
          [ -z "${repo}" ] && sudo apt-get -y install "$apt" || { sudo apt-add-repository "${repo}"; sudo apt-get update; sudo apt-get -y install "$apt"; }
@@ -124,42 +118,12 @@ function install_npm()
    sudo ln -s "$(which nodejs)" /usr/bin/node
    # install npm packages in the list
    for app in $names; do
-      if npm ls -gs | grep -qw "$app"; then
-         echo "$app is already installed"
-      else
+      if ! npm ls -gs | grep -qw "$app"; then
          echo
          read -p "Press enter to install $app..."
          [ $global ] && sudo npm install -g "$app" || sudo npm install "$app"
       fi
    done
-}
-
-# purpose: to install ruby and rubygems
-# arguments: none
-function install_ruby()
-{
-   echo
-   read -p "Press enter to install ruby and rubygems..."
-   if ruby -v | grep -q "ruby ${RUBY_V}"; then
-      echo "ruby is already installed"
-   else
-      gpg2 --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
-      curl -L "$RUBY_URL" | bash -s stable --ruby="${RUBY_V}"
-   fi
-}
-
-# purpose: to source the rvm command
-# arguments: none
-function source_rvm()
-{
-   echo
-   read -p "Press enter to start using rvm..."
-   if grep -q "/usr/local/rvm/scripts/rvm" $HOME/.bashrc; then
-      echo "already added rvm to .bashrc"
-   else
-      echo "source /usr/local/rvm/scripts/rvm" >> $HOME/.bashrc
-      source /usr/local/rvm/scripts/rvm && echo "rvm sourced and added to .bashrc"
-   fi
 }
 
 # purpose: to install gems from a list
@@ -172,9 +136,7 @@ function install_gem()
    install_apt "ruby rubygems"
    # install gems in the list
    for app in $names; do
-      if $(gem list "$app" -i); then
-         echo "$app is already installed"
-      else
+      if ! $(gem list "$app" -i); then
          echo
          read -p "Press enter to install $app..."
          gem install "$app"
@@ -193,14 +155,38 @@ function install_pip()
    # install pips in the list
    for app in $names; do
       app=$(trim_longest_right_pattern "$app" "[")
-      if pip list | grep "$app" >/dev/null 2>&1; then
-         echo "$app is already installed"
-      else
+      if ! pip list | grep "$app" >/dev/null 2>&1; then
          echo
          read -p "Press enter to install $app..."
          sudo pip install "$app"
       fi
    done
+}
+
+# purpose: to install ruby and rubygems
+# arguments: none
+function install_ruby()
+{
+   echo
+   read -p "Press enter to install ruby and rubygems..."
+   if ! ruby -v | grep -q "ruby ${RUBY_V}"; then
+      gpg2 --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
+      curl -L "$RUBY_URL" | bash -s stable --ruby="${RUBY_V}"
+   fi
+}
+
+# purpose: to source the rvm command
+# arguments: none
+function source_rvm()
+{
+   echo
+   read -p "Press enter to start using rvm..."
+   if grep -q "/usr/local/rvm/scripts/rvm" $HOME/.bashrc; then
+      source /usr/local/rvm/scripts/rvm && echo "sourced rvm"
+   else
+      echo "source /usr/local/rvm/scripts/rvm" >> $HOME/.bashrc
+      source /usr/local/rvm/scripts/rvm && echo "rvm sourced and added to .bashrc"
+   fi
 }
 
 # purpose: to install keybase
