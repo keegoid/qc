@@ -16,8 +16,8 @@ if [ "$VVV_REQS" = true ]; then
    install_vagrant
    VVV_GO=$(confirm "clone VVV and VV for WordPress development?" false)
    if [ "$VVV_GO" = true ]; then
-      clone_vvv
-      clone_vv
+      clone_vvv "$REPOS_DIRECTORY"
+      clone_vv "$REPOS_DIRECTORY"
    fi
 fi
 
