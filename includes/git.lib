@@ -21,11 +21,9 @@ function configure_git()
    local editor="$3"
    local ignore="$HOME/.gitignore_global"
 
-   if git config --list | grep -q "${name}"; then
+   if [ -e "${ignore}" ]; then
       echo "git is already configured."
    else
-      echo
-      read -p "Press enter to configure git..."
       # specify a user
       git config --global user.name "${name}"
       git config --global user.email "${email}"
@@ -74,7 +72,11 @@ function configure_git()
 .Spotlight-V100
 .Trashes
 ehthumbs.db
-Thumbs.db" > "${ignore}"
+Thumbs.db
+
+# txt editor backups #
+######################
+*.*~" > "${ignore}"
       git config --global core.excludesfile "${ignore}"
       echo "git was configured"
       echo

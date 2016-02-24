@@ -10,7 +10,6 @@ Quickly configures a fresh install of [Ubuntu 14.04 x64][tt].
 - [What it can do](#what-it-can-do)
 - [Usage](#usage)
   - [Clone or download this project](#clone-or-download-this-project)
-  - [Set variables for run.sh script](#set-variables-for-runsh-script)
   - [Run it](#run-it)
 - [SSH Keys](#ssh-keys)
 - [License](#license)
@@ -31,10 +30,6 @@ Quickly configures a fresh install of [Ubuntu 14.04 x64][tt].
 
 - HTTPS: `git clone https://github.com/keegoid/ubuntu-quick-config.git`
 - SSH: `git clone git@github.com:keegoid/ubuntu-quick-config.git`
-
-### Set variables for run.sh script
-
-Open **vars.sh** with your favorite text editor and **edit the input variables** at the top to reflect your information.
 
 ### Run it
 

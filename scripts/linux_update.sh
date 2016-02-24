@@ -16,12 +16,7 @@ pause "Press enter to upgrade programs..."
 sudo apt-get -y upgrade
 
 # install programs with apt-get
-install_apt "$WORKSTATION_PROGRAMS"
-
-# install programs with apt-get
-if [ "$IS_SERVER" = true ]; then
-   install_apt "$SERVER_PROGRAMS"
-fi
+install_apt "$APT_PROGRAMS"
 
 # install gems
 #install_gem "$GEM_PROGRAMS"
@@ -33,9 +28,7 @@ install_pip "$PIP_PROGRAMS"
 install_npm "$NPM_PROGRAMS" true
 
 # install keybase
-pause "Press enter to install keybase..."
 install_keybase
-keybase version
 
 #if [ "$DROPBOX" = true ]; then
 #   echo

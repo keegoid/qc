@@ -10,10 +10,10 @@ echo "# http://keegoid.mit-license.org              "
 echo "# --------------------------------------------"
 
 # if user doesn't exist, add new user
-if [ "$(user_exists $USER_NAME)" = false ]; then
-   echo
-   sudo /usr/sbin/adduser $USER_NAME
-fi
+#if [ "$(user_exists $USER_NAME)" = false ]; then
+#   echo
+#   sudo /usr/sbin/adduser $USER_NAME
+#fi
 
 if [ "$IS_SERVER" = true ]; then
    # make a copy of the original sshd config file
@@ -38,13 +38,13 @@ if [ "$IS_SERVER" = true ]; then
    echo -e "SSH port set to $SSH_PORT\nclient alive interval set to $CLIENT_ALIVE"
 
    # add public SSH key for new ssh user
-   SSH_DIRECTORY="/home/$USER_NAME/.ssh"
+   SSH_DIRECTORY="$HOME/.ssh"
 
    # generate SSH keypair
 #   gen_ssh_keys $SSH_DIRECTORY "$SSH_COMMENT" true $USER_NAME
 
    # add authorized key for ssh user
-   authorized_ssh_keys $SSH_DIRECTORY $USER_NAME
+   authorized_ssh_keys $SSH_DIRECTORY $(logname)
 
    # use ufw to limit login attempts too
    echo
@@ -58,10 +58,10 @@ if [ "$IS_SERVER" = true ]; then
                -e "s|PasswordAuthentication yes|PasswordAuthentication no|" \
                -e "s|#MaxStartups 10:30:60|MaxStartups 2:30:10|" \
                -e "s|#Banner /etc/issue.net|Banner /etc/issue.net|" /etc/ssh/sshd_config
-   if grep -q "AllowUsers $USER_NAME" /etc/ssh/sshd_config; then
+   if grep -q "AllowUsers $(logname)" /etc/ssh/sshd_config; then
       echo "AllowUsers is already configured"
    else
-      sudo printf "\nAllowUsers $USER_NAME" >> /etc/ssh/sshd_config && echo -e "\nroot login disallowed"
+      sudo printf "\nAllowUsers $(logname)" >> /etc/ssh/sshd_config && echo -e "\nroot login disallowed"
    fi
 
    echo
@@ -69,6 +69,6 @@ if [ "$IS_SERVER" = true ]; then
    sudo service ssh restart
 else
    # generate an RSA SSH keypair if none exists
-   gen_ssh_keys "/home/$USER_NAME/.ssh" "$SSH_KEY_COMMENT" true $USER_NAME
+   gen_ssh_keys "$HOME/.ssh" "$SSH_KEY_COMMENT" true $(logname)
 fi
 

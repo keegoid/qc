@@ -10,15 +10,34 @@ echo "#                                             "
 echo "# http://keegoid.mit-license.org              "
 echo "# --------------------------------------------"
 
-source vars.sh
+# library files
+LIBS='base.lib software.lib git.lib'
+LIBS_DIR='includes'
+
+# for screen error messages
+RED='\033[0;41;30m'
+STD='\033[0;0;39m'
 
 # source function libraries
 for lib in $LIBS; do
    [ -d "$LIBS_DIR" ] && { source "$LIBS_DIR/$lib" > /dev/null 2>&1 && echo "sourced: $LIBS_DIR/$lib" || echo "can't find: $LIBS_DIR/$lib"; }
 done
 
-# make sure curl is installed
-install_apt "curl"
+# config for server
+IS_SERVER=$(confirm "Is this a server?")
+
+# user inputs
+read -ep "enter your name for git: " -i 'Keegan Mullaney' REAL_NAME
+read -ep "enter your email for git: " -i 'keeganmullaney@gmail.com' EMAIL_ADDRESS
+read -ep "enter your prefered text editor for git: " -i 'vi' GIT_EDITOR
+read -ep "enter a comment for your ssh key: " -i 'coding key' SSH_KEY_COMMENT
+read -ep "enter apps to install with apt-get: " -i 'deluge gist gnupg2 gufw lynx nautilus-open-terminal xclip vim vlc' APT_PROGRAMS
+read -ep "enter apps to install with pip: " -i 'jrnl[encrypted]' PIP_PROGRAMS
+read -ep "enter apps to install with npm: " -i 'doctoc' NPM_PROGRAMS
+
+# make sure curl and git are installed
+install_apt "curl git"
+#install_apt "curl git openssh-server"
 
 # local repository location
 # use Dropbox for Repos directory?
@@ -26,9 +45,6 @@ install_apt "curl"
 #echo
 #REPOS=$(locate_repos $USER_NAME $DROPBOX)
 #echo "repository location: $REPOS"
-
-# config for server
-IS_SERVER=$(confirm "Is this a server?")
 
 # install software and update system
 function updates_go()
@@ -90,11 +106,23 @@ function terminal_go()
    pause
 }
 
+# wordpress
+function wordpress_go()
+{
+   echo "# -------------------------------"
+   echo "# SECTION 6: WORDPRESS DEV       "
+   echo "# -------------------------------"
+
+   # install requirements for WordPress development
+   run_script wordpress_dev.sh
+   pause
+}
+
 # code to run before exit
 function finish_up()
 {
    # set ownership
-   sudo chown -cR $USER_NAME:$USER_NAME "$WORKING_DIR"
+   sudo chown -cR $(logname):$(logname) "$HOME"
    echo
    echo "# --------------------------------------------------------------------"
    echo "# Lastly: execute sudo ./sudoers.sh to increase the sudo timeout.     "
@@ -122,22 +150,24 @@ display_menu()
    echo "3. SSH KEY"
    echo "4. ALIASES"
    echo "5. TERMINAL CONFIG"
-   echo "6. EXIT"
+   echo "6. WORDPRESS DEVELOPMENT"
+   echo "7. EXIT"
 }
 
 # user selection
 select_options()
 {
    local choice
-   read -r -p "Enter choice [1 - 6]: " choice
+   read -rp "Enter choice [1 - 7]: " choice
    case $choice in
       1) updates_go;;
       2) git_go;;
       3) ssh_go;;
       4) aliases_go;;
       5) terminal_go;;
-      6) finish_up && exit 0;;
-      *) echo -e "${RED}Error...${STD}" && sleep 2
+      6) wordpress_go;;
+      7) finish_up && exit 0;;
+      *) echo -e "${RED}Error...${STD}" && sleep 1
    esac
 }
  

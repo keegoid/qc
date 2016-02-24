@@ -10,18 +10,18 @@ echo "# http://keegoid.mit-license.org              "
 echo "# --------------------------------------------"
 
 # if user doesn't exist, add new user
-if [ "$(user_exists $USER_NAME)" = false ]; then
-   echo
-   sudo /usr/sbin/adduser $USER_NAME
-fi
+#if [ "$(user_exists $USER_NAME)" = false ]; then
+#   echo
+#   sudo /usr/sbin/adduser $USER_NAME
+#fi
 
 # append aliases to .bashrc if not done already
-pause "Press enter to add useful aliases for $USER_NAME..."
-if grep -q "alias wget" /home/$USER_NAME/.bashrc; then
-   echo "already added aliases for $USER_NAME..."
+if grep -q "alias wget" $HOME/.bashrc; then
+   echo "already added aliases..."
 else
-# alias useful shell commands
-cat << EOF >> /home/$USER_NAME/.bashrc
+   pause "Press enter to add useful aliases..."
+# alias useful shell commands, EOF must not be indented
+cat << EOF >> $HOME/.bashrc
 
 # make directories and parents
 alias mkdir='mkdir -pv'
@@ -69,8 +69,8 @@ alias osversion='cat /etc/*release*'
 alias wget='wget -c'
 
 # print aliases
-alias aliases="cat /home/$USER_NAME/.bashrc"
+alias aliases="cat $HOME/.bashrc"
 EOF
-   echo "/home/$USER_NAME/.bashrc was updated"
+   echo "$HOME/.bashrc was updated"
 fi
 

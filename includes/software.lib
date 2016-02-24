@@ -83,6 +83,16 @@ function get_software()
    done
 }
 
+# purpose: to check if program is NOT installed
+# arguments:
+#   $1 -> program name
+# returns: true if not installed, false if installed or unrecognized program name
+function not_installed()
+{
+   local app="$1"
+   [ -n "$(apt-cache policy ${app} | grep 'Installed: (none)')" ] && echo true || echo false
+}
+
 # purpose: to install programs from a list
 # arguments:
 #   $1 -> program list (space-separated)
@@ -93,7 +103,7 @@ function install_apt()
    local repo="$2"
    # install applications in the list
    for apt in $names; do
-      if ! dpkg-query -W "$apt" >/dev/null 2>&1; then
+      if [ "$(not_installed $apt)" = true ]; then
          echo
          read -p "Press enter to install $apt..."
          [ -z "${repo}" ] && sudo apt-get -y install "$apt" || { sudo apt-add-repository "${repo}"; sudo apt-get update; sudo apt-get -y install "$apt"; }
@@ -114,8 +124,10 @@ function install_npm()
    
    # make sure npm is installed
    install_apt "npm"
-   # symlink nodejs to path   
-   sudo ln -s "$(which nodejs)" /usr/bin/node
+   # symlink nodejs to path
+   if [ ! -L /usr/bin/node ]; then
+      sudo ln -s "$(which nodejs)" /usr/bin/node
+   fi
    # install npm packages in the list
    for app in $names; do
       if ! npm ls -gs | grep -qw "$app"; then
@@ -192,9 +204,67 @@ function source_rvm()
 # purpose: to install keybase
 function install_keybase()
 {
-   # change to Downloads directory to download file and then back to original directory
-   cd /tmp
-   curl -O https://dist.keybase.io/linux/deb/keybase-latest-amd64.deb && sudo dpkg -i keybase-latest-amd64.deb
-   cd -
+   if [ "$(not_installed keybase)" = true ]; then
+      # change to tmp directory to download file and then back to original directory
+      cd /tmp
+      curl -O https://dist.keybase.io/linux/deb/keybase-latest-amd64.deb && sudo dpkg -i keybase-latest-amd64.deb
+      cd - >/dev/null
+   fi
+}
+
+# purpose: to install newer version of virtualbox per VVV requirements
+function install_virtualbox()
+{
+   if [ "$(not_installed virtualbox-5.0)" = true ]; then
+      # add virtualbox to sources list if not already there
+      if ! grep -q "virtualbox" /etc/apt/sources.list; then
+         echo "deb http://download.virtualbox.org/virtualbox/debian trusty contrib" | sudo tee --append /etc/apt/sources.list
+      fi
+      # add signing key
+      wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add -
+      # update sources and install the latest virtualbox
+      sudo apt-get update
+      install_apt "virtualbox-5.0 dkms"
+   fi
+}
+
+# purpose: to install newer version of vagrant per VVV requirements
+function install_vagrant()
+{
+   if [ "$(not_installed vagrant)" = true ]; then
+      # change to tmp directory to download file and then back to original directory
+      cd /tmp
+      curl -O https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.deb && sudo dpkg -i vagrant_1.8.1_x86_64.deb
+      cd - >/dev/null
+   fi
+   # install vagrant-hostsupdater
+   [ -z "$(vagrant plugin list | grep hostsupdater)" ] && vagrant plugin install vagrant-hostsupdater
+   # install vagrant-triggers
+   [ -z "$(vagrant plugin list | grep triggers)" ] && vagrant plugin install vagrant-triggers
+}
+
+# purpose: to clone vvv
+function clone_vvv()
+{
+   if ! [ -d ../../vagrants/vvv ]; then
+      # clone VVV to vagrants directory one level up
+      git clone https://github.com/Varying-Vagrant-Vagrants/VVV.git ../../vagrants/vvv
+      echo "use \'vagrant up\' to start VVV from within ../../vagrants/vvv"
+   fi
+}
+
+# purpose: to clone vv
+function clone_vv()
+{
+   local clonePath="$HOME/bin/vv"
+   if ! [ -d "${clonePath}" ]; then
+      # clone VV to bin/vv directory
+      git clone https://github.com/bradp/vv.git "${clonePath}"
+      # add bin/vv directory to PATH
+      if ! grep -q "${clonePath}" $HOME/.profile; then
+         echo "PATH=${clonePath}:$PATH" >> $HOME/.profile
+         echo "vv directory added to PATH so vv commands will work in terminal"
+      fi
+   fi
 }
 

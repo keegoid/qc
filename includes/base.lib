@@ -166,7 +166,7 @@ function run_script()
    cd "$project_dir/scripts"
 #   echo "changing directory to $_"
    # make sure dos2unix is installed
-   dpkg-query -W dos2unix >/dev/null 2>&1 || { echo >&2 "dos2unix will be installed."; sudo apt-get -y install dos2unix; }
+   [ -n "$(apt-cache policy dos2unix | grep 'Installed: (none)')" ] && { echo >&2 "dos2unix will be installed."; sudo apt-get -y install dos2unix; }
    dos2unix -k -q ${script}
    chmod +x ${script}
 #   sudo chown $(logname):$(logname) ${script} && echo "owner set to $(logname)"
@@ -211,7 +211,7 @@ function locate_repos()
 #   $1 -> SSH directory
 #   $2 -> SSH key comment
 #   $3 -> use SSH?
-#   $4 -> non-root Linux username (optional)
+#   $4 -> non-root Linux username
 function gen_ssh_keys()
 {
    local ssh_dir="$1"
