@@ -225,10 +225,8 @@ function gen_ssh_keys()
    if [ "$use_ssh" = true ]; then
       # move id_rsa to new user account or create new SSH keypair if none exists
       echo
-      echo "Note: ${ssh_dir}/id_rsa is for public/private key pairs to establish"
-      echo "outgoing SSH connections to remote systems"
+      echo "Note: ${ssh_dir}/id_rsa is for public/private key pairs to establish SSH connections to remote systems"
       echo
-
       # check if id_rsa already exists and skip if true
       if [ -e "${ssh_dir}/id_rsa" ]; then
          echo "${ssh_dir}/id_rsa already exists"

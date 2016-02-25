@@ -15,6 +15,7 @@ LIBS='base.sh software.sh git.sh'
 LIBS_DIR='includes'
 
 # for screen error messages
+LIGHT_GRAY='\033[0;47;30m'
 RED='\033[0;41;30m'
 STD='\033[0;0;39m'
 
@@ -31,7 +32,7 @@ read -ep "enter your name for git: " -i 'Keegan Mullaney' REAL_NAME
 read -ep "enter your email for git: " -i 'keeganmullaney@gmail.com' EMAIL_ADDRESS
 read -ep "enter your prefered text editor for git: " -i 'vi' GIT_EDITOR
 read -ep "enter a comment for your ssh key: " -i 'coding key' SSH_KEY_COMMENT
-read -ep "enter directory to use for repositories or code projects" -i "$HOME/Dropbox/Repos" REPOS_DIRECTORY
+read -ep "enter directory to use for repositories or code projects: " -i "$HOME/Dropbox/Repos" REPOS_DIRECTORY
 read -ep "enter apps to install with apt-get: " -i 'deluge gist gnupg2 gufw lynx nautilus-open-terminal xclip vim vlc' APT_PROGRAMS
 read -ep "enter apps to install with pip: " -i 'jrnl[encrypted]' PIP_PROGRAMS
 read -ep "enter apps to install with npm: " -i 'doctoc' NPM_PROGRAMS
@@ -168,10 +169,10 @@ select_options()
       5) terminal_go;;
       6) wordpress_go;;
       7) finish_up && exit 0;;
-      *) echo -e "${RED}Error...${STD}" && sleep 1
+      *) echo -e "${RED} Error... ${STD}" && sleep 1
    esac
 }
- 
+"\033[0;41;30mError...\033[0;0;39m"
 # ----------------------------------------------
 # trap CTRL+C, CTRL+Z and quit singles
 # ----------------------------------------------

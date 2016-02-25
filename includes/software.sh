@@ -219,7 +219,7 @@ function install_virtualbox()
       wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add -
       # update sources and install the latest virtualbox
       sudo apt-get update
-      install_apt "virtualbox-5.0 dkms"
+      install_apt "virtualbox-5.0"
    fi
 }
 
@@ -229,13 +229,14 @@ function install_vagrant()
    if [ "$(not_installed vagrant)" = true ]; then
       # change to tmp directory to download file and then back to original directory
       cd /tmp
+      echo "downloading vagrant..."
       curl -O https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.deb && sudo dpkg -i vagrant_1.8.1_x86_64.deb
       cd - >/dev/null
    fi
    # install vagrant-hostsupdater
-   [ -z "$(vagrant plugin list | grep hostsupdater)" ] && echo "NOTE: a vpn may be required in China for this..." && vagrant plugin install vagrant-hostsupdater
+   [ -z "$(vagrant plugin list | grep hostsupdater)" ] && echo "${LIGHT_GRAY} NOTE: a vpn may be required in China for this... ${STD}" && vagrant plugin install vagrant-hostsupdater
    # install vagrant-triggers
-   [ -z "$(vagrant plugin list | grep triggers)" ] && echo "NOTE: a vpn may be required in China for this..." && vagrant plugin install vagrant-triggers
+   [ -z "$(vagrant plugin list | grep triggers)" ] && echo "${LIGHT_GRAY} NOTE: a vpn may be required in China for this... ${STD}" && vagrant plugin install vagrant-triggers
 }
 
 # purpose: to clone vvv
