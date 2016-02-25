@@ -21,20 +21,16 @@ function configure_git()
    local editor="$3"
    local ignore="$HOME/.gitignore_global"
 
-   if [ -e "${ignore}" ]; then
-      echo "git is already configured."
-   else
-      read -p "Press enter to configure git..."
-      # specify a user
-      git config --global user.name "${name}"
-      git config --global user.email "${email}"
-      # select a text editor
-      git config --global core.editor "${editor}"
-      # set default push and pull behavior to the old method
-      git config --global push.default matching
-      git config --global pull.default matching
-      # create a global .gitignore file
-      echo "# global list of file types to ignore
+   # specify a user
+   git config --global user.name "${name}"
+   git config --global user.email "${email}"
+   # select a text editor
+   git config --global core.editor "${editor}"
+   # set default push and pull behavior to the old method
+   git config --global push.default matching
+   git config --global pull.default matching
+   # create a global .gitignore file
+   echo "# global list of file types to ignore
 # from https://gist.githubusercontent.com/octocat/9257657/raw/c91b435be351fcdff00f6f97f20824d0286b99ef/.gitignore
 
 # Compiled source #
@@ -78,12 +74,11 @@ Thumbs.db
 # txt editor backups #
 ######################
 *.*~" > "${ignore}"
-      git config --global core.excludesfile "${ignore}"
-      echo "git was configured"
-      echo
-      read -p "Press enter to view the config..."
-      git config --list
-   fi
+   git config --global core.excludesfile "${ignore}"
+   echo "git was configured"
+   echo
+   read -p "Press [Enter] to view the config..."
+   git config --list
 }
 
 # purpose: clone repository after fork
@@ -108,7 +103,7 @@ function clone_repo()
       echo
       echo "*** NOTE ***"
       echo "Make sure \"github.com/${address}\" exists."
-      read -p "Press enter to clone ${address} at GitHub..."
+      read -p "Press [Enter] to clone ${address} at GitHub..."
       if [ "$use_ssh" = true ]; then
          git clone "git@github.com:${address}"
       else
@@ -148,7 +143,7 @@ function set_remote_repo()
    else
       echo
       if [ "$set_upstream" = true ]; then
-         read -p "Press enter to assign upstream repository..."
+         read -p "Press [Enter] to assign upstream repository..."
          if [ "$use_ssh" = true ]; then
             git remote add upstream "git@github.com:${address}" && echo "remote upstream added: git@github.com:${address}"
          else
@@ -158,7 +153,7 @@ function set_remote_repo()
          echo "*** NOTE ***"
          echo "Make sure \"github.com/${address}\" exists."
          echo "Either fork and rename it, or create a new repository in your GitHub."
-         read -p "Press enter to assign remote origin repository..."
+         read -p "Press [Enter] to assign remote origin repository..."
          if [ "$use_ssh" = true ]; then
             git remote add origin "git@github.com:${address}" && echo "remote origin added: git@github.com:${address}"
          else
@@ -177,7 +172,7 @@ function create_branch()
    local branch_name="$1"
    
    echo
-   read -p "Press enter to create a git branch for your site at ${branch_name}..."
+   read -p "Press [Enter] to create a git branch for your site at ${branch_name}..."
    git checkout -b "${branch_name}"
 
    # some work and some commits happen
@@ -186,11 +181,11 @@ function create_branch()
    #git rebase upstream/master or git rebase interactive upstream/master
 
    echo
-   read -p "Press enter to push changes and set branch origin in config..."
+   read -p "Press [Enter] to push changes and set branch origin in config..."
    git push -u origin "${branch_name}"
 
    echo
-   read -p "Press enter to checkout the master branch again..."
+   read -p "Press [Enter] to checkout the master branch again..."
    git checkout master
 
    # above could also be done with:
@@ -211,14 +206,14 @@ function merge_upstream()
 {
    # pull in changes not present in local repository, without modifying local files
    echo
-   read -p "Press enter to fetch changes from upstream repository..."
+   read -p "Press [Enter] to fetch changes from upstream repository..."
    git fetch upstream && echo "upstream fetch done"
 
    # merge any changes fetched into local working files
    echo
    echo "*** NOTE ***"
    echo "If merging changes, press \":wq enter\" to accept the merge message in vi."
-   read -p "Press enter to merge changes..."
+   read -p "Press [Enter] to merge changes..."
    git merge upstream/master
 
    # or combine fetch and merge with:
@@ -238,7 +233,7 @@ function merge_upstream()
    # push commits to your remote repository
 #   if $commit || git status | grep -qw "Your branch is ahead of"; then
 #      echo
-#      read -p "Press enter to push changes to your remote repository (GitHub)..."
+#      read -p "Press [Enter] to push changes to your remote repository (GitHub)..."
 #      git push origin master
 #   else
 #      echo "nothing to push, skipping push..."

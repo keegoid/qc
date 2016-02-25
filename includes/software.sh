@@ -77,7 +77,7 @@ function get_software()
    echo
    for url in ${list}; do
       name="${url##*/}"
-      read -p "Press enter to download and extract: $name"
+      read -p "Press [Enter] to download and extract: $name"
       wget -nc $url
       tar -xzf $name
    done
@@ -105,7 +105,7 @@ function install_apt()
    for apt in $names; do
       if [ "$(not_installed $apt)" = true ]; then
          echo
-         read -p "Press enter to install $apt..."
+         read -p "Press [Enter] to install $apt..."
          [ -z "${repo}" ] && sudo apt-get -y install "$apt" || { sudo apt-add-repository "${repo}"; sudo apt-get update; sudo apt-get -y install "$apt"; }
       fi
    done
@@ -127,7 +127,7 @@ function install_npm()
    for app in $names; do
       if ! npm ls -gs | grep -qw "$app"; then
          echo
-         read -p "Press enter to install $app..."
+         read -p "Press [Enter] to install $app..."
          sudo npm install -g "$app"
       fi
    done
@@ -145,7 +145,7 @@ function install_gem()
    for app in $names; do
       if ! $(gem list "$app" -i); then
          echo
-         read -p "Press enter to install $app..."
+         read -p "Press [Enter] to install $app..."
          gem install "$app"
       fi
    done
@@ -164,7 +164,7 @@ function install_pip()
       app=$(trim_longest_right_pattern "$app" "[")
       if ! pip list | grep "$app" >/dev/null 2>&1; then
          echo
-         read -p "Press enter to install $app..."
+         read -p "Press [Enter] to install $app..."
          sudo pip install "$app"
       fi
    done
@@ -175,7 +175,7 @@ function install_pip()
 function install_ruby()
 {
    echo
-   read -p "Press enter to install ruby and rubygems..."
+   read -p "Press [Enter] to install ruby and rubygems..."
    if ! ruby -v | grep -q "ruby ${RUBY_V}"; then
       gpg2 --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
       curl -L "$RUBY_URL" | bash -s stable --ruby="${RUBY_V}"
@@ -187,7 +187,7 @@ function install_ruby()
 function source_rvm()
 {
    echo
-   read -p "Press enter to start using rvm..."
+   read -p "Press [Enter] to start using rvm..."
    if grep -q "/usr/local/rvm/scripts/rvm" $HOME/.bashrc; then
       source /usr/local/rvm/scripts/rvm && echo "sourced rvm"
    else
@@ -263,7 +263,7 @@ function clone_vv()
       git clone https://github.com/bradp/vv.git "${repos}/vv"
       # add vv directory to PATH
       if ! grep -q "${repos}/vv" $HOME/.profile; then
-         echo "PATH=${repos}/vv:$PATH" >> $HOME/.profile
+         echo "PATH=${repos}/vv:'$PATH'" >> $HOME/.profile && source $HOME/.profile
          echo "vv directory added to PATH so vv commands will work in terminal"
       fi
    fi

@@ -75,11 +75,16 @@ function die()
 # purpose: wait for user to press enter
 # arguments:
 #   $1 -> user message
+#   #2 -> use back option?
 function pause()
 {
-  local msg="$1"
-  [ -z "${msg}" ] && msg="Press [Enter] key to continue..."
-  read -p "$msg"
+   local msg="$1"
+   local back="$2"
+   # default message
+   [ -z "${msg}" ] && msg="Press [Enter] key to continue"
+   # how to go back, with either default or user message
+   [ "$back" = true ] && msg="${msg}, [Ctrl+Z] to go back" 
+   read -p "$msg..."
 }
 
 # purpose: return true if script is executed by the root user
@@ -159,6 +164,7 @@ function script_name()
 # purpose: run a script from another script
 # arguments:
 #   $1 -> name of script to be run
+#   #2 -> debug mode? (optional)
 function run_script()
 {
    local name="$1"
@@ -173,14 +179,13 @@ function run_script()
    dos2unix -k -q "${name}"
    chmod +x "${name}"
 
-   # run the script
+   # clear the screen and run the script
+   [ "${2}" = true ] || clear
    . ./"${name}"
+   echo "script: ${name} has finished"
 
    # change back to original directory
    cd - >/dev/null
-
-   echo "script: ${name} has finished"
-   read -p "Press enter to return to the main menu..."
 }
 
 # purpose: generate an RSA SSH keypair if none exists or copy from root
@@ -198,14 +203,14 @@ function gen_ssh_keys()
 
    if [ "$use_ssh" = true ]; then
       echo
-      echo "Note: ${ssh_dir}/id_rsa is for public/private key pairs to establish SSH connections to remote systems"
+      echo "Note: ${ssh_dir} is for public/private key pairs to establish SSH connections to remote systems"
       echo
       # check if id_rsa exists
       if [ -e "${ssh_dir}/id_rsa" ]; then
          echo "${ssh_dir}/id_rsa already exists"
       else
          # create a new ssh key with provided ssh key comment
-         pause "Press enter to generate a new SSH key at: ${ssh_dir}/id_rsa"
+         pause "Press [Enter] to generate a new SSH key at: ${ssh_dir}/id_rsa" true
          ssh-keygen -b 4096 -t rsa -C "${comment}"
          echo "SSH key generated"
 	      chmod -c 0600 "${ssh_dir}/id_rsa"
@@ -218,7 +223,7 @@ function gen_ssh_keys()
          echo
          cat "${ssh_dir}/id_rsa.pub"
          echo
-         read -p "Press enter to continue..."
+         read -p "Press [Enter] to continue..."
       fi
       echo
       echo "Have you copied id_rsa.pub (above) to the SSH keys section"
@@ -285,7 +290,7 @@ function get_public_key()
    local apt_keys="$HOME/apt_keys"
 
    [ -z "${url}" ] && echo false && return
-   pause "Press enter to download and import the GPG Key..."
+   pause "Press [Enter] to download and import the GPG Key..."
    mkdir -pv "$apt_keys"
    cd "$apt_keys"
 #   echo "changing directory to $_"
