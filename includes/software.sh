@@ -157,8 +157,8 @@ function install_gem()
 function install_pip()
 {
    local names="$1"
-   # make sure python-pip and python-gpgme are installed
-   install_apt "python-pip python-gpgme"
+   # make sure python-pip and python-keyring are installed for jrnl to work
+   install_apt "python-pip python-keyring"
    # install pips in the list
    for app in $names; do
       app=$(trim_longest_right_pattern "$app" "[")
