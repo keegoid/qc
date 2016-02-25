@@ -10,6 +10,7 @@ echo "# http://keegoid.mit-license.org              "
 echo "# --------------------------------------------"
 
 if [ "$IS_SERVER" = true ]; then
+   pause "Press [Enter] to configure sshd service" true
    # make a copy of the original sshd config file
    sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.original
    # protect it from writing
@@ -22,8 +23,6 @@ if [ "$IS_SERVER" = true ]; then
    read -ep "Enter the ssh port number to use on the server: " -i "22" SSH_PORT
 
    # edit /etc/ssh/sshd_config
-   echo
-   pause "Press enter to configure sshd service..."
    sudo sed -i.bak -e "{
       s|#Port 22|Port $SSH_PORT|
       s|#ClientAliveInterval 0|ClientAliveInterval $CLIENT_ALIVE|
@@ -42,12 +41,12 @@ if [ "$IS_SERVER" = true ]; then
 
    # use ufw to limit login attempts too
    echo
-   pause "Press enter to configure ufw to limit ssh connection attempts..."
+   pause "Press [Enter] to configure ufw to limit ssh connection attempts..."
    sudo ufw limit ssh
 
    # disable root user access and limit login attempts
    echo
-   pause "Press enter to configure sshd security settings..."
+   pause "Press [Enter] to configure sshd security settings..."
    sudo sed -i -e "s|#PermitRootLogin yes|PermitRootLogin no|" \
                -e "s|PasswordAuthentication yes|PasswordAuthentication no|" \
                -e "s|#MaxStartups 10:30:60|MaxStartups 2:30:10|" \
@@ -59,7 +58,7 @@ if [ "$IS_SERVER" = true ]; then
    fi
 
    echo
-   pause "Press enter to restart the ssh service..."
+   pause "Press [Enter] to restart the ssh service..."
    sudo service ssh restart
 else
    # generate an RSA SSH keypair if none exists

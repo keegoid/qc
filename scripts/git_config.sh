@@ -9,6 +9,12 @@ echo "#                                             "
 echo "# http://keegoid.mit-license.org              "
 echo "# --------------------------------------------"
 
-# configure git
-configure_git "$REAL_NAME" "$EMAIL_ADDRESS" "$GIT_EDITOR"
+# check if git is already configured
+if [ -e "$HOME/.gitignore_global" ]; then
+   echo "git is already configured."
+else
+   pause "Press [Enter] to configure git..." true
+   # configure git
+   configure_git "$REAL_NAME" "$EMAIL_ADDRESS" "$GIT_EDITOR"
+fi
 

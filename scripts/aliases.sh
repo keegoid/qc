@@ -13,7 +13,7 @@ echo "# --------------------------------------------"
 if grep -q "alias wget" $HOME/.bashrc; then
    echo "already added aliases..."
 else
-   pause "Press enter to add useful aliases..."
+   pause "Press [Enter] to add useful aliases" true
 # alias useful shell commands, EOF must not be indented
 cat << EOF >> $HOME/.bashrc
 

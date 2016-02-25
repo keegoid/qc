@@ -10,9 +10,9 @@ echo "# http://keegoid.mit-license.org              "
 echo "# --------------------------------------------"
 
 # update programs maintained by the package manager
-pause "Press enter to update Ubuntu sources..."
+pause "Press [Enter] to update Ubuntu sources" true
 sudo apt-get -y update
-pause "Press enter to upgrade programs..."
+pause "Press [Enter] to upgrade programs" true
 sudo apt-get -y upgrade
 
 # install programs with apt-get

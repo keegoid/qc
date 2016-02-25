@@ -9,6 +9,7 @@ echo "#                                             "
 echo "# http://keegoid.mit-license.org              "
 echo "# --------------------------------------------"
 
+pause "" true
 # wordpress development
 VVV_REQS=$(confirm "install virtualbox and vagrant for VVV?" false)
 if [ "$VVV_REQS" = true ]; then
