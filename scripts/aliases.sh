@@ -62,6 +62,9 @@ alias osversion='cat /etc/*release*'
 # resume downloads
 alias wget='wget -c'
 
+# git log
+alias gitlog='git log --oneline --decorate'
+
 # print aliases
 alias aliases="cat $HOME/.bashrc"
 EOF
