@@ -23,6 +23,7 @@ Quickly configures a fresh install of [Ubuntu 14.04 x64][tt].
 - generate an [RSA key][sshkey] for remote [SSH sessions][ssh] (this is not a [GPG key][gpgkey])
 - add useful [shell aliases][sa]
 - make the [terminal][lc] easier to read and use
+- install the latest [VirtualBox][vb], [Vagrant][vg] and clone [VVV][vvv] and [VV][vv] for [WordPress][wp] development
 
 ## Usage
 
@@ -62,7 +63,11 @@ SEE: http://keegoid.mit-license.org
 [ubuntu]:   http://www.ubuntu.com/global
 [tt]:       https://wiki.ubuntu.com/TrustyTahr/ReleaseNotes
 [lc]:       http://en.wikipedia.org/wiki/Linux_console
-[lp]:       https://lastpass.com/f?3202156
+[vb]:       https://www.virtualbox.org/
+[vg]:       https://www.vagrantup.com/
+[vvv]:      https://github.com/Varying-Vagrant-Vagrants/VVV
+[vv]:       https://github.com/bradp/vv
+[wp]:       https://wordpress.org/
 [ss]:       http://en.wikipedia.org/wiki/Shell_script
 [ssh]:      http://en.wikipedia.org/wiki/Secure_Shell
 [sshkey]:   http://en.wikipedia.org/wiki/Ssh-keygen
@@ -70,4 +75,5 @@ SEE: http://keegoid.mit-license.org
 [sa]:       http://en.wikipedia.org/wiki/Alias_%28command%29
 [gh]:       https://github.com/
 [git]:      https://git-scm.com/
+[lp]:       https://lastpass.com/f?3202156
 [twitter]:  https://twitter.com/intent/tweet?screen_name=keegoid&text=loving%20your%20CentOS%207.0%20deploy%20scripts%20for%20%40middlemanapp%20or%20%40WordPress%20with%20%40nginxorg%20https%3A%2F%2Fgithub.com%2Fkeegoid%2Flinux-deploy-scripts
