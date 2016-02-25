@@ -68,6 +68,7 @@ alias gitlog='git log --oneline --decorate'
 # print aliases
 alias aliases="cat $HOME/.bashrc"
 EOF
-   echo "$HOME/.bashrc was updated"
+   source "$HOME/.bashrc"
+   echo "$HOME/.bashrc was updated and sourced"
 fi
 
