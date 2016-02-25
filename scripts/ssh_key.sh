@@ -9,12 +9,6 @@ echo "#                                             "
 echo "# http://keegoid.mit-license.org              "
 echo "# --------------------------------------------"
 
-# if user doesn't exist, add new user
-#if [ "$(user_exists $USER_NAME)" = false ]; then
-#   echo
-#   sudo /usr/sbin/adduser $USER_NAME
-#fi
-
 if [ "$IS_SERVER" = true ]; then
    # make a copy of the original sshd config file
    sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.original

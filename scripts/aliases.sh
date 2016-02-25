@@ -9,12 +9,6 @@ echo "#                                             "
 echo "# http://keegoid.mit-license.org              "
 echo "# --------------------------------------------"
 
-# if user doesn't exist, add new user
-#if [ "$(user_exists $USER_NAME)" = false ]; then
-#   echo
-#   sudo /usr/sbin/adduser $USER_NAME
-#fi
-
 # append aliases to .bashrc if not done already
 if grep -q "alias wget" $HOME/.bashrc; then
    echo "already added aliases..."

@@ -30,9 +30,3 @@ install_npm "$NPM_PROGRAMS" true
 # install keybase
 install_keybase
 
-#if [ "$DROPBOX" = true ]; then
-#   echo
-#   echo "To install Dropbox, please do so manually at: "
-#   echo "https://www.dropbox.com/install?os=lnx"
-#fi
-
