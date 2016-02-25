@@ -75,8 +75,8 @@ Thumbs.db
 ######################
 *.*~" > "${ignore}"
    git config --global core.excludesfile "${ignore}"
+   ! [ -e "$HOME/.vimrc" ] && echo "au FileType gitcommit setlocal tw=72" | tee "$HOME/.vimrc"
    echo "git was configured"
-   echo
    read -p "Press [Enter] to view the config..."
    git config --list
 }
