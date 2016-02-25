@@ -23,7 +23,7 @@ Quickly configures a fresh install of [Ubuntu 14.04 x64][tt].
 - generate an [RSA key][sshkey] for remote [SSH sessions][ssh] (this is not a [GPG key][gpgkey])
 - add useful [shell aliases][sa]
 - make the [terminal][lc] easier to read and use
-- install the latest [VirtualBox][vb], [Vagrant][vg] and clone [VVV][vvv] and [VV][vv] for [WordPress][wp] development
+- install the latest [VirtualBox][vb], [Vagrant][vg] and setup [VVV][vvv] and [VV][vv] for [WordPress][wp] development
 
 ## Usage
 
