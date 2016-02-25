@@ -24,6 +24,7 @@ function configure_git()
    if [ -e "${ignore}" ]; then
       echo "git is already configured."
    else
+      read -p "Press enter to configure git..."
       # specify a user
       git config --global user.name "${name}"
       git config --global user.email "${email}"

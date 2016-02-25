@@ -22,6 +22,44 @@ function to_lower()
     echo $output
 }
 
+
+# purpose: trim shortest pattern from the left
+# arguments:
+#   $1 -> variable
+#   $2 -> pattern
+function trim_shortest_left_pattern()
+{
+   echo -n "${1#*$2}"
+   # -n (don't create newline character)
+}
+
+# purpose: trim longest pattern from the left
+# arguments:
+#   $1 -> variable
+#   $2 -> pattern
+function trim_longest_left_pattern()
+{
+   echo -n "${1##*$2}"
+}
+
+# purpose: trim shortest pattern from the right
+# arguments:
+#   $1 -> variable
+#   $2 -> pattern
+function trim_shortest_right_pattern()
+{
+   echo -n "${1%$2*}"
+}
+
+# purpose: trim longest pattern from the right
+# arguments:
+#   $1 -> variable
+#   $2 -> pattern
+function trim_longest_right_pattern()
+{
+   echo -n "${1%%$2*}"
+}
+
 # purpose: to display an error message and die
 # arguments:
 #   $1 -> message
@@ -32,6 +70,16 @@ function die()
     local e=${2-1}	# default exit status 1
     printf "$m"
     exit $e
+}
+
+# purpose: wait for user to press enter
+# arguments:
+#   $1 -> user message
+function pause()
+{
+  local msg="$1"
+  [ -z "${msg}" ] && msg="Press [Enter] key to continue..."
+  read -p "$msg"
 }
 
 # purpose: return true if script is executed by the root user
@@ -96,43 +144,6 @@ function confirm()
    fi
 }
 
-# purpose: trim shortest pattern from the left
-# arguments:
-#   $1 -> variable
-#   $2 -> pattern
-function trim_shortest_left_pattern()
-{
-   echo -n "${1#*$2}"
-   # -n (don't create newline character)
-}
-
-# purpose: trim longest pattern from the left
-# arguments:
-#   $1 -> variable
-#   $2 -> pattern
-function trim_longest_left_pattern()
-{
-   echo -n "${1##*$2}"
-}
-
-# purpose: trim shortest pattern from the right
-# arguments:
-#   $1 -> variable
-#   $2 -> pattern
-function trim_shortest_right_pattern()
-{
-   echo -n "${1%$2*}"
-}
-
-# purpose: trim longest pattern from the right
-# arguments:
-#   $1 -> variable
-#   $2 -> pattern
-function trim_longest_right_pattern()
-{
-   echo -n "${1%%$2*}"
-}
-
 # purpose: return name of script being run
 # arguments:
 #   $1 -> message before
@@ -145,65 +156,31 @@ function script_name()
    echo -n "$1" && trim_longest_left_pattern $0 / && echo "$2"
 }
 
-# purpose: wait for user to press enter
-# arguments:
-#   $1 -> user message
-function pause()
-{
-  local msg="$1"
-  [ -z "${msg}" ] && msg="Press [Enter] key to continue..."
-  read -p "$msg"
-}
-
 # purpose: run a script from another script
 # arguments:
 #   $1 -> name of script to be run
 function run_script()
 {
-   local script="$1"
-   local project_dir="$PWD"
-   # reset back to root poject directory to run scripts
-   cd "$project_dir/scripts"
-#   echo "changing directory to $_"
+   local name="$1"
+
    # make sure dos2unix is installed
-   [ -n "$(apt-cache policy dos2unix | grep 'Installed: (none)')" ] && { echo >&2 "dos2unix will be installed."; sudo apt-get -y install dos2unix; }
-   dos2unix -k -q ${script}
-   chmod +x ${script}
-#   sudo chown $(logname):$(logname) ${script} && echo "owner set to $(logname)"
-   read -p "Press enter to run: ${script}"
-   . ./${script}
-   echo
-   echo "          done with ${script}"
-   echo "*********************************************"
-   cd "$project_dir"
-}
+   [ "$(not_installed dos2unix)" = true ] && install_apt dos2unix
 
-# purpose: set Repos directory location
-# arguments:
-#   $1 -> non-root Linux username
-#   $2 -> use Dropbox?
-function locate_repos()
-{
-   local u="$1"
-   local db=$2
-   local repos
+   # change to scripts directory to run scripts
+   cd scripts
 
-   if [ "$db" = true ]; then
-      repos="/home/${u}/Dropbox/Repos"
-      # if dropbox directory is made, set ownership
-      if mkdir -p "/home/${u}/Dropbox"; then
-         chown $u:$u "/home/${u}/Dropbox"
-      fi
-   else
-      repos="/home/${u}/Repos"
-   fi
+   # get script ready to run
+   dos2unix -k -q "${name}"
+   chmod +x "${name}"
 
-   # if repos directory is made, set ownership
-   mkdir -p "$repos"
-#   if mkdir -p "$repos"; then
-#      chown $u:$u "$repos"
-#   fi
-   echo -n $repos
+   # run the script
+   . ./"${name}"
+
+   # change back to original directory
+   cd - >/dev/null
+
+   echo "script: ${name} has finished"
+   read -p "Press enter to return to the main menu..."
 }
 
 # purpose: generate an RSA SSH keypair if none exists or copy from root
@@ -219,36 +196,18 @@ function gen_ssh_keys()
    local use_ssh=$3
    local u="$4"
 
-#   echo "variable use_ssh = $use_ssh"
-#   pause
-
    if [ "$use_ssh" = true ]; then
-      # move id_rsa to new user account or create new SSH keypair if none exists
       echo
       echo "Note: ${ssh_dir}/id_rsa is for public/private key pairs to establish SSH connections to remote systems"
       echo
-      # check if id_rsa already exists and skip if true
+      # check if id_rsa exists
       if [ -e "${ssh_dir}/id_rsa" ]; then
          echo "${ssh_dir}/id_rsa already exists"
-      # if it doesn't exist, get it from root user
-#      elif [ -e "$HOME/.ssh/id_rsa" ] && [ -n "${u}" ]; then
-#         mkdir -pv "${ssh_dir}"
-#         cp -v $HOME/.ssh/id_rsa ${ssh_dir}
-#         cp -v $HOME/.ssh/id_rsa.pub ${ssh_dir}
-#         chmod -c 0600 "${ssh_dir}/id_rsa"
-#         chown -cR "${u}":"${u}" "${ssh_dir}"
-      # if no id_rsa, create a new keypair
       else
          # create a new ssh key with provided ssh key comment
-         echo "create new key: ${ssh_dir}/id_rsa"
-         pause "Press enter to generate a new SSH key"
+         pause "Press enter to generate a new SSH key at: ${ssh_dir}/id_rsa"
          ssh-keygen -b 4096 -t rsa -C "${comment}"
          echo "SSH key generated"
-#         if [ -e "$HOME/.ssh/id_rsa" ] && [ -n "${ssh_dir}/id_rsa" ]; then
-#            mkdir -pv "${ssh_dir}"
-#            cp -v $HOME/.ssh/id_rsa "${ssh_dir}/id_rsa"
-#            cp -v $HOME/.ssh/id_rsa.pub "${ssh_dir}/id_rsa.pub"
-#         fi
 	      chmod -c 0600 "${ssh_dir}/id_rsa"
          chown -cR "${u}":"${u}" "${ssh_dir}"
          echo

@@ -83,7 +83,7 @@ function get_software()
    done
 }
 
-# purpose: to check if program is NOT installed
+# purpose: check if program is NOT installed
 # arguments:
 #   $1 -> program name
 # returns: true if not installed, false if installed or unrecognized program name
@@ -93,7 +93,7 @@ function not_installed()
    [ -n "$(apt-cache policy ${app} | grep 'Installed: (none)')" ] && echo true || echo false
 }
 
-# purpose: to install programs from a list
+# purpose: install programs from a list
 # arguments:
 #   $1 -> program list (space-separated)
 #   $2 -> enable-repo (optional)
@@ -111,7 +111,7 @@ function install_apt()
    done
 }
 
-# purpose: to install npm packages from a list
+# purpose: install npm packages from a list
 # arguments:
 #   $1 -> npm list (space-separated)
 function install_npm()
@@ -133,7 +133,7 @@ function install_npm()
    done
 }
 
-# purpose: to install gems from a list
+# purpose: install gems from a list
 # arguments:
 #   $1 -> gem list (space-separated)
 function install_gem()
@@ -151,7 +151,7 @@ function install_gem()
    done
 }
 
-# purpose: to install pips from a list
+# purpose: install pips from a list
 # arguments:
 #   $1 -> pip list (space-separated)
 function install_pip()
@@ -170,7 +170,7 @@ function install_pip()
    done
 }
 
-# purpose: to install ruby and rubygems
+# purpose: install ruby and rubygems
 # arguments: none
 function install_ruby()
 {
@@ -182,7 +182,7 @@ function install_ruby()
    fi
 }
 
-# purpose: to source the rvm command
+# purpose: source the rvm command
 # arguments: none
 function source_rvm()
 {
@@ -196,7 +196,7 @@ function source_rvm()
    fi
 }
 
-# purpose: to install keybase
+# purpose: install keybase
 function install_keybase()
 {
    if [ "$(not_installed keybase)" = true ]; then
@@ -207,7 +207,7 @@ function install_keybase()
    fi
 }
 
-# purpose: to install newer version of virtualbox per VVV requirements
+# purpose: install newer version of virtualbox per VVV requirements
 function install_virtualbox()
 {
    if [ "$(not_installed virtualbox-5.0)" = true ]; then
@@ -223,7 +223,7 @@ function install_virtualbox()
    fi
 }
 
-# purpose: to install newer version of vagrant per VVV requirements
+# purpose: install newer version of vagrant per VVV requirements
 function install_vagrant()
 {
    if [ "$(not_installed vagrant)" = true ]; then
@@ -239,7 +239,7 @@ function install_vagrant()
    [ -z "$(vagrant plugin list | grep triggers)" ] && echo -e "${LIGHT_GRAY} NOTE: a vpn may be required in China for this... ${STD}" && vagrant plugin install vagrant-triggers
 }
 
-# purpose: to clone vvv
+# purpose: clone vvv
 # arguments:
 #   $1 -> repos directory
 function clone_vvv()
@@ -252,7 +252,7 @@ function clone_vvv()
    fi
 }
 
-# purpose: to clone vv
+# purpose: clone vv
 # arguments:
 #   $1 -> repos directory
 function clone_vv()
