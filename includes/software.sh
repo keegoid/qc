@@ -234,9 +234,9 @@ function install_vagrant()
       cd - >/dev/null
    fi
    # install vagrant-hostsupdater
-   [ -z "$(vagrant plugin list | grep hostsupdater)" ] && echo "${LIGHT_GRAY} NOTE: a vpn may be required in China for this... ${STD}" && vagrant plugin install vagrant-hostsupdater
+   [ -z "$(vagrant plugin list | grep hostsupdater)" ] && echo -e "${LIGHT_GRAY} NOTE: a vpn may be required in China for this... ${STD}" && vagrant plugin install vagrant-hostsupdater
    # install vagrant-triggers
-   [ -z "$(vagrant plugin list | grep triggers)" ] && echo "${LIGHT_GRAY} NOTE: a vpn may be required in China for this... ${STD}" && vagrant plugin install vagrant-triggers
+   [ -z "$(vagrant plugin list | grep triggers)" ] && echo -e "${LIGHT_GRAY} NOTE: a vpn may be required in China for this... ${STD}" && vagrant plugin install vagrant-triggers
 }
 
 # purpose: to clone vvv
