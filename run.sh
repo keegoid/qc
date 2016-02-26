@@ -43,7 +43,7 @@ read -ep "enter your email for git: " -i 'keeganmullaney@gmail.com' EMAIL_ADDRES
 read -ep "enter your prefered text editor for git: " -i 'vi' GIT_EDITOR
 read -ep "enter a comment for your ssh key: " -i 'coding key' SSH_KEY_COMMENT
 read -ep "enter directory to use for repositories or code projects: " -i "$HOME/Dropbox/Repos" REPOS_DIRECTORY
-read -ep "enter apps to install with apt-get: " -i 'deluge gist gnupg2 gufw lynx mutt nautilus-open-terminal x11vnc xclip vim vlc' APT_PROGRAMS
+read -ep "enter apps to install with apt-get: " -i 'deluge gist gnupg2 gufw lynx nautilus-open-terminal x11vnc xclip vim vlc' APT_PROGRAMS
 read -ep "enter apps to install with pip: " -i 'jrnl[encrypted]' PIP_PROGRAMS
 read -ep "enter apps to install with npm: " -i 'doctoc' NPM_PROGRAMS
 
