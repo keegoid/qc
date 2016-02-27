@@ -245,9 +245,9 @@ function install_vagrant()
 function clone_vvv()
 {
    local repos="$1"
-   if ! [ -d "${repos}/vagrants/vvv" ]; then
+   if ! [ -d "$HOME/${repos}/vagrants/vvv" ]; then
       # clone VVV to vagrants directory
-      git clone https://github.com/Varying-Vagrant-Vagrants/VVV.git "${repos}/vagrants/vvv"
+      git clone https://github.com/Varying-Vagrant-Vagrants/VVV.git "$HOME/${repos}/vagrants/vvv"
       echo "use \'vagrant up\' to start VVV from within ${repos}/vagrants/vvv"
    fi
 }
@@ -258,13 +258,14 @@ function clone_vvv()
 function clone_vv()
 {
    local repos="$1"
-   if ! [ -d "${repos}/vv" ]; then
+   if ! [ -d "$HOME/${repos}/vv" ]; then
       # clone VV to vv directory
-      git clone https://github.com/bradp/vv.git "${repos}/vv"
+      git clone https://github.com/bradp/vv.git "$HOME/${repos}/vv"
       # add vv directory to PATH
-      if ! grep -q "${repos}/vv" $HOME/.profile; then
-         echo "PATH=${repos}/vv:'$PATH'" >> $HOME/.profile && source $HOME/.profile
-         echo "vv directory added to PATH so vv commands will work in terminal"
+      if ! grep -q "$HOME/${repos}/vv" $HOME/.profile; then
+         echo "PATH=\"\$HOME/${repos}/vv:\$PATH\"" >> $HOME/.profile
+         source $HOME/.profile
+         echo "vv directory added to \$PATH"
       fi
    fi
 }
