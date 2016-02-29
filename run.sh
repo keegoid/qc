@@ -31,11 +31,11 @@ for lib in $LIBS; do
 done
 
 # config for server
-IS_SERVER=$(confirm "Is this a server?")
-echo "please wait..."
+confirm "Is this a server?"
+IS_SERVER=$?
+
 # make sure curl and git are installed
 install_apt "curl git"
-#install_apt "curl git openssh-server"
 
 # user inputs
 read -ep "enter your name for git: " -i 'Keegan Mullaney' REAL_NAME
@@ -43,9 +43,17 @@ read -ep "enter your email for git: " -i 'keeganmullaney@gmail.com' EMAIL_ADDRES
 read -ep "enter your prefered text editor for git: " -i 'vi' GIT_EDITOR
 read -ep "enter a comment for your ssh key: " -i 'coding key' SSH_KEY_COMMENT
 read -ep "enter relative directory to use for repositories: " -i "Dropbox/Repos" REPOS_DIRECTORY
-read -ep "enter apps to install with apt-get: " -i 'deluge gist gnupg2 gufw lynx nautilus-open-terminal x11vnc xclip vim vlc' APT_PROGRAMS
 read -ep "enter apps to install with pip: " -i 'jrnl[encrypted]' PIP_PROGRAMS
 read -ep "enter apps to install with npm: " -i 'doctoc' NPM_PROGRAMS
+read -ep "enter apps to install with gem: " -i 'gist' GEM_PROGRAMS
+if [ "$IS_SERVER" = true ]; then
+   read -ep "enter apps to install with apt-get: " -i 'gnupg2 lynx openssh-server xclip vim' APT_PROGRAMS
+else
+   read -ep "enter apps to install with apt-get: " -i 'deluge gnupg2 gufw lynx nautilus-open-terminal x11vnc xclip vim vlc' APT_PROGRAMS
+fi
+
+# add programs to check list array
+apt_package_check_list+=($APT_PROGRAMS)
 
 # code to run before exit
 function finish_up()
@@ -57,6 +65,7 @@ function finish_up()
    echo -e "${LIGHT_GRAY} Lastly: execute sudo ./sudoers.sh to increase the sudo timeout. ${STD}"
    echo
    echo "Thanks for using this ubuntu-quick-config script."
+   exit 0
 }
 
 # --------------------------------------------

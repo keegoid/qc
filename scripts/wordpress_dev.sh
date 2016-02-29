@@ -11,12 +11,10 @@ echo "# --------------------------------------------"
 
 pause "" true
 # wordpress development
-VVV_REQS=$(confirm "install virtualbox and vagrant for VVV?" false)
-if [ "$VVV_REQS" = true ]; then
+if confirm "install virtualbox and vagrant for VVV?" false; then
    install_virtualbox
    install_vagrant
-   VVV_GO=$(confirm "clone VVV and VV for WordPress development?" false)
-   if [ "$VVV_GO" = true ]; then
+   if confirm "clone VVV and VV for WordPress development?" false; then
       clone_vvv "$REPOS_DIRECTORY"
       clone_vv "$REPOS_DIRECTORY"
    fi
