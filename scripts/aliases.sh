@@ -40,6 +40,21 @@ alias mv='mv -i'
 alias cp='cp -i'
 alias ln='ln -i'
 
+# find file in home
+alias findf='find ~/ -type f -name'
+
+# find directory in home
+alias findd='find ~/ -type d -name'
+
+# find file in anywhere
+alias findfroot='sudo find / -type f -name'
+
+# find directory in anywhere
+alias finddroot='sudo find / -type d -name'
+
+# always copy resulting url to clipboard
+alias gist='gist -c'
+
 # reboot and shutdown
 alias reboot='sudo /sbin/reboot'
 alias shutdown='sudo /sbin/shutdown'
