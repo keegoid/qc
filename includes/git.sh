@@ -14,7 +14,7 @@
 #   $1 -> code author's name
 #   $2 -> code author's email
 #   $3 -> editor to use for git
-function configure_git()
+configure_git()
 {
    local name="$1"
    local email="$2"
@@ -87,7 +87,7 @@ Thumbs.db
 #   $2 -> name of upstream repository
 #   $3 -> location of Repos directory
 #   $4 -> use SSH protocal for git operations? (optional)
-function clone_repo()
+clone_repo()
 {
    local github_user="$1"
    local address="${github_user}/$2.git"
@@ -123,7 +123,7 @@ function clone_repo()
 #   $3 -> set remote upstream or origin (true for upstream)
 #   $4 -> use SSH protocal for git operations? (optional)
 # return: false if no upstream repo
-function set_remote_repo()
+set_remote_repo()
 {
    local github_user="$1"
    local address="${github_user}/$2.git"
@@ -167,7 +167,7 @@ function set_remote_repo()
 #          upstream changes can then be merged with the branch interactively
 # arguments:
 #   $1 -> branch name
-function create_branch()
+create_branch()
 {
    local branch_name="$1"
    
@@ -202,7 +202,7 @@ function create_branch()
 
 # purpose: add remote upstream repository, fetch and merge changes
 # arguments: none
-function merge_upstream()
+merge_upstream()
 {
    # pull in changes not present in local repository, without modifying local files
    echo
@@ -222,7 +222,7 @@ function merge_upstream()
 
 # purpose: commit and push changes with git
 # arguments: none
-#function commit_and_push()
+#commit_and_push()
 #{
 #   local commit=false
 

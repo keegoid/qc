@@ -28,8 +28,7 @@ SV=( 7-5    7      1.9.9   1.0.2f    1.2.8  8.38   2.3       2.3.0 )
 # purpose: set software versions
 # arguments:
 #   $1 -> software list (space-separated)
-function set_software_versions()
-{
+set_software_versions() {
    local swl="$1"
    local version
    echo
@@ -69,8 +68,7 @@ REMI_KEY='http://rpms.famillecollet.com/RPM-GPG-KEY-remi'
 # purpose: download and extract software
 # arguments:
 #   $1 -> list of URLs to software (space-separated)
-function get_software()
-{
+get_software() {
    local list="$1"
    local name
 
@@ -83,27 +81,69 @@ function get_software()
    done
 }
 
+# package install code
+# source and thanks: https://github.com/Varying-Vagrant-Vagrants/VVV/
+apt_package_install_list=()
+apt_package_check_list=()
+
 # purpose: check if program is NOT installed
 # arguments:
 #   $1 -> program name
 # returns: true if not installed, false if installed or unrecognized program name
-function not_installed()
-{
-   local app="$1"
-   [ -n "$(apt-cache policy ${app} | grep 'Installed: (none)')" ] && echo true || echo false
+not_installed() {
+   [ -n "$(apt-cache policy ${1} | grep 'Installed: (none)')" ] && return 0 || return 1
+}
+
+# purpose: add needed packages to package install list
+package_check() {
+   # Loop through each of our packages that should be installed on the system. If
+   # not yet installed, it should be added to the array of packages to install.
+   local pkg
+   local package_version
+
+   for pkg in "${apt_package_check_list[@]}"; do
+      if not_installed $pkg; then
+         echo " * $pkg [not installed]"
+         apt_package_install_list+=($pkg)
+      else
+         package_version=$(dpkg -s "${pkg}" 2>&1 | grep 'Version:' | cut -d " " -f 2)
+         space_count="$(expr 20 - "${#pkg}")" #11
+         pack_space_count="$(expr 30 - "${#package_version}")"
+         real_space="$(expr ${space_count} + ${pack_space_count} + ${#package_version})"
+         printf " * $pkg %${real_space}.${#package_version}s ${package_version}\n"
+      fi
+   done
+}
+
+package_install() {
+   package_check
+
+   if [[ ${#apt_package_install_list[@]} = 0 ]]; then
+      echo -e "No apt packages to install\n"
+   else
+      # update all of the package references before installing anything
+      pause "Press [Enter] to update Ubuntu sources" true
+      sudo apt-get -y update
+
+      # install required packages
+      read -p "Press [Enter] to install apt packages..."
+      sudo apt-get -y install ${apt_package_install_list[@]}
+
+      # clean up apt caches
+      sudo apt-get clean
+   fi
 }
 
 # purpose: install programs from a list
 # arguments:
 #   $1 -> program list (space-separated)
 #   $2 -> enable-repo (optional)
-function install_apt()
-{
+install_apt() {
    local names="$1"
    local repo="$2"
    # install applications in the list
    for apt in $names; do
-      if [ "$(not_installed $apt)" = true ]; then
+      if not_installed $apt; then
          echo
          read -p "Press [Enter] to install $apt..."
          [ -z "${repo}" ] && sudo apt-get -y install "$apt" || { sudo apt-add-repository "${repo}"; sudo apt-get update; sudo apt-get -y install "$apt"; }
@@ -114,11 +154,10 @@ function install_apt()
 # purpose: install npm packages from a list
 # arguments:
 #   $1 -> npm list (space-separated)
-function install_npm()
-{
+install_npm() {
    local names="$1"
    # make sure npm is installed
-   install_apt "npm"
+   install_apt install npm
    # symlink nodejs to path
    if [ ! -L /usr/bin/node ]; then
       sudo ln -s "$(which nodejs)" /usr/bin/node
@@ -136,17 +175,16 @@ function install_npm()
 # purpose: install gems from a list
 # arguments:
 #   $1 -> gem list (space-separated)
-function install_gem()
-{
+install_gem() {
    local names="$1"
-   # make sure ruby and rubygems are installed
-   install_apt "ruby rubygems"
+   # make sure ruby is installed
+   install_apt "ruby rubygems-integration"
    # install gems in the list
    for app in $names; do
       if ! $(gem list "$app" -i); then
          echo
          read -p "Press [Enter] to install $app..."
-         gem install "$app"
+         sudo gem install "$app"
       fi
    done
 }
@@ -154,8 +192,7 @@ function install_gem()
 # purpose: install pips from a list
 # arguments:
 #   $1 -> pip list (space-separated)
-function install_pip()
-{
+install_pip() {
    local names="$1"
    # make sure python-pip and python-keyring are installed for jrnl to work
    install_apt "python-pip python-keyring"
@@ -171,9 +208,7 @@ function install_pip()
 }
 
 # purpose: install ruby and rubygems
-# arguments: none
-function install_ruby()
-{
+install_ruby() {
    echo
    read -p "Press [Enter] to install ruby and rubygems..."
    if ! ruby -v | grep -q "ruby ${RUBY_V}"; then
@@ -182,10 +217,7 @@ function install_ruby()
    fi
 }
 
-# purpose: source the rvm command
-# arguments: none
-function source_rvm()
-{
+source_rvm() {
    echo
    read -p "Press [Enter] to start using rvm..."
    if grep -q "/usr/local/rvm/scripts/rvm" $HOME/.bashrc; then
@@ -196,10 +228,8 @@ function source_rvm()
    fi
 }
 
-# purpose: install keybase
-function install_keybase()
-{
-   if [ "$(not_installed keybase)" = true ]; then
+install_keybase() {
+   if not_installed keybase; then
       # change to tmp directory to download file and then back to original directory
       cd /tmp
       curl -O https://dist.keybase.io/linux/deb/keybase-latest-amd64.deb && sudo dpkg -i keybase-latest-amd64.deb
@@ -207,10 +237,9 @@ function install_keybase()
    fi
 }
 
-# purpose: install newer version of virtualbox per VVV requirements
-function install_virtualbox()
-{
-   if [ "$(not_installed virtualbox-5.0)" = true ]; then
+# purpose: install newer version of virtualbox
+install_virtualbox() {
+   if not_installed virtualbox-5.0; then
       # add virtualbox to sources list if not already there
       if ! grep -q "virtualbox" /etc/apt/sources.list; then
          echo "deb http://download.virtualbox.org/virtualbox/debian trusty contrib" | sudo tee --append /etc/apt/sources.list
@@ -219,14 +248,13 @@ function install_virtualbox()
       wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add -
       # update sources and install the latest virtualbox
       sudo apt-get update
-      install_apt "virtualbox-5.0"
+      install_apt virtualbox-5.0
    fi
 }
 
-# purpose: install newer version of vagrant per VVV requirements
-function install_vagrant()
-{
-   if [ "$(not_installed vagrant)" = true ]; then
+# purpose: install newer version of vagrant
+install_vagrant() {
+   if not_installed vagrant; then
       # change to tmp directory to download file and then back to original directory
       cd /tmp
       echo "downloading vagrant..."
@@ -242,8 +270,7 @@ function install_vagrant()
 # purpose: clone vvv
 # arguments:
 #   $1 -> repos directory
-function clone_vvv()
-{
+clone_vvv() {
    local repos="$1"
    if ! [ -d "$HOME/${repos}/vagrants/vvv" ]; then
       # clone VVV to vagrants directory
@@ -255,8 +282,7 @@ function clone_vvv()
 # purpose: clone vv
 # arguments:
 #   $1 -> repos directory
-function clone_vv()
-{
+clone_vv() {
    local repos="$1"
    if ! [ -d "$HOME/${repos}/vv" ]; then
       # clone VV to vv directory

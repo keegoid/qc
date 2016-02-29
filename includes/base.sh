@@ -14,7 +14,7 @@
 # purpose: converts a string to lower case
 # arguments:
 #   $1 -> string to convert to lower case
-function to_lower() 
+to_lower() 
 {
     local str="$@"
     local output     
@@ -27,7 +27,7 @@ function to_lower()
 # arguments:
 #   $1 -> variable
 #   $2 -> pattern
-function trim_shortest_left_pattern()
+trim_shortest_left_pattern()
 {
    echo -n "${1#*$2}"
    # -n (don't create newline character)
@@ -37,7 +37,7 @@ function trim_shortest_left_pattern()
 # arguments:
 #   $1 -> variable
 #   $2 -> pattern
-function trim_longest_left_pattern()
+trim_longest_left_pattern()
 {
    echo -n "${1##*$2}"
 }
@@ -46,7 +46,7 @@ function trim_longest_left_pattern()
 # arguments:
 #   $1 -> variable
 #   $2 -> pattern
-function trim_shortest_right_pattern()
+trim_shortest_right_pattern()
 {
    echo -n "${1%$2*}"
 }
@@ -55,7 +55,7 @@ function trim_shortest_right_pattern()
 # arguments:
 #   $1 -> variable
 #   $2 -> pattern
-function trim_longest_right_pattern()
+trim_longest_right_pattern()
 {
    echo -n "${1%%$2*}"
 }
@@ -64,7 +64,7 @@ function trim_longest_right_pattern()
 # arguments:
 #   $1 -> message
 #   $2 -> exit status (optional)
-function die() 
+die() 
 {
     local m=$1 	   # message
     local e=${2-1}	# default exit status 1
@@ -76,7 +76,7 @@ function die()
 # arguments:
 #   $1 -> user message
 #   #2 -> use back option?
-function pause()
+pause()
 {
    local msg="$1"
    local back="$2"
@@ -90,26 +90,26 @@ function pause()
 # purpose: return true if script is executed by the root user
 # arguments: none
 # return: true or die with message
-function is_root() 
+is_root() 
 {
-#   [ $(id -u) -eq 0 ] && echo true || echo false
-   [ "$EUID" -eq 0 ] && echo true || echo false
+#   [ $(id -u) -eq 0 ] && return 0 || return 1
+   [ "$EUID" -eq 0 ] && return 0 || return 1
 }
  
 # purpose: return true if $user exits in /etc/passwd
 # arguments:
 #   $1 -> username to check in /etc/passwd
 # return: true or false
-function user_exists()
+user_exists()
 {
    local u="$1"
    # -q (quiet), -w (only match whole words, otherwise "user" would match "user1" and "user2")
    if grep -qw "^${u}" /etc/passwd; then
       #echo "user $u exists in /etc/passwd"
-      echo true
+      return 0
    else
       #echo "user $u does not exists in /etc/passwd"
-      echo false
+      return 1
    fi
 }
 
@@ -118,7 +118,7 @@ function user_exists()
 #   $1 -> text string to prompt user
 #   #2 -> default to no? (optional)
 # return: true or false
-function confirm()
+confirm()
 {
    local text="$1"
    local preferNo="$2"
@@ -129,10 +129,10 @@ function confirm()
       read -rp "${text} [Y/n] " response
       case $response in
          [nN][oO]|[nN])
-            echo false
+            return 1
             ;;
          *)
-            echo true
+            return 0
             ;;
       esac
    else
@@ -140,10 +140,10 @@ function confirm()
       read -rp "${text} [y/N] " response
       case $response in
          [yY][eE][sS]|[yY]) 
-            echo true
+            return 0
             ;;
          *) 
-            echo false
+            return 1
             ;;
       esac
    fi
@@ -153,7 +153,7 @@ function confirm()
 # arguments:
 #   $1 -> message before
 #   $2 -> message after
-function script_name()
+script_name()
 {
 #   echo "$(basename "$(test -L "$0" && readlink "$0" || echo "$0")")"
 
@@ -165,12 +165,12 @@ function script_name()
 # arguments:
 #   $1 -> name of script to be run
 #   #2 -> debug mode? (optional)
-function run_script()
+run_script()
 {
    local name="$1"
 
    # make sure dos2unix is installed
-   [ "$(not_installed dos2unix)" = true ] && install_apt dos2unix
+   not_installed dos2unix && sudo apt-get -y install dos2unix
 
    # change to scripts directory to run scripts
    cd scripts
@@ -194,7 +194,7 @@ function run_script()
 #   $2 -> SSH key comment
 #   $3 -> use SSH?
 #   $4 -> non-root Linux username
-function gen_ssh_keys()
+gen_ssh_keys()
 {
    local ssh_dir="$1"
    local comment="$2"
@@ -248,7 +248,7 @@ function gen_ssh_keys()
 # arguments:
 #   $1 -> SSH directory
 #   $2 -> non-root Linux username
-function authorized_ssh_keys()
+authorized_ssh_keys()
 {
    local ssh_dir="$1"
    local u="$2"
@@ -284,7 +284,7 @@ function authorized_ssh_keys()
 # arguments:
 #   $1 -> URL of the public key file
 # return: false if URL is empty, else true
-function get_public_key()
+get_public_key()
 {
    local url="$1"
    local apt_keys="$HOME/apt_keys"
