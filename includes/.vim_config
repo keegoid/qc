@@ -5,7 +5,7 @@
    nnoremap <leader>a            :Ag 
    nnoremap <leader>u            :GundoToggle<CR>     " toggle gundo
    nnoremap <leader><space>      :nohlsearch<CR>      " turn off search highlight
-   nnoremap <silent> <leader>s   :set spell!<CR>      " turn off spell checking
+   nnoremap <silent> <leader>s   :set spell!<CR>      " toggle spell checking
 
 " plugins
    call pathogen#infect()
@@ -13,6 +13,7 @@
 " misc
    set spell spelllang=en_us  " spell check language
    set spellfile=~/Dropbox/Config/vim.utf-8.add  " spell check file
+   set nospell                " start with spell checking off
    set spellcapcheck=         " disable checking for words that should be capitalized
    au filetype gitcommit setlocal tw=72   " git commit word wrapping distance
    set backupdir=~/.vim/backup//
@@ -60,8 +61,8 @@
 " autogroups
    augroup configgroup
       autocmd!
-      autocmd InsertEnter * setlocal nospell
-      autocmd InsertLeave * setlocal spell
+"      autocmd InsertEnter * setlocal nospell
+"      autocmd InsertLeave * setlocal spell
       autocmd VimEnter * highlight clear SignColumn
       autocmd FileType java setlocal noexpandtab
       autocmd FileType java setlocal list
