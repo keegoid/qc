@@ -115,6 +115,7 @@ package_check() {
    done
 }
 
+# $1 -> to update sources or not
 package_install() {
    package_check
 
@@ -122,8 +123,10 @@ package_install() {
       echo -e "No apt packages to install\n"
    else
       # update all of the package references before installing anything
-      pause "Press [Enter] to update Ubuntu sources" true
-      sudo apt-get -y update
+      if [ "${1}" -eq 0 ]; then
+         pause "Press [Enter] to update Ubuntu sources" true
+         sudo apt-get -y update
+      fi
 
       # install required packages
       read -p "Press [Enter] to install apt packages..."

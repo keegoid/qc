@@ -10,9 +10,10 @@ echo "# http://keegoid.mit-license.org              "
 echo "# --------------------------------------------"
 
 # remove i386 architecture from sources list
+update=0
 if [ "$(dpkg --print-foreign-architectures)" = "i386" ]; then
    pause "Press [Enter] to purge all i386 packages and remove the i386 architecture" true
-   sudo apt-get purge ".*:i386" && sudo dpkg --remove-architecture i386 && sudo apt-get update && echo "Success, goodbye i386!"
+   sudo apt-get purge ".*:i386" && sudo dpkg --remove-architecture i386 && sudo apt-get update && echo "Success, goodbye i386!" && update=1
 fi
 
 if [ $IS_SERVER -eq 0 ]; then
@@ -28,7 +29,7 @@ fi
 apt_package_check_list+=($APT_PROGRAMS)
 
 # install programs with apt-get
-package_install
+package_install $update
 
 # install gems
 install_gem "$GEM_PROGRAMS"
