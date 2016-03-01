@@ -19,63 +19,17 @@ configure_git()
    local name="$1"
    local email="$2"
    local editor="$3"
-   local ignore="$HOME/.gitignore_global"
 
    # specify a user
-   git config --global user.name "${name}"
-   git config --global user.email "${email}"
+   git config --global user.name "$name"
+   git config --global user.email "$email"
    # select a text editor
-   git config --global core.editor "${editor}"
+   git config --global core.editor "$editor"
    # set default push and pull behavior to the old method
    git config --global push.default matching
    git config --global pull.default matching
    # create a global .gitignore file
-   echo "# global list of file types to ignore
-# from https://gist.githubusercontent.com/octocat/9257657/raw/c91b435be351fcdff00f6f97f20824d0286b99ef/.gitignore
-
-# Compiled source #
-###################
-*.com
-*.class
-*.dll
-*.exe
-*.o
-*.so
-
-# Packages #
-############
-# it's better to unpack these files and commit the raw source
-# git has its own built in compression methods
-*.7z
-*.dmg
-*.gz
-*.iso
-*.jar
-*.rar
-*.tar
-*.zip
-
-# Logs and databases #
-######################
-*.log
-*.sql
-*.sqlite
-
-# OS generated files #
-######################
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# txt editor backups #
-######################
-*.*~" > "${ignore}"
-   git config --global core.excludesfile "${ignore}"
-   ! [ -e "$HOME/.vimrc" ] && echo "au FileType gitcommit setlocal tw=72" | tee "$HOME/.vimrc"
+   git config --global core.excludesfile "$HOME/.gitignore_global"
    echo "git was configured"
    read -p "Press [Enter] to view the config..."
    git config --list
