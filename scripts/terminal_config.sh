@@ -20,7 +20,7 @@ if grep -q "$CONFIG/.bash_aliases" $HOME/.bashrc; then
    echo "already added aliases"
 else
    pause "Press [Enter] to add useful aliases" true
-   cp "$PROJECT/includes/.bash_aliases" "$HOME/$CONFIG"
+   cp -n "$PROJECT/includes/.bash_aliases" "$HOME/$CONFIG"
 cat << EOF >> "$HOME/.bashrc"
 # source .bash_aliases
 if [ -f ~/$CONFIG/.bash_aliases ]; then
@@ -35,7 +35,7 @@ if grep -q "$CONFIG/.bash_config" $HOME/.bashrc; then
    echo "already added autojump (usage: j directory)"
 else
    pause "Press [Enter] to add autojump to bash" true
-   cp "$PROJECT/includes/.bash_config" "$HOME/$CONFIG"
+   cp -n "$PROJECT/includes/.bash_config" "$HOME/$CONFIG"
 cat << EOF >> "$HOME/.bashrc"
 # source .bash_config
 if [ -f ~/$CONFIG/.bash_config ]; then
@@ -62,7 +62,7 @@ if grep -q "$CONFIG/.input_config" $HOME/.inputrc; then
    echo "already added terminal history lookup"
 else
    pause "Press [Enter] to configure .inputrc" true
-   cp "$PROJECT/includes/.input_config" "$HOME/$CONFIG"
+   cp -n "$PROJECT/includes/.input_config" "$HOME/$CONFIG"
 cat << EOF >> "$HOME/.inputrc"
 \$include ~/$CONFIG/.input_config
 EOF
@@ -74,8 +74,8 @@ fi
 # --------------------------------------------
 
 # install vim plugins and colorthemes
-[ -d "$HOME/.vim/autoload/pathogen" ] || git clone https://github.com/tpope/vim-pathogen.git $HOME/.vim/autoload/pathogen && cp $HOME/.vim/autoload/pathogen/autoload/pathogen.vim $HOME/.vim/autoload && echo "vim plugin pathogen was installed"
-[ -f "$HOME/.vim/colors/blackboard.vim" ] || cp "$PROJECT/includes/blackboard.vim" "$HOME/.vim/colors" && echo "vim colortheme blackboard was installed"
+[ -d "$HOME/.vim/autoload/pathogen" ] || git clone https://github.com/tpope/vim-pathogen.git $HOME/.vim/autoload/pathogen && cp -n $HOME/.vim/autoload/pathogen/autoload/pathogen.vim $HOME/.vim/autoload && echo "vim plugin pathogen was installed"
+[ -f "$HOME/.vim/colors/blackboard.vim" ] || cp -n "$PROJECT/includes/blackboard.vim" "$HOME/.vim/colors" && echo "vim colortheme blackboard was installed"
 [ -d "$HOME/.vim/bundle/gundo" ] || git clone https://github.com/sjl/gundo.vim.git $HOME/.vim/bundle/gundo && echo "vim plugin gundo was installed"
 [ -d "$HOME/.vim/bundle/ag" ] || git clone https://github.com/rking/ag.vim.git $HOME/.vim/bundle/ag && echo "vim plugin ag was installed"
 [ -d "$HOME/.vim/bundle/ctrlp" ] || git clone https://github.com/ctrlpvim/ctrlp.vim.git $HOME/.vim/bundle/ctrlp && echo "vim plugin ctrlp was installed"
@@ -85,7 +85,7 @@ if grep -q ":so ~/$CONFIG/.vim_config" $HOME/.vimrc; then
    echo "already configured .vimrc"
 else
    pause "Press [Enter] to configure .vimrc" true
-   cp "$PROJECT/includes/.vim_config" "$HOME/$CONFIG"
+   cp -n "$PROJECT/includes/.vim_config" "$HOME/$CONFIG"
 cat << EOF >> "$HOME/.vimrc"
 " source config file
 :so ~/$CONFIG/.vim_config
