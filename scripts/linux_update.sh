@@ -12,7 +12,7 @@ echo "# --------------------------------------------"
 # remove i386 architecture from sources list
 if [ "$(dpkg --print-foreign-architectures)" = "i386" ]; then
    pause "Press [Enter] to purge all i386 packages and remove the i386 architecture" true
-   sudo apt-get purge "*.:i386" && sudo dpkg --remove-architecture i386 && sudo apt-get update && echo "Success, goodbye i386!"
+   sudo apt-get purge ".*:i386" && sudo dpkg --remove-architecture i386 && sudo apt-get update && echo "Success, goodbye i386!"
 fi
 
 if [ $IS_SERVER -eq 0 ]; then
