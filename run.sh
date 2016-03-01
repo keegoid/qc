@@ -50,8 +50,7 @@ exit_msg() {
 # --------------------------------------------
 # display the menu
 # --------------------------------------------
-display_menu()
-
+display_menu() {
       [ $DEBUG -eq 0 ] || clear
       echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~"	
    if [ $IS_SERVER -eq 0 ]; then
@@ -74,8 +73,7 @@ display_menu()
 # --------------------------------------------
 # user selection
 # --------------------------------------------
-select_options()
-{
+select_options() {
    local choice
    # make sure we're always starting from the right place
    cd "$PROJECT"
@@ -100,8 +98,7 @@ trap "echo; menu_loop" SIGTSTP
 # --------------------------------------------
 # main loop (infinite)
 # --------------------------------------------
-menu_loop()
-{
+menu_loop() {
    while true; do
       display_menu
       select_options
