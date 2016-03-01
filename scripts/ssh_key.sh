@@ -34,7 +34,7 @@ if [ "$IS_SERVER" = true ]; then
    SSH_DIRECTORY="$HOME/.ssh"
 
    # generate SSH keypair
-#   gen_ssh_keys $SSH_DIRECTORY "$SSH_COMMENT" true $USER_NAME
+#   gen_ssh_keys $SSH_DIRECTORY "$SSH_COMMENT" $(logname)
 
    # add authorized key for ssh user
    authorized_ssh_keys $SSH_DIRECTORY $(logname)
@@ -62,6 +62,6 @@ if [ "$IS_SERVER" = true ]; then
    sudo service ssh restart
 else
    # generate an RSA SSH keypair if none exists
-   gen_ssh_keys "$HOME/.ssh" "$SSH_KEY_COMMENT" true $(logname)
+   gen_ssh_keys "$HOME/.ssh" $(logname)
 fi
 

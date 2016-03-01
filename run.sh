@@ -10,25 +10,20 @@ echo "#                                             "
 echo "# http://keegoid.mit-license.org              "
 echo "# --------------------------------------------"
 
-# set to true prevent clearing the screen
-DEBUG=false
-
-# project directory
-PROJECT_DIRECTORY="$PWD"
+# set to true (0) prevent clearing the screen
+DEBUG=1
 
 # library files
 LIBS='base.sh software.sh git.sh'
 LIBS_DIR='includes'
 
-# for screen error messages
-LIGHT_GRAY='\033[0;47;30m'
-RED='\033[0;41;30m'
-STD='\033[0;0;39m'
-
 # source function libraries
 for lib in $LIBS; do
    [ -d "$LIBS_DIR" ] && { source "$LIBS_DIR/$lib" > /dev/null 2>&1 && echo "sourced: $LIBS_DIR/$lib" || echo "can't find: $LIBS_DIR/$lib"; }
 done
+
+# project directory
+PROJECT="$PWD"
 
 # config for server
 confirm "Is this a server?"
@@ -37,45 +32,29 @@ IS_SERVER=$?
 # make sure curl and git are installed
 install_apt "curl git"
 
-# user inputs
-read -ep "enter your name for git: " -i 'Keegan Mullaney' REAL_NAME
-read -ep "enter your email for git: " -i 'keeganmullaney@gmail.com' EMAIL_ADDRESS
-read -ep "enter your prefered text editor for git: " -i 'vi' GIT_EDITOR
-read -ep "enter a comment for your ssh key: " -i 'coding key' SSH_KEY_COMMENT
-read -ep "enter relative directory to use for repositories: " -i "Dropbox/Repos" REPOS_DIRECTORY
-read -ep "enter apps to install with pip: " -i 'jrnl[encrypted]' PIP_PROGRAMS
-read -ep "enter apps to install with npm: " -i 'doctoc' NPM_PROGRAMS
-read -ep "enter apps to install with gem: " -i 'gist' GEM_PROGRAMS
-if [ "$IS_SERVER" = true ]; then
-   read -ep "enter apps to install with apt-get: " -i 'gnupg2 lynx openssh-server xclip vim' APT_PROGRAMS
-else
-   read -ep "enter apps to install with apt-get: " -i 'deluge gnupg2 gufw lynx nautilus-open-terminal x11vnc xclip vim vlc' APT_PROGRAMS
-fi
-
-# add programs to check list array
-apt_package_check_list+=($APT_PROGRAMS)
-
-# code to run before exit
-function finish_up()
-{
+# if any files in home are not owned by home user, fix that
+fix_permissions() {
    # set ownership
    pause "Press [Enter] to make sure all files in $HOME are owned by $(logname)" true
-   sudo chown -cR $(logname):$(logname) "$HOME"
+   sudo chown --preserve-root -cR $(logname):$(logname) "$HOME"
+}
+
+# display message before exit
+exit_msg() {
    echo
    echo -e "${LIGHT_GRAY} Lastly: execute sudo ./sudoers.sh to increase the sudo timeout. ${STD}"
    echo
    echo "Thanks for using this ubuntu-quick-config script."
-   exit 0
 }
 
 # --------------------------------------------
 # display the menu
 # --------------------------------------------
-function display_menu()
+display_menu()
 {
-      [ "$DEBUG" = true ] || clear
+      [ $DEBUG -eq 0 ] || clear
       echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~"	
-   if [ "$IS_SERVER" = true ]; then
+   if [ $IS_SERVER -eq 0 ]; then
       echo "     M A I N - M E N U     "
       echo "          server           "
    else
@@ -86,29 +65,29 @@ function display_menu()
       echo "1. INSTALLS & UPDATES"
       echo "2. GIT CONFIG"
       echo "3. SSH KEY"
-      echo "4. ALIASES"
-      echo "5. TERMINAL CONFIG"
-      echo "6. WORDPRESS DEVELOPMENT"
-      echo "7. EXIT"
+      echo "4. TERMINAL CONFIG"
+      echo "5. WORDPRESS DEVELOPMENT"
+      echo "6. FIX PERMISSIONS"
+      echo "7. QUIT"
 }
 
 # --------------------------------------------
 # user selection
 # --------------------------------------------
-function select_options()
+select_options()
 {
    local choice
    # make sure we're always starting from the right place
-   cd "$PROJECT_DIRECTORY"
+   cd "$PROJECT"
    read -rp "Enter choice [1 - 7]: " choice
    case $choice in
       1) run_script linux_update.sh    $DEBUG;;
       2) run_script git_config.sh      $DEBUG;;
       3) run_script ssh_key.sh         $DEBUG;;
-      4) run_script aliases.sh         $DEBUG;;
-      5) run_script terminal_config.sh $DEBUG;;
-      6) run_script wordpress_dev.sh   $DEBUG;;
-      7) finish_up && exit 0;;
+      4) run_script terminal_config.sh $DEBUG;;
+      5) run_script wordpress_dev.sh   $DEBUG;;
+      6) fix_permissions;;
+      7) exit_msg && exit 0;;
       *) echo -e "${RED} Error... ${STD}" && sleep 1
    esac
 }
@@ -121,7 +100,7 @@ trap "echo; menu_loop" SIGTSTP
 # --------------------------------------------
 # main loop (infinite)
 # --------------------------------------------
-function menu_loop()
+menu_loop()
 {
    while true; do
       display_menu
