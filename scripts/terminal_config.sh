@@ -16,7 +16,7 @@ read -ep "Directory to use for config files: ~/" -i "Dropbox/Config" CONFIG
 # --------------------------------------------
 
 # aliases
-if grep -q "$CONFIG/.bash_aliases" $HOME/.bashrc; then
+if grep -q "$CONFIG/.bash_aliases" $HOME/.bashrc >/dev/null 2>&1; then
    echo "already added aliases"
 else
    pause "Press [Enter] to add useful aliases" true
@@ -31,7 +31,7 @@ EOF
 fi
 
 # autojump
-if grep -q "$CONFIG/.bash_config" $HOME/.bashrc; then
+if grep -q "$CONFIG/.bash_config" $HOME/.bashrc >/dev/null 2>&1; then
    echo "already added autojump (usage: j directory)"
 else
    pause "Press [Enter] to add autojump to bash" true
@@ -58,7 +58,7 @@ fi
 # --------------------------------------------
 
 # terminal history lookup
-if grep -q "$CONFIG/.input_config" $HOME/.inputrc; then
+if grep -q "$CONFIG/.input_config" $HOME/.inputrc >/dev/null 2>&1; then
    echo "already added terminal history lookup"
 else
    pause "Press [Enter] to configure .inputrc" true
@@ -81,7 +81,7 @@ fi
 [ -d "$HOME/.vim/bundle/ctrlp" ] || git clone https://github.com/ctrlpvim/ctrlp.vim.git $HOME/.vim/bundle/ctrlp && echo "vim plugin ctrlp was installed"
 
 # configure vim (from http://dougblack.io/words/a-good-vimrc.html)
-if grep -q ":so ~/$CONFIG/.vim_config" $HOME/.vimrc; then
+if grep -q ":so ~/$CONFIG/.vim_config" $HOME/.vimrc >/dev/null 2>&1; then
    echo "already configured .vimrc"
 else
    pause "Press [Enter] to configure .vimrc" true
