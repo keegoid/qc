@@ -15,7 +15,6 @@
    set spellfile=~/Dropbox/Config/vim.utf-8.add  " spell check file
    set spellcapcheck=         " disable checking for words that should be capitalized
    au filetype gitcommit setlocal tw=72   " git commit word wrapping distance
-   set autowrite              " automatically save before commands like :next and :make
    set nobackup               " don't autosave backup files with ~
    set hidden                 " hide buffers when they are abandoned
    set mouse=a                " enable mouse usage (all modes)
