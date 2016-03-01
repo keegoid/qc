@@ -9,10 +9,16 @@ echo "#                                             "
 echo "# http://keegoid.mit-license.org              "
 echo "# --------------------------------------------"
 
+# remove i386 architecture from sources list
+if [ "$(dpkg --print-foreign-architectures)" = "i386" ]; then
+   pause "Press [Enter] to purge all i386 packages and remove the i386 architecture" true
+   sudo apt-get purge "*.:i386" && sudo dpkg --remove-architecture i386 && sudo apt-get update && echo "Success, goodbye i386!"
+fi
+
 if [ $IS_SERVER -eq 0 ]; then
    read -ep "Enter apps to install with apt-get: " -i 'gnupg2 lynx openssh-server xclip vim' APT_PROGRAMS
 else
-   read -ep "Enter apps to install with apt-get: " -i 'autojump deluge gnupg2 gufw lynx nautilus-open-terminal x11vnc xclip vim vlc' APT_PROGRAMS
+   read -ep "Enter apps to install with apt-get: " -i 'autojump deluge gnupg2 gufw lynx nautilus-open-terminal silversearcher-ag x11vnc xclip vim vlc' APT_PROGRAMS
    read -ep "Enter apps to install with pip: " -i 'jrnl[encrypted]' PIP_PROGRAMS
    read -ep "Enter apps to install with npm: " -i 'doctoc' NPM_PROGRAMS
    read -ep "Enter apps to install with gem: " -i 'gist' GEM_PROGRAMS

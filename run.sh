@@ -51,7 +51,7 @@ exit_msg() {
 # display the menu
 # --------------------------------------------
 display_menu()
-{
+
       [ $DEBUG -eq 0 ] || clear
       echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~"	
    if [ $IS_SERVER -eq 0 ]; then
