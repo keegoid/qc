@@ -10,35 +10,32 @@ echo "# http://keegoid.mit-license.org              "
 echo "# --------------------------------------------"
 
 # remove i386 architecture from sources list
-update=0
+UPDATE=0
 if [ "$(dpkg --print-foreign-architectures)" = "i386" ]; then
    pause "Press [Enter] to purge all i386 packages and remove the i386 architecture" true
-   sudo apt-get purge ".*:i386" && sudo dpkg --remove-architecture i386 && sudo apt-get update && echo "Success, goodbye i386!" && update=1
+   sudo apt-get purge ".*:i386" && sudo dpkg --remove-architecture i386 && sudo apt-get update && echo "Success, goodbye i386!" && UPDATE=1
 fi
 
 if [ $IS_SERVER -eq 0 ]; then
-   read -ep "Enter apps to install with apt-get: " -i 'gnupg2 lynx openssh-server xclip vim' APT_PROGRAMS
+   read -ep "Enter apps to install with apt-get: " -i 'gnupg2 lynx openssh-server xclip vim' APTS
 else
-   read -ep "Enter apps to install with apt-get: " -i 'autojump deluge gnupg2 gufw lynx nautilus-open-terminal silversearcher-ag x11vnc xclip vim vlc' APT_PROGRAMS
-   read -ep "Enter apps to install with pip: " -i 'jrnl[encrypted]' PIP_PROGRAMS
-   read -ep "Enter apps to install with npm: " -i 'doctoc' NPM_PROGRAMS
-   read -ep "Enter apps to install with gem: " -i 'gist' GEM_PROGRAMS
+   read -ep "Enter apps to install with apt-get: " -i 'autojump deluge gnupg2 gufw lynx nautilus-open-terminal silversearcher-ag x11vnc xclip vim vlc' APTS
+   read -ep "Enter apps to install with gem: " -i 'gist' GEMS
+   read -ep "Enter apps to install with npm: " -i 'doctoc' NPMS
+   read -ep "Enter apps to install with pip: " -i 'jrnl[encrypted]' PIPS
 fi
 
-# add programs to check list array
-apt_package_check_list+=($APT_PROGRAMS)
+# add packages, gems, npms and pips to check list arrays
+apt_package_check_list+=($APTS)
+gem_check_list+=($GEMS)
+npm_check_list+=($NPMS)
+pip_check_list+=($PIPS)
 
-# install programs with apt-get
-package_install $update
-
-# install gems
-install_gem "$GEM_PROGRAMS"
-
-# install pips
-install_pip "$PIP_PROGRAMS"
-
-# install npms
-install_npm "$NPM_PROGRAMS" true
+# install packages, gems, npms and pips
+package_install $UPDATE
+gem_install
+npm_install
+pip_install
 
 # install keybase
 install_keybase
