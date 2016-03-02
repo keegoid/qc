@@ -70,6 +70,20 @@ EOF
 fi
 
 # --------------------------------------------
+# gedit
+# --------------------------------------------
+
+# gedit directory
+GEDIT=$HOME/.local/share/gedit/styles
+
+# blackboard color scheme
+if [ -d $GEDIT/blackboard ]; then
+   cd $GEDIT/blackboard && printf "updating blackboard...\n" && git pull && cp $GEDIT/blackboard/blackboard.xml $GEDIT && cd - >/dev/null
+else
+   git clone https://github.com/afair/dot-gedit.git $GEDIT/blackboard && cp $GEDIT/blackboard/blackboard.xml $GEDIT && echo "successfully installed: Gedit color scheme blackboard"
+fi
+
+# --------------------------------------------
 # .vimrc
 # --------------------------------------------
 
