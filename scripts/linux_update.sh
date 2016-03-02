@@ -19,20 +19,20 @@ fi
 if [ $IS_SERVER -eq 0 ]; then
    read -ep "Enter apps to install with apt-get: " -i 'gnupg2 lynx openssh-server xclip vim' APTS
 else
-   read -ep "Enter apps to install with apt-get: " -i 'autojump deluge gnupg2 gufw lynx nautilus-open-terminal silversearcher-ag x11vnc xclip vim vlc' APTS
+   read -ep "Enter apps to install with apt-get: " -i 'autojump build-essential cmake checkinstall cvs deluge git-core gnupg2 gufw lynx mercurial nautilus-open-terminal subversion silversearcher-ag x11vnc xclip vim vlc' APTS
    read -ep "Enter apps to install with gem: " -i 'gist' GEMS
    read -ep "Enter apps to install with npm: " -i 'doctoc' NPMS
    read -ep "Enter apps to install with pip: " -i 'jrnl[encrypted]' PIPS
 fi
 
 # add packages, gems, npms and pips to check list arrays
-apt_package_check_list+=($APTS)
+apt_check_list+=($APTS)
 gem_check_list+=($GEMS)
 npm_check_list+=($NPMS)
 pip_check_list+=($PIPS)
 
 # install packages, gems, npms and pips
-package_install $UPDATE
+apt_install $UPDATE
 gem_install
 npm_install
 pip_install
@@ -40,3 +40,5 @@ pip_install
 # install keybase
 install_keybase
 
+# restart nautilus
+nautilus -q && nautilus &
