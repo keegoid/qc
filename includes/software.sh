@@ -249,7 +249,7 @@ pip_check() {
          space_count="$(expr 20 - "${#pkg}")"
          pack_space_count="$(expr 30 - "${#pkg_version}")"
          real_space="$(expr ${space_count} + ${pack_space_count} + ${#pkg_version})"
-         printf " * $pkg_trim %${real_space}.${#pkg_version}s ${pkg_version}\n"
+         printf " * $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
       fi
    done
 }

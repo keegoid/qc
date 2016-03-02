@@ -115,7 +115,7 @@ else
    git clone https://github.com/sjl/gundo.vim.git $BUNDLE/gundo && echo "vim plugin gundo was installed"
 fi
 
-# ag plugin (for better keyword searching)
+# ag plugin (for keyword searching within project directory)
 if [ -d $BUNDLE/ag ]; then
    cd $BUNDLE/ag && echo "updating ag..." && git pull && cd - >/dev/null
 else
