@@ -78,7 +78,7 @@ GEDIT=$HOME/.local/share/gedit/styles
 
 # blackboard color scheme
 if [ -d $GEDIT/blackboard ]; then
-   cd $GEDIT/blackboard && printf "updating blackboard...\n" && git pull && cp $GEDIT/blackboard/blackboard.xml $GEDIT && cd - >/dev/null
+   cd $GEDIT/blackboard && echo "updating blackboard for gedit..." && git pull && cp $GEDIT/blackboard/blackboard.xml $GEDIT && cd - >/dev/null
 else
    git clone https://github.com/afair/dot-gedit.git $GEDIT/blackboard && cp $GEDIT/blackboard/blackboard.xml $GEDIT && echo "successfully installed: Gedit color scheme blackboard"
 fi
@@ -96,35 +96,35 @@ SWP=$HOME/.vim/swp
 
 # pathogen plugin (for loading other plugins)
 if [ -d $AUTOLOAD/pathogen ]; then
-   cd $AUTOLOAD/pathogen && printf "updating pathogen...\n" && git pull && cp $AUTOLOAD/pathogen/autoload/pathogen.vim $AUTOLOAD && cd - >/dev/null
+   cd $AUTOLOAD/pathogen && echo "updating pathogen..." && git pull && cp $AUTOLOAD/pathogen/autoload/pathogen.vim $AUTOLOAD && cd - >/dev/null
 else
    git clone https://github.com/tpope/vim-pathogen.git $AUTOLOAD/pathogen && cp $AUTOLOAD/pathogen/autoload/pathogen.vim $AUTOLOAD && echo "successfully installed: vim plugin pathogen"
 fi
 
 # blackboard colorscheme
 if [ -d $COLORS/blackboard ]; then
-   cd $COLORS/blackboard && printf "updating blackboard...\n" && git pull && cp $COLORS/blackboard/colors/blackboard.vim $COLORS && cd - >/dev/null
+   cd $COLORS/blackboard && echo "updating blackboard for vim..." && git pull && cp $COLORS/blackboard/colors/blackboard.vim $COLORS && cd - >/dev/null
 else
    git clone https://github.com/nelstrom/vim-blackboard.git $COLORS/blackboard && cp $COLORS/blackboard/colors/blackboard.vim $COLORS && echo "successfully installed: vim colorscheme blackboard"
 fi
 
 # gundo plugin (for graphical undo tree)
 if [ -d $BUNDLE/gundo ]; then
-   cd $BUNDLE/gundo && printf "updating gundo...\n" && git pull && cd - >/dev/null
+   cd $BUNDLE/gundo && echo "updating gundo..." && git pull && cd - >/dev/null
 else
    git clone https://github.com/sjl/gundo.vim.git $BUNDLE/gundo && echo "vim plugin gundo was installed"
 fi
 
 # ag plugin (for better keyword searching)
 if [ -d $BUNDLE/ag ]; then
-   cd $BUNDLE/ag && printf "updating ag...\n" && git pull && cd - >/dev/null
+   cd $BUNDLE/ag && echo "updating ag..." && git pull && cd - >/dev/null
 else
    git clone https://github.com/rking/ag.vim.git $BUNDLE/ag && echo "vim plugin ag was installed"
 fi
 
 # ctrlp plugin (for fuzzy file searching, utilizes ag)
 if [ -d $BUNDLE/ctrlp ]; then
-   cd $BUNDLE/ctrlp && printf "updating ctrp...\n" && git pull && cd - >/dev/null
+   cd $BUNDLE/ctrlp && echo "updating ctrp..." && git pull && cd - >/dev/null
 else
    git clone https://github.com/ctrlpvim/ctrlp.vim.git $BUNDLE/ctrlp && echo "vim plugin ctrlp was installed"
 fi
