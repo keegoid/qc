@@ -70,6 +70,21 @@ EOF
 fi
 
 # --------------------------------------------
+# terminal default profile
+# --------------------------------------------
+
+# profile directory
+DEFAULT=$HOME/.gconf/apps/gnome-terminal/profiles/Default
+
+# default profile
+if [ -f $HOME/$CONFIG/%gconf.xml ]; then
+   echo "already configured terminal default profile"
+else
+   cp $PROJECT/includes/%gconf.xml $DEFAULT && echo "successfully configured: gnome-terminal default profile"
+fi
+
+
+# --------------------------------------------
 # gedit
 # --------------------------------------------
 
@@ -105,7 +120,7 @@ fi
 if [ -d $COLORS/blackboard ]; then
    cd $COLORS/blackboard && echo "updating blackboard for vim..." && git pull && cp $COLORS/blackboard/colors/blackboard.vim $COLORS && cd - >/dev/null
 else
-   git clone https://github.com/nelstrom/vim-blackboard.git $COLORS/blackboard && cp $COLORS/blackboard/colors/blackboard.vim $COLORS && echo "successfully installed: vim colorscheme blackboard"
+   git clone https://github.com/ratazzi/blackboard.vim $COLORS/blackboard && cp $COLORS/blackboard/colors/blackboard.vim $COLORS && echo "successfully installed: vim colorscheme blackboard"
 fi
 
 # gundo plugin (for graphical undo tree)
@@ -122,7 +137,7 @@ else
    git clone https://github.com/rking/ag.vim.git $BUNDLE/ag && echo "vim plugin ag was installed"
 fi
 
-# ctrlp plugin (for fuzzy file searching, utilizes ag)
+# ctrlp plugin (for fuzzy file searching)
 if [ -d $BUNDLE/ctrlp ]; then
    cd $BUNDLE/ctrlp && echo "updating ctrp..." && git pull && cd - >/dev/null
 else
