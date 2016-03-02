@@ -9,7 +9,7 @@ echo "#                                             "
 echo "# http://keegoid.mit-license.org              "
 echo "# --------------------------------------------"
 
-if [ "$IS_SERVER" = true ]; then
+if [ $IS_SERVER -eq 0 ]; then
    pause "Press [Enter] to configure sshd service" true
    # make a copy of the original sshd config file
    sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.original
@@ -31,7 +31,7 @@ if [ "$IS_SERVER" = true ]; then
    echo -e "SSH port set to $SSH_PORT\nclient alive interval set to $CLIENT_ALIVE"
 
    # add public SSH key for new ssh user
-   SSH_DIRECTORY="$HOME/.ssh"
+   SSH_DIRECTORY=$HOME/.ssh
 
    # generate SSH keypair
 #   gen_ssh_keys $SSH_DIRECTORY "$SSH_COMMENT" $(logname)
@@ -62,6 +62,6 @@ if [ "$IS_SERVER" = true ]; then
    sudo service ssh restart
 else
    # generate an RSA SSH keypair if none exists
-   gen_ssh_keys "$HOME/.ssh" $(logname)
+   gen_ssh_keys $HOME/.ssh $(logname)
 fi
 
