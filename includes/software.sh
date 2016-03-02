@@ -85,13 +85,13 @@ get_software() {
 # source and thanks: https://github.com/Varying-Vagrant-Vagrants/VVV/
 
 # install lists (perform install)
-apt_package_install_list=()
+apt_install_list=()
 gem_install_list=()
 npm_install_list=()
 pip_install_list=()
 
 # check lists (check if installed)
-apt_package_check_list=()
+apt_check_list=()
 gem_check_list=()
 npm_check_list=()
 pip_check_list=()
@@ -107,7 +107,7 @@ not_installed() {
 # purpose: loop through check list and add missing packages to install list
 # arguments:
 #   none
-package_check() {
+apt_check() {
    local pkg
    local pkg_version
 
@@ -128,10 +128,10 @@ package_check() {
 # purpose: loop through install list and install any apt packages that are in the list
 # arguments:
 #   $1 -> to update sources or not
-package_install() {
-   package_check
+apt_install() {
+   apt_check
 
-   if [[ ${#apt_package_install_list[@]} = 0 ]]; then
+   if [[ ${#apt_install_list[@]} = 0 ]]; then
       echo -e "No apt packages to install\n"
    else
       # update all of the package references before installing anything
@@ -142,10 +142,11 @@ package_install() {
 
       # install required packages
       read -p "Press [Enter] to install apt packages..."
-      sudo apt-get -y install ${apt_package_install_list[@]}
+      sudo apt-get -y install ${apt_install_list[@]}
 
       # clean up apt caches
       sudo apt-get clean
+      echo
    fi
 }
 
@@ -181,7 +182,8 @@ gem_install() {
    else
       # install required gems
       pause "Press [Enter] to install gems" true
-      sudo gem install -y ${gem_install_list[@]}
+      sudo gem install ${gem_install_list[@]}
+      echo
    fi
 }
 
@@ -225,6 +227,7 @@ npm_install() {
       # install required npms
       pause "Press [Enter] to install npms" true
       sudo npm install -g ${npm_install_list[@]}
+      echo
    fi
 }
 
@@ -246,7 +249,7 @@ pip_check() {
          space_count="$(expr 20 - "${#pkg}")"
          pack_space_count="$(expr 30 - "${#pkg_version}")"
          real_space="$(expr ${space_count} + ${pack_space_count} + ${#pkg_version})"
-         printf " * $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
+         printf " * $pkg_trim %${real_space}.${#pkg_version}s ${pkg_version}\n"
       fi
    done
 }
@@ -266,6 +269,7 @@ pip_install() {
       # install required pips
       pause "Press [Enter] to install pips" true
       sudo -H pip install ${pip_install_list[@]}
+      echo
    fi
 }
 
@@ -342,7 +346,7 @@ install_pip() {
    done
 }
 
-# purpose: install ruby and rubygems
+# purpose: install rubygems
 # arguments:
 #   none
 install_ruby() {
