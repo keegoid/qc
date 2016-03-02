@@ -16,39 +16,39 @@ read -ep "Directory to use for config files: ~/" -i "Dropbox/Config" CONFIG
 # --------------------------------------------
 
 # aliases
-if grep -q "$CONFIG/.bash_aliases" $HOME/.bashrc >/dev/null 2>&1; then
+if grep -q $CONFIG/.bash_aliases $HOME/.bashrc >/dev/null 2>&1; then
    echo "already added aliases"
 else
    pause "Press [Enter] to add useful aliases" true
-   cp -n "$PROJECT/includes/.bash_aliases" "$HOME/$CONFIG"
-cat << EOF >> "$HOME/.bashrc"
+   cp -n $PROJECT/includes/.bash_aliases $HOME/$CONFIG
+cat << EOF >> $HOME/.bashrc
 # source .bash_aliases
 if [ -f ~/$CONFIG/.bash_aliases ]; then
     . ~/$CONFIG/.bash_aliases
 fi
 EOF
-   [ -f "$HOME/$CONFIG/.bash_aliases" ] && source "$HOME/.bashrc" && echo ".bash_aliases was copied to ~/$CONFIG and sourced"
+   [ -f $HOME/$CONFIG/.bash_aliases ] && source $HOME/.bashrc && echo "successfully configured: .bashrc with .bash_aliases from ~/$CONFIG"
 fi
 
 # autojump
-if grep -q "$CONFIG/.bash_config" $HOME/.bashrc >/dev/null 2>&1; then
+if grep -q $CONFIG/.bash_config $HOME/.bashrc >/dev/null 2>&1; then
    echo "already added autojump (usage: j directory)"
 else
    pause "Press [Enter] to add autojump to bash" true
-   cp -n "$PROJECT/includes/.bash_config" "$HOME/$CONFIG"
-cat << EOF >> "$HOME/.bashrc"
+   cp -n $PROJECT/includes/.bash_config $HOME/$CONFIG
+cat << EOF >> $HOME/.bashrc
 # source .bash_config
 if [ -f ~/$CONFIG/.bash_config ]; then
    . ~/$CONFIG/.bash_config
 fi
 EOF
-   [ -f "$HOME/$CONFIG/.bash_config" ] && source "$HOME/.bashrc" && echo ".bash_config was copied to ~/$CONFIG and sourced"
+   [ -f $HOME/$CONFIG/.bash_config ] && source $HOME/.bashrc && echo "successfully configured: .bashrc with .bash_config from ~/$CONFIG"
 fi
 
 # color terminal prompts
-if grep -q "#force_color_prompt=yes" $HOME/.bashrc; then
+if grep -q "#force_color_prompt=yes" $HOME/.bashrc >/dev/null 2>&1; then
    pause "Press [Enter] to activate color terminal prompts" true
-   sed -i.bak -e "s|#force_color_prompt=yes|force_color_prompt=yes|" $HOME/.bashrc
+   sed -i.bak -e "s|#force_color_prompt=yes|force_color_prompt=yes|" $HOME/.bashrc && source $HOME/.bashrc && echo "successfully configured: .bashrc with color terminal prompts"
 else
    echo "already set color prompts"
 fi
@@ -58,40 +58,75 @@ fi
 # --------------------------------------------
 
 # terminal history lookup
-if grep -q "$CONFIG/.input_config" $HOME/.inputrc >/dev/null 2>&1; then
+if grep -q $CONFIG/.input_config $HOME/.inputrc >/dev/null 2>&1; then
    echo "already added terminal history lookup"
 else
    pause "Press [Enter] to configure .inputrc" true
-   cp -n "$PROJECT/includes/.input_config" "$HOME/$CONFIG"
-cat << EOF >> "$HOME/.inputrc"
+   cp -n $PROJECT/includes/.input_config $HOME/$CONFIG
+cat << EOF >> $HOME/.inputrc
 \$include ~/$CONFIG/.input_config
 EOF
-   [ -f "$HOME/$CONFIG/.input_config" ] && echo ".input_config was copied to ~/$CONFIG"
+   [ -f $HOME/$CONFIG/.input_config ] && echo ".input_config was copied to ~/$CONFIG"
 fi
 
 # --------------------------------------------
 # .vimrc
 # --------------------------------------------
 
-# install vim plugins and colorthemes
-[ -d "$HOME/.vim/autoload/pathogen" ] || git clone https://github.com/tpope/vim-pathogen.git $HOME/.vim/autoload/pathogen && cp -n $HOME/.vim/autoload/pathogen/autoload/pathogen.vim $HOME/.vim/autoload && echo "vim plugin pathogen was installed"
-[ -f "$HOME/.vim/colors/blackboard.vim" ] || mkdir -p "$HOME/.vim/colors" && cp -n "$PROJECT/includes/blackboard.vim" "$HOME/.vim/colors/" && echo "vim colortheme blackboard was installed"
-[ -d "$HOME/.vim/bundle/gundo" ] || git clone https://github.com/sjl/gundo.vim.git $HOME/.vim/bundle/gundo && echo "vim plugin gundo was installed"
-[ -d "$HOME/.vim/bundle/ag" ] || git clone https://github.com/rking/ag.vim.git $HOME/.vim/bundle/ag && echo "vim plugin ag was installed"
-[ -d "$HOME/.vim/bundle/ctrlp" ] || git clone https://github.com/ctrlpvim/ctrlp.vim.git $HOME/.vim/bundle/ctrlp && echo "vim plugin ctrlp was installed"
+# .vim directories
+AUTOLOAD=$HOME/.vim/autoload
+BUNDLE=$HOME/.vim/bundle
+COLORS=$HOME/.vim/colors
+BACKUP=$HOME/.vim/backup
+SWP=$HOME/.vim/swp
+
+# pathogen plugin (for loading other plugins)
+if [ -d $AUTOLOAD/pathogen ]; then
+   cd $AUTOLOAD/pathogen && printf "updating pathogen...\n" && git pull && cp $AUTOLOAD/pathogen/autoload/pathogen.vim $AUTOLOAD && cd - >/dev/null
+else
+   git clone https://github.com/tpope/vim-pathogen.git $AUTOLOAD/pathogen && cp $AUTOLOAD/pathogen/autoload/pathogen.vim $AUTOLOAD && echo "successfully installed: vim plugin pathogen"
+fi
+
+# blackboard colorscheme
+if [ -d $COLORS/blackboard ]; then
+   cd $COLORS/blackboard && printf "updating blackboard...\n" && git pull && cp $COLORS/blackboard/colors/blackboard.vim $COLORS && cd - >/dev/null
+else
+   git clone https://github.com/nelstrom/vim-blackboard.git $COLORS/blackboard && cp $COLORS/blackboard/colors/blackboard.vim $COLORS && echo "successfully installed: vim colorscheme blackboard"
+fi
+
+# gundo plugin (for graphical undo tree)
+if [ -d $BUNDLE/gundo ]; then
+   cd $BUNDLE/gundo && printf "updating gundo...\n" && git pull && cd - >/dev/null
+else
+   git clone https://github.com/sjl/gundo.vim.git $BUNDLE/gundo && echo "vim plugin gundo was installed"
+fi
+
+# ag plugin (for better keyword searching)
+if [ -d $BUNDLE/ag ]; then
+   cd $BUNDLE/ag && printf "updating ag...\n" && git pull && cd - >/dev/null
+else
+   git clone https://github.com/rking/ag.vim.git $BUNDLE/ag && echo "vim plugin ag was installed"
+fi
+
+# ctrlp plugin (for fuzzy file searching, utilizes ag)
+if [ -d $BUNDLE/ctrlp ]; then
+   cd $BUNDLE/ctrlp && printf "updating ctrp...\n" && git pull && cd - >/dev/null
+else
+   git clone https://github.com/ctrlpvim/ctrlp.vim.git $BUNDLE/ctrlp && echo "vim plugin ctrlp was installed"
+fi
 
 # configure vim (from http://dougblack.io/words/a-good-vimrc.html)
-if grep -q ":so ~/$CONFIG/.vim_config" $HOME/.vimrc >/dev/null 2>&1; then
+if grep -q $CONFIG/.vim_config $HOME/.vimrc >/dev/null 2>&1; then
    echo "already configured .vimrc"
 else
    pause "Press [Enter] to configure .vimrc" true
-   cp -n "$PROJECT/includes/.vim_config" "$HOME/$CONFIG"
-   mkdir -p "$HOME/.vim/backup"
-   mkdir -p "$HOME/.vim/swp"
-cat << EOF >> "$HOME/.vimrc"
+   cp -n $PROJECT/includes/.vim_config $HOME/$CONFIG
+   mkdir -p $BACKUP
+   mkdir -p $SWP
+cat << EOF >> $HOME/.vimrc
 " source config file
 :so ~/$CONFIG/.vim_config
 EOF
-   [ -f "$HOME/$CONFIG/.vim_config" ] && echo ".vim_config was copied to ~/$CONFIG"
+   [ -f $HOME/$CONFIG/.vim_config ] && echo "successfully configured: .vimrc with .vim_config from ~/$CONFIG"
 fi
 
