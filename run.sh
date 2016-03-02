@@ -64,7 +64,7 @@ display_menu() {
       echo "1. INSTALLS & UPDATES"
       echo "2. GIT CONFIG"
       echo "3. SSH KEY"
-      echo "4. TERMINAL CONFIG"
+      echo "4. SYSTEM CONFIG"
       echo "5. WORDPRESS DEVELOPMENT"
       echo "6. FIX PERMISSIONS"
       echo "7. QUIT"
@@ -82,7 +82,7 @@ select_options() {
       1) run_script linux_update.sh    $DEBUG;;
       2) run_script git_config.sh      $DEBUG;;
       3) run_script ssh_key.sh         $DEBUG;;
-      4) run_script terminal_config.sh $DEBUG;;
+      4) run_script system_config.sh   $DEBUG;;
       5) run_script wordpress_dev.sh   $DEBUG;;
       6) fix_permissions;;
       7) exit_msg && exit 0;;
