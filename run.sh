@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "# --------------------------------------------"
 echo "# Quickly configures a fresh install of       "
-echo "# Ubuntu 14.04 x64.                           "
+echo "# Ubuntu 14.04 64-bit.                        "
 echo "#                                             "
 echo "# Author : Keegan Mullaney                    "
 echo "# Website: http://keegoid.com                 "
