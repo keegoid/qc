@@ -1,7 +1,9 @@
 ubuntu-quick-config
 ===================
 
-Quickly configures a fresh install of [Ubuntu 14.04 x64][tt].
+Quickly configures a fresh install of [Ubuntu 14.04 x64][tt] on a workstation or server.
+
+*(The server part is a work in progress...)*
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -18,7 +20,7 @@ Quickly configures a fresh install of [Ubuntu 14.04 x64][tt].
 
 ## What it can do
 
-- update [Ubuntu][ubuntu] and install useful packages
+- update [Ubuntu][ubuntu] and install some packages
 - configure [git][git] global settings
 - generate an [RSA key][sshkey] for remote [SSH sessions][ssh] (this is not a [GPG key][gpgkey])
 - add useful [shell aliases][sa]
