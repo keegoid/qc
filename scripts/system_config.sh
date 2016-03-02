@@ -83,7 +83,6 @@ else
    cp $PROJECT/includes/%gconf.xml $DEFAULT && echo "successfully configured: gnome-terminal default profile"
 fi
 
-
 # --------------------------------------------
 # gedit
 # --------------------------------------------
