@@ -1,7 +1,7 @@
 ubuntu-quick-config
 ===================
 
-Quickly configures a fresh install of [Ubuntu 14.04 x64][tt] on a workstation or server.
+Quickly configures a fresh install of [Ubuntu 14.04 64-bit][tt] on a workstation or server.
 
 *(The server part is a work in progress...)*
 
