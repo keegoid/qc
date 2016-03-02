@@ -18,11 +18,13 @@ Quickly configures a fresh install of [Ubuntu 14.04 x64][tt].
 
 ## What it can do
 
-- update [Ubuntu][ubuntu] and install useful programs
+- update [Ubuntu][ubuntu] and install useful packages
 - configure [git][git] global settings
 - generate an [RSA key][sshkey] for remote [SSH sessions][ssh] (this is not a [GPG key][gpgkey])
 - add useful [shell aliases][sa]
 - make the [terminal][lc] easier to read and use
+- add some plugins and a colorscheme to [VIM][vim]
+- add a color scheme to [gedit][gedit]
 - install the latest [VirtualBox][vb], [Vagrant][vg] and setup [VVV][vvv] and [VV][vv] for [WordPress][wp] development
 
 ## Usage
@@ -61,6 +63,8 @@ SEE: http://keegoid.mit-license.org
 
 
 [ubuntu]:   http://www.ubuntu.com/global
+[gedit]:    https://wiki.gnome.org/Apps/Gedit
+[vim]:      http://www.vim.org/
 [tt]:       https://wiki.ubuntu.com/TrustyTahr/ReleaseNotes
 [lc]:       http://en.wikipedia.org/wiki/Linux_console
 [vb]:       https://www.virtualbox.org/
