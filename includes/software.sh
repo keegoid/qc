@@ -83,8 +83,18 @@ get_software() {
 
 # package install code
 # source and thanks: https://github.com/Varying-Vagrant-Vagrants/VVV/
+
+# install lists (perform install)
 apt_package_install_list=()
+gem_install_list=()
+npm_install_list=()
+pip_install_list=()
+
+# check lists (check if installed)
 apt_package_check_list=()
+gem_check_list=()
+npm_check_list=()
+pip_check_list=()
 
 # purpose: check if program is NOT installed
 # arguments:
@@ -94,28 +104,30 @@ not_installed() {
    [ -n "$(apt-cache policy ${1} | grep 'Installed: (none)')" ] && return 0 || return 1
 }
 
-# purpose: add needed packages to package install list
+# purpose: loop through check list and add missing packages to install list
+# arguments:
+#   none
 package_check() {
-   # Loop through each of our packages that should be installed on the system. If
-   # not yet installed, it should be added to the array of packages to install.
    local pkg
-   local package_version
+   local pkg_version
 
-   for pkg in "${apt_package_check_list[@]}"; do
+   for pkg in "${apt_check_list[@]}"; do
       if not_installed $pkg; then
          echo " * $pkg [not installed]"
-         apt_package_install_list+=($pkg)
+         apt_install_list+=($pkg)
       else
-         package_version=$(dpkg -s "${pkg}" 2>&1 | grep 'Version:' | cut -d " " -f 2)
-         space_count="$(expr 20 - "${#pkg}")" #11
-         pack_space_count="$(expr 30 - "${#package_version}")"
-         real_space="$(expr ${space_count} + ${pack_space_count} + ${#package_version})"
-         printf " * $pkg %${real_space}.${#package_version}s ${package_version}\n"
+         pkg_version=$(dpkg -s "${pkg}" 2>&1 | grep 'Version:' | cut -d " " -f 2)
+         space_count="$(expr 20 - "${#pkg}")"
+         pack_space_count="$(expr 30 - "${#pkg_version}")"
+         real_space="$(expr ${space_count} + ${pack_space_count} + ${#pkg_version})"
+         printf " * $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
       fi
    done
 }
 
-# $1 -> to update sources or not
+# purpose: loop through install list and install any apt packages that are in the list
+# arguments:
+#   $1 -> to update sources or not
 package_install() {
    package_check
 
@@ -137,7 +149,127 @@ package_install() {
    fi
 }
 
-# purpose: install programs from a list
+# purpose: loop through check list and add missing gems to install list
+# arguments:
+#   none
+gem_check() {
+   local pkg
+   local pkg_version
+
+   for pkg in "${gem_check_list[@]}"; do
+      if ! $(gem list $pkg -i); then
+         echo " * $pkg [not installed]"
+         gem_install_list+=($pkg)
+      else
+         pkg_version=$(gem list "${pkg}" | grep "${pkg}" | cut -d " " -f 2 | cut -d "(" -f 2 | cut -d ")" -f 1)
+         space_count="$(expr 20 - "${#pkg}")"
+         pack_space_count="$(expr 30 - "${#pkg_version}")"
+         real_space="$(expr ${space_count} + ${pack_space_count} + ${#pkg_version})"
+         printf " * $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
+      fi
+   done
+}
+
+# purpose: loop through install list and install any gems that are in the list
+# arguments:
+#   none
+gem_install() {
+   gem_check
+
+   if [[ ${#gem_install_list[@]} = 0 ]]; then
+      echo -e "No gems to install\n"
+   else
+      # install required gems
+      pause "Press [Enter] to install gems" true
+      sudo gem install -y ${gem_install_list[@]}
+   fi
+}
+
+# purpose: loop through check list and add missing npms to install list
+# arguments:
+#   none
+npm_check() {
+   local pkg
+   local pkg_version
+
+   # make sure npm is installed
+   install_apt npm
+   # symlink nodejs to path
+   if [ ! -L /usr/bin/node ]; then
+      sudo ln -s "$(which nodejs)" /usr/bin/node
+   fi
+
+   for pkg in "${npm_check_list[@]}"; do
+      if ! npm ls -gs | grep -q "$pkg"; then
+         echo " * $pkg [not installed]"
+         npm_install_list+=($pkg)
+      else
+         pkg_version=$(npm ls -gs | grep "${pkg}" | cut -d "@" -f 2)
+         space_count="$(expr 20 - "${#pkg}")"
+         pack_space_count="$(expr 30 - "${#pkg_version}")"
+         real_space="$(expr ${space_count} + ${pack_space_count} + ${#pkg_version})"
+         printf " * $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
+      fi
+   done
+}
+
+# purpose: loop through install list and install any npms that are in the list
+# arguments:
+#   none
+npm_install() {
+   npm_check
+
+   if [[ ${#npm_install_list[@]} = 0 ]]; then
+      echo -e "No npms to install\n"
+   else
+      # install required npms
+      pause "Press [Enter] to install npms" true
+      sudo npm install -g ${npm_install_list[@]}
+   fi
+}
+
+# purpose: loop through check list and add missing pips to install list
+# arguments:
+#   none
+pip_check() {
+   local pkg
+   local pkg_trim
+   local pkg_version
+
+   for pkg in "${pip_check_list[@]}"; do
+      pkg_trim=$(trim_longest_right_pattern "$pkg" "[")
+      if ! pip list | grep "$pkg_trim" >/dev/null 2>&1; then
+         echo " * $pkg_trim [not installed]"
+         pip_install_list+=($pkg)
+      else
+         pkg_version=$(pip list | grep "${pkg_trim}" | cut -d " " -f 2 | tr -d "(" | tr -d ")")
+         space_count="$(expr 20 - "${#pkg}")"
+         pack_space_count="$(expr 30 - "${#pkg_version}")"
+         real_space="$(expr ${space_count} + ${pack_space_count} + ${#pkg_version})"
+         printf " * $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
+      fi
+   done
+}
+
+# purpose: loop through install list and install any pips that are in the list
+# arguments:
+#   none
+pip_install() {
+   pip_check
+
+   # make sure python-pip and python-keyring are installed
+   install_apt "python-pip python-keyring"
+
+   if [[ ${#pip_install_list[@]} = 0 ]]; then
+      echo -e "No pips to install\n"
+   else
+      # install required pips
+      pause "Press [Enter] to install pips" true
+      sudo -H pip install ${pip_install_list[@]}
+   fi
+}
+
+# purpose: install packages from a simple list
 # arguments:
 #   $1 -> program list (space-separated)
 #   $2 -> enable-repo (optional)
@@ -154,28 +286,7 @@ install_apt() {
    done
 }
 
-# purpose: install npm packages from a list
-# arguments:
-#   $1 -> npm list (space-separated)
-install_npm() {
-   local names="$1"
-   # make sure npm is installed
-   install_apt install npm
-   # symlink nodejs to path
-   if [ ! -L /usr/bin/node ]; then
-      sudo ln -s "$(which nodejs)" /usr/bin/node
-   fi
-   # install npm packages in the list
-   for app in $names; do
-      if ! npm ls -gs | grep -qw "$app"; then
-         echo
-         read -p "Press [Enter] to install $app..."
-         sudo npm install -g "$app"
-      fi
-   done
-}
-
-# purpose: install gems from a list
+# purpose: install gems from a simple list
 # arguments:
 #   $1 -> gem list (space-separated)
 install_gem() {
@@ -192,7 +303,28 @@ install_gem() {
    done
 }
 
-# purpose: install pips from a list
+# purpose: install npms from a simple list
+# arguments:
+#   $1 -> npm list (space-separated)
+install_npm() {
+   local names="$1"
+   # make sure npm is installed
+   install_apt npm
+   # symlink nodejs to path
+   if [ ! -L /usr/bin/node ]; then
+      sudo ln -s "$(which nodejs)" /usr/bin/node
+   fi
+   # install npm packages in the list
+   for app in $names; do
+      if ! npm ls -gs | grep -qw "$app"; then
+         echo
+         read -p "Press [Enter] to install $app..."
+         sudo npm install -g "$app"
+      fi
+   done
+}
+
+# purpose: install pips from a simpe list
 # arguments:
 #   $1 -> pip list (space-separated)
 install_pip() {
@@ -211,6 +343,8 @@ install_pip() {
 }
 
 # purpose: install ruby and rubygems
+# arguments:
+#   none
 install_ruby() {
    echo
    read -p "Press [Enter] to install ruby and rubygems..."
@@ -220,6 +354,9 @@ install_ruby() {
    fi
 }
 
+# purpose: source rvm after non-package management version of ruby
+# arguments:
+#   none
 source_rvm() {
    echo
    read -p "Press [Enter] to start using rvm..."
@@ -231,6 +368,9 @@ source_rvm() {
    fi
 }
 
+# purpose: install the keybase cli client
+# arguments:
+#   none
 install_keybase() {
    if not_installed keybase; then
       # change to tmp directory to download file and then back to original directory
@@ -241,6 +381,8 @@ install_keybase() {
 }
 
 # purpose: install newer version of virtualbox
+# arguments:
+#   none
 install_virtualbox() {
    if not_installed virtualbox-5.0; then
       # add virtualbox to sources list if not already there
@@ -256,6 +398,8 @@ install_virtualbox() {
 }
 
 # purpose: install newer version of vagrant
+# arguments:
+#   none
 install_vagrant() {
    if not_installed vagrant; then
       # change to tmp directory to download file and then back to original directory
