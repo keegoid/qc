@@ -25,7 +25,7 @@ Quickly configures a fresh install of [Ubuntu 14.04 64-bit][tt] on a workstation
 - generate an [RSA key][sshkey] for remote [SSH sessions][ssh] (this is not a [GPG key][gpgkey])
 - add useful [shell aliases][sa]
 - make the [terminal][lc] easier to read and use
-- add some plugins and a colorscheme to [VIM][vim]
+- add some plugins and a color scheme to [VIM][vim]
 - add a color scheme to [gedit][gedit]
 - install the latest [VirtualBox][vb], [Vagrant][vg] and setup [VVV][vvv] and [VV][vv] for [WordPress][wp] development
 
