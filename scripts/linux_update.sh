@@ -19,7 +19,7 @@ fi
 if [ $IS_SERVER -eq 0 ]; then
    read -ep "Enter apps to install with apt-get: " -i 'gnupg2 lynx openssh-server xclip vim' APTS
 else
-   read -ep "Enter apps to install with apt-get: " -i 'autojump build-essential cmake checkinstall cvs deluge git-core gnupg2 gufw lynx mercurial nautilus-open-terminal subversion silversearcher-ag x11vnc xclip vim vlc' APTS
+   read -ep "Enter apps to install with apt-get: " -i 'autojump build-essential cmake checkinstall cvs deluge git-core gnupg2 gufw lynx mercurial nautilus-open-terminal subversion silversearcher-ag x11vnc xclip vim-gtk vlc' APTS
    read -ep "Enter apps to install with gem: " -i 'gist' GEMS
    read -ep "Enter apps to install with npm: " -i 'doctoc' NPMS
    read -ep "Enter apps to install with pip: " -i 'jrnl[encrypted]' PIPS
