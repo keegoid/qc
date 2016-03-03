@@ -84,6 +84,17 @@ else
 fi
 
 # --------------------------------------------
+# .tmux.conf
+# --------------------------------------------
+
+# tmux config
+if [ -f $HOME/.tmux.conf ]; then
+   echo "already configured tmux"
+else
+   cp $PROJECT/includes/.tmux.conf $HOME && echo "successfully configured: tmux"
+fi
+
+# --------------------------------------------
 # gedit
 # --------------------------------------------
 
@@ -119,7 +130,7 @@ fi
 if [ -d $COLORS/blackboard ]; then
    cd $COLORS/blackboard && echo "updating blackboard for vim..." && git pull && cp $COLORS/blackboard/colors/blackboard.vim $COLORS && cd - >/dev/null
 else
-   git clone https://github.com/ratazzi/blackboard.vim $COLORS/blackboard && cp $COLORS/blackboard/colors/blackboard.vim $COLORS && echo "successfully installed: vim colorscheme blackboard"
+   git clone https://github.com/rickharris/vim-blackboard.git $COLORS/blackboard && cp $COLORS/blackboard/colors/blackboard.vim $COLORS && echo "successfully installed: vim colorscheme blackboard"
 fi
 
 # gundo plugin (for graphical undo tree)
