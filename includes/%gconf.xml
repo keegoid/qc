@@ -9,7 +9,7 @@
 	<entry name="default_size_rows" mtime="1456949547" type="int" value="43"/>
 	<entry name="use_custom_default_size" mtime="1456949547" type="bool" value="true"/>
 	<entry name="font" mtime="1456953016" type="string">
-		<stringvalue>Ubuntu Mono 11</stringvalue>
+		<stringvalue>Ubuntu Mono 12</stringvalue>
 	</entry>
 	<entry name="use_system_font" mtime="1456949547" type="bool" value="false"/>
 	<entry name="palette" mtime="1456953360" type="string">
