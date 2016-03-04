@@ -16,39 +16,39 @@ read -ep "Directory to use for config files: ~/" -i "Dropbox/Config" CONFIG
 # --------------------------------------------
 
 # aliases
-if grep -q $CONFIG/.bash_aliases $HOME/.bashrc >/dev/null 2>&1; then
-   echo "already added aliases"
+REPO_DIR="$HOME/$CONFIG/bash"
+REPO_URL=https://gist.github.com/9d74e08779c1db6cb7b7
+CONF_PATH=$HOME/.bashrc
+REPO_PATH=$REPO_DIR/bash_aliases
+REPO_FILE=$(trim_longest_left_pattern $REPO_PATH "/")
+SRC_CMD="\n# source $REPO_FILE\n
+if [ -f $REPO_PATH ]; then\n
+    . $REPO_PATH\n
+fi"
+
+# if config file exists, update config, otherwise clone it
+if [ -f $REPO_PATH ]; then
+   cd $REPO_DIR && echo "updating $REPO_FILE..." && git pull && echo "successfully updated: $REPO_PATH" && cd - >/dev/null
 else
-   pause "Press [Enter] to add useful aliases" true
-   cp -n $PROJECT/includes/.bash_aliases $HOME/$CONFIG
-cat << EOF >> $HOME/.bashrc
-# source .bash_aliases
-if [ -f ~/$CONFIG/.bash_aliases ]; then
-    . ~/$CONFIG/.bash_aliases
-fi
-EOF
-   [ -f $HOME/$CONFIG/.bash_aliases ] && source $HOME/.bashrc && echo "successfully configured: .bashrc with .bash_aliases from ~/$CONFIG"
+   pause "Press [Enter] to configure $CONF_PATH" true
+   git clone $REPO_URL $REPO_DIR && echo -e "$SRC_CMD" >> $CONF_PATH && source $CONF_PATH && echo "successfully configured: $CONF_PATH"
 fi
 
 # autojump
-if grep -q $CONFIG/.bash_config $HOME/.bashrc >/dev/null 2>&1; then
+SRC_CMD="\n# source autojump.sh\n
+. /usr/share/autojump/autojump.sh"
+
+if grep -q "autojump/autojump.sh" $CONF_PATH >/dev/null 2>&1; then
    echo "already added autojump (usage: j directory)"
 else
-   pause "Press [Enter] to add autojump to bash" true
-   cp -n $PROJECT/includes/.bash_config $HOME/$CONFIG
-cat << EOF >> $HOME/.bashrc
-# source .bash_config
-if [ -f ~/$CONFIG/.bash_config ]; then
-   . ~/$CONFIG/.bash_config
-fi
-EOF
-   [ -f $HOME/$CONFIG/.bash_config ] && source $HOME/.bashrc && echo "successfully configured: .bashrc with .bash_config from ~/$CONFIG"
+   pause "Press [Enter] to configure autojump for the gnome-terminal" true
+   echo -e "$SRC_CMD" >> $CONF_PATH && source $CONF_PATH && echo "successfully configured: $CONF_PATH"
 fi
 
 # color terminal prompts
-if grep -q "#force_color_prompt=yes" $HOME/.bashrc >/dev/null 2>&1; then
+if grep -q "#force_color_prompt=yes" $CONF_PATH >/dev/null 2>&1; then
    pause "Press [Enter] to activate color terminal prompts" true
-   sed -i.bak -e "s|#force_color_prompt=yes|force_color_prompt=yes|" $HOME/.bashrc && source $HOME/.bashrc && echo "successfully configured: .bashrc with color terminal prompts"
+   sed -i.bak -e "s|#force_color_prompt=yes|force_color_prompt=yes|" $CONF_PATH && source $CONF_PATH && echo "successfully configured: $CONF_PATH with color terminal prompts"
 else
    echo "already set color prompts"
 fi
@@ -58,114 +58,105 @@ fi
 # --------------------------------------------
 
 # terminal history lookup
-if grep -q $CONFIG/.input_config $HOME/.inputrc >/dev/null 2>&1; then
+CONF_PATH=$HOME/.inputrc
+SRC_CMD="# terminal history lookup\n
+'\e[A': history-search-backward\n
+'\e[B': history-search-forward\n
+'\e[C': forward-char\n
+'\e[D': backward-char"
+
+if grep -q $CONFIG/.input_config $CONF_PATH >/dev/null 2>&1; then
    echo "already added terminal history lookup"
 else
    pause "Press [Enter] to configure .inputrc" true
-   cp -n $PROJECT/includes/.input_config $HOME/$CONFIG
-cat << EOF >> $HOME/.inputrc
-\$include ~/$CONFIG/.input_config
-EOF
-   [ -f $HOME/$CONFIG/.input_config ] && echo ".input_config was copied to ~/$CONFIG"
+   echo -e "$SRC_CMD" > $CONF_PATH && source $CONF_PATH && echo "successfully configured: $CONF_PATH"
 fi
 
 # --------------------------------------------
-# terminal default profile
+# .muttrc solarized colorscheme
 # --------------------------------------------
 
-# profile directory
-DEFAULT=$HOME/.gconf/apps/gnome-terminal/profiles/Default
+REPO_DIR=$HOME/$CONFIG/mutt/mutt-colors-solarized
+REPO_URL=https://github.com/altercation/mutt-colors-solarized.git
+REPO_PATH=$REPO_DIR/mutt-colors-solarized-dark-16.muttrc
+CONF_PATH=$HOME/$CONFIG/mutt/mutt.conf
+COLOR_FILE=$(trim_longest_left_pattern $REPO_DIR "/")
 
-# default profile
-if [ -f $HOME/$CONFIG/%gconf.xml ]; then
-   echo "already configured terminal default profile"
+# if config file exists, update config, otherwise clone it
+if [ -d $REPO_DIR ]; then
+   cd $REPO_DIR && echo "updating $COLOR_FILE..." && git pull && echo "successfully updated: $COLOR_FILE" && cd - >/dev/null
 else
-   cp $PROJECT/includes/%gconf.xml $DEFAULT && echo "successfully configured: gnome-terminal default profile"
+   pause "Press [Enter] to configure $COLOR_FILE" true
+   git clone $REPO_URL $REPO_DIR && echo "successfully configured: $COLOR_FILE"
+fi
+
+# --------------------------------------------
+# terminal solarized profile
+# --------------------------------------------
+
+REPO_DIR=$HOME/$CONFIG/terminal
+REPO_URL=https://github.com/Anthony25/gnome-terminal-colors-solarized.git
+REPO_PATH=$REPO_DIR/install.sh
+
+# if config directory exists, update config, otherwise clone it
+if [ -d $REPO_DIR ]; then
+   cd $REPO_DIR && echo "updating gnome-terminal solarized profile..." && git pull && run_script install.sh && echo "successfully updated: gnome-terminal with solarized colors" && cd - >/dev/null
+else
+   pause "Press [Enter] to configure gnome-terminal solarized profile" true
+   git clone $REPO_URL $REPO_DIR && run_script install.sh && echo "successfully configured: gnome-terminal with solarized colors"
 fi
 
 # --------------------------------------------
 # .tmux.conf
 # --------------------------------------------
 
-# tmux config
-if [ -f $HOME/.tmux.conf ]; then
-   echo "already configured tmux"
+REPO_DIR=$HOME/$CONFIG/tmux
+REPO_URL=https://gist.github.com/3247d5a1c172167e593c.git
+CONF_PATH=$HOME/.tmux.conf
+REPO_PATH=$REPO_DIR/tmux.conf
+CONF_FILE=$(trim_longest_left_pattern $CONF_PATH "/")
+
+# if config directory exists, update config, otherwise clone it
+if [ -d $REPO_DIR ]; then
+   cd $REPO_DIR && echo "updating $CONF_FILE..." && git pull && echo "successfully updated: $CONF_PATH" && cd - >/dev/null
 else
-   cp $PROJECT/includes/.tmux.conf $HOME && echo "successfully configured: tmux"
+   pause "Press [Enter] to configure $CONF_FILE" true
+   git clone $REPO_URL $REPO_DIR && echo "source-file $REPO_PATH" > $CONF_PATH && echo "successfully configured: $CONF_PATH"
 fi
 
 # --------------------------------------------
 # gedit
 # --------------------------------------------
 
-# gedit directory
-GEDIT=$HOME/.local/share/gedit/styles
+REPO_DIR=$HOME/$CONFIG/gedit/blackboard
+REPO_URL=https://github.com/afair/dot-gedit.git
+CONF_PATH=$HOME/.local/share/gedit/styles/blackboard.xml
+REPO_PATH=$REPO_DIR/blackboard.xml
+CONF_FILE=$(trim_longest_left_pattern $CONF_PATH "/")
 
-# blackboard color scheme
-if [ -d $GEDIT/blackboard ]; then
-   cd $GEDIT/blackboard && echo "updating blackboard for gedit..." && git pull && cp $GEDIT/blackboard/blackboard.xml $GEDIT && cd - >/dev/null
+# if config directory exists, update config, otherwise clone it
+if [ -d $REPO_DIR ]; then
+   cd $REPO_DIR && echo "updating $CONF_FILE..." && git pull && cp $REPO_PATH $CONF_PATH && echo "successfully updated: $CONF_PATH" && cd - >/dev/null
 else
-   git clone https://github.com/afair/dot-gedit.git $GEDIT/blackboard && cp $GEDIT/blackboard/blackboard.xml $GEDIT && echo "successfully installed: Gedit color scheme blackboard"
+   pause "Press [Enter] to configure $CONF_FILE" true
+   git clone $REPO_URL $REPO_DIR && cp $REPO_PATH $CONF_PATH && echo "successfully configured: $CONF_PATH"
 fi
 
 # --------------------------------------------
-# .vimrc
+# .vimrc.local for use with spf13-vim
 # --------------------------------------------
 
-# .vim directories
-AUTOLOAD=$HOME/.vim/autoload
-BUNDLE=$HOME/.vim/bundle
-COLORS=$HOME/.vim/colors
-BACKUP=$HOME/.vim/backup
-SWP=$HOME/.vim/swp
+REPO_DIR=$HOME/$CONFIG/vim
+REPO_URL=https://gist.github.com/00a60c7355c27c692262
+CONF_PATH=$HOME/.vimrc.local
+REPO_PATH=$REPO_DIR/vim.conf
+CONF_FILE=$(trim_longest_left_pattern $CONF_PATH "/")
 
-# pathogen plugin (for loading other plugins)
-if [ -d $AUTOLOAD/pathogen ]; then
-   cd $AUTOLOAD/pathogen && echo "updating pathogen..." && git pull && cp $AUTOLOAD/pathogen/autoload/pathogen.vim $AUTOLOAD && cd - >/dev/null
+# check if vim is already configured
+if [ -d $REPO_DIR ]; then
+   cd $REPO_DIR && echo "updating $CONF_FILE..." && git pull && echo "successfully updated: $CONF_PATH" && cd - >/dev/null
 else
-   git clone https://github.com/tpope/vim-pathogen.git $AUTOLOAD/pathogen && cp $AUTOLOAD/pathogen/autoload/pathogen.vim $AUTOLOAD && echo "successfully installed: vim plugin pathogen"
-fi
-
-# blackboard colorscheme
-if [ -d $COLORS/blackboard ]; then
-   cd $COLORS/blackboard && echo "updating blackboard for vim..." && git pull && cp $COLORS/blackboard/colors/blackboard.vim $COLORS && cd - >/dev/null
-else
-   git clone https://github.com/rickharris/vim-blackboard.git $COLORS/blackboard && cp $COLORS/blackboard/colors/blackboard.vim $COLORS && echo "successfully installed: vim colorscheme blackboard"
-fi
-
-# gundo plugin (for graphical undo tree)
-if [ -d $BUNDLE/gundo ]; then
-   cd $BUNDLE/gundo && echo "updating gundo..." && git pull && cd - >/dev/null
-else
-   git clone https://github.com/sjl/gundo.vim.git $BUNDLE/gundo && echo "vim plugin gundo was installed"
-fi
-
-# ag plugin (for keyword searching within project directory)
-if [ -d $BUNDLE/ag ]; then
-   cd $BUNDLE/ag && echo "updating ag..." && git pull && cd - >/dev/null
-else
-   git clone https://github.com/rking/ag.vim.git $BUNDLE/ag && echo "vim plugin ag was installed"
-fi
-
-# ctrlp plugin (for fuzzy file searching)
-if [ -d $BUNDLE/ctrlp ]; then
-   cd $BUNDLE/ctrlp && echo "updating ctrp..." && git pull && cd - >/dev/null
-else
-   git clone https://github.com/ctrlpvim/ctrlp.vim.git $BUNDLE/ctrlp && echo "vim plugin ctrlp was installed"
-fi
-
-# configure vim (from http://dougblack.io/words/a-good-vimrc.html)
-if grep -q $CONFIG/.vim_config $HOME/.vimrc >/dev/null 2>&1; then
-   echo "already configured .vimrc"
-else
-   pause "Press [Enter] to configure .vimrc" true
-   cp -n $PROJECT/includes/.vim_config $HOME/$CONFIG
-   mkdir -p $BACKUP
-   mkdir -p $SWP
-cat << EOF >> $HOME/.vimrc
-" source config file
-:so ~/$CONFIG/.vim_config
-EOF
-   [ -f $HOME/$CONFIG/.vim_config ] && echo "successfully configured: .vimrc with .vim_config from ~/$CONFIG"
+   pause "Press [Enter] to configure $CONF_FILE" true
+   git clone $REPO_URL $REPO_DIR && echo ":so $REPO_PATH" > $CONF_PATH && echo "successfully configured: $CONF_PATH"
 fi
 
