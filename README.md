@@ -20,13 +20,19 @@ Quickly configures a fresh install of [Ubuntu 14.04 64-bit][tt] on a workstation
 
 ## What it can do
 
-- update [Ubuntu][ubuntu] and install some packages
-- configure [git][git] global settings
+- update [Ubuntu][ubuntu] and install some programs using apt-get, gem, npm and pip
 - generate an [RSA key][sshkey] for remote [SSH sessions][ssh] (this is not a [GPG key][gpgkey])
 - add useful [shell aliases][sa]
-- make the [terminal][lc] easier to read and use
-- add some plugins and a color scheme to [VIM][vim]
-- add a color scheme to [gedit][gedit]
+- make the [terminal][gt] easier to read and use with:
+    - colored prompts
+    - [autojump][aj]
+    - [incremental history searching][ihs]
+    - [dark solarized color scheme][tsolar]
+- add [blackboard][bb] and [solarized][gsolar] color schemes to [gedit][gedit]
+- add [solarized][msolar] color scheme to [Mutt][mutt]
+- configure [tmux][tmux]
+- install and configure [spf13-vim][spf13] version of [VIM][vim], ideal for developers
+- configure [git][git] global settings
 - install the latest [VirtualBox][vb], [Vagrant][vg] and setup [VVV][vvv] and [VV][vv] for [WordPress][wp] development
 
 ## Usage
@@ -51,7 +57,7 @@ Also run `./sudoers.sh` if you want to increase the sudo timeout which is set to
 
 ## SSH Keys
 
-You can save a backup copy of your [SSH key pair][sshkey] that gets generated and output to the screen. I prefer saving it as a secure note in [LastPass][lp]. Copy the keys from the [Linux console][lc] with `ctrl+shift+c` before clearing the screen.
+You can save a backup copy of your [SSH key pair][sshkey] that gets generated and output to the screen. I prefer saving it as a secure note in [LastPass][lp]. Copy the keys from the [terminal][gt] with `ctrl+shift+c` before clearing the screen.
 
 ```bash
 cat ~/.ssh/id_rsa.pub
@@ -67,12 +73,20 @@ SEE: http://keegoid.mit-license.org
 [ubuntu]:   http://www.ubuntu.com/global
 [gedit]:    https://wiki.gnome.org/Apps/Gedit
 [vim]:      http://www.vim.org/
+[spf13]:    http://vim.spf13.com/
 [tt]:       https://wiki.ubuntu.com/TrustyTahr/ReleaseNotes
-[lc]:       http://en.wikipedia.org/wiki/Linux_console
+[gt]:       http://manpages.ubuntu.com/manpages/hardy/man1/gnome-terminal.1.html
+[ihs]:      https://help.ubuntu.com/community/UsingTheTerminal#An_extremely_handy_tool_::_Incremental_history_searching
+[tsolar]:   https://github.com/Anthony25/gnome-terminal-colors-solarized
+[gsolar]:   https://github.com/mattcan/solarized-gedit
+[msolar]:   https://github.com/altercation/mutt-colors-solarized
+[bb]:       https://github.com/afair/dot-gedit
+[tmux]:     https://tmux.github.io/
 [vb]:       https://www.virtualbox.org/
 [vg]:       https://www.vagrantup.com/
 [vvv]:      https://github.com/Varying-Vagrant-Vagrants/VVV
 [vv]:       https://github.com/bradp/vv
+[aj]:       https://github.com/wting/autojump
 [wp]:       https://wordpress.org/
 [ss]:       http://en.wikipedia.org/wiki/Shell_script
 [ssh]:      http://en.wikipedia.org/wiki/Secure_Shell
