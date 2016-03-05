@@ -31,6 +31,19 @@ set_aliases() {
    fi
 }
 
+# --------------------------  TERMINAL COLOR PROMPTS
+
+set_terminal_color() {
+   local conf_file_path="$1"
+
+   if grep -q "#force_color_prompt=yes" $conf_file_path >/dev/null 2>&1; then
+      pause "Press [Enter] to activate color terminal prompts" true
+      sed -i.bak -e "s|#force_color_prompt=yes|force_color_prompt=yes|" $conf_file_path && source $conf_file_path && success "successfully configured: $conf_file_path with color terminal prompts"
+   else
+      notify "already set color prompts"
+   fi
+}
+
 # --------------------------  AUTOJUMP (so awesome)
 
 set_autojump() {
@@ -42,19 +55,6 @@ set_autojump() {
    else
       pause "Press [Enter] to configure autojump for gnome-terminal" true
       echo -e "$src_cmd" >> $conf_file_path && source $conf_file_path && success "successfully configured: $conf_file_path"
-   fi
-}
-
-# --------------------------  TERMINAL COLOR PROMPTS
-
-set_terminal_color() {
-   local conf_file_path="$1"
-
-   if grep -q "#force_color_prompt=yes" $conf_file_path >/dev/null 2>&1; then
-      pause "Press [Enter] to activate color terminal prompts" true
-      sed -i.bak -e "s|#force_color_prompt=yes|force_color_prompt=yes|" $conf_file_path && source $conf_file_path && success "successfully configured: $conf_file_path with color terminal prompts"
-   else
-      notify "already set color prompts"
    fi
 }
 
@@ -98,6 +98,24 @@ set_terminal_profile() {
    fi
 }
 
+# --------------------------  GEDIT
+
+set_gedit_colors() {
+   local conf_file_path="$1"
+   local repo_url="$2"
+   local repo_dir=$(trim_shortest_right_pattern "$3" "/")
+   local repo_file_path="$3"
+
+   # solarized and blackboard color schemes
+   if [ -f $repo_file_path ]; then
+      pause "Press [Enter] to update $repo_file_path" true
+      cd $repo_dir && echo "updating $repo_file_path..." && git pull && cp $repo_file_path $conf_file_path && cd - >/dev/null
+   else
+      pause "Press [Enter] to configure $conf_file_path" true
+      git clone $repo_url $repo_dir && cp $repo_file_path $conf_file_path && success "successfully configured: $conf_file_path"
+   fi
+}
+
 # --------------------------  MUTT
 
 set_mutt_colors() {
@@ -132,23 +150,6 @@ set_tmux_config() {
    else
       pause "Press [Enter] to configure $conf_file_path" true
       git clone $repo_url $repo_dir && echo "$src_cmd" > $conf_file_path && success "successfully configured: $conf_file_path"
-   fi
-}
-
-# --------------------------  GEDIT
-
-set_gedit_colors() {
-   local conf_file_path="$1"
-   local repo_url="$2"
-   local repo_dir=$(trim_shortest_right_pattern "$3" "/")
-   local repo_file_path="$3"
-
-   if [ -f $repo_file_path ]; then
-      pause "Press [Enter] to update $repo_file_path" true
-      cd $repo_dir && echo "updating $repo_file_path..." && git pull && cp $repo_file_path $conf_file_path && cd - >/dev/null
-   else
-      pause "Press [Enter] to configure $conf_file_path" true
-      git clone $repo_url $repo_dir && cp $repo_file_path $conf_file_path && success "successfully configured: $conf_file_path"
    fi
 }
 
@@ -201,15 +202,23 @@ set_aliases          "$HOME/.bashrc" \
                      "$HOME/$CONFIG/bash/aliases/bash_aliases" \
                      "\n# source alias file\nif [ -f ~/$CONFIG/bash/aliases/bash_aliases ]; then\n   . ~/$CONFIG/bash/aliases/bash_aliases\nfi"
 
+set_terminal_color   "$HOME/.bashrc"
+
 set_autojump         "$HOME/.bashrc" \
                      "\n# source autojump file\nif [ -f /usr/share/autojump/autojump.sh ]; then\n   . /usr/share/autojump/autojump.sh\nfi"
-
-set_terminal_color   "$HOME/.bashrc"
 
 set_terminal_history "$HOME/.inputrc"
 
 set_terminal_profile "https://github.com/Anthony25/gnome-terminal-colors-solarized.git" \
                      "$HOME/$CONFIG/terminal/profile/install.sh"
+
+set_gedit_colors     "$HOME/.local/share/gedit/styles/blackboard.xml" \
+                     "https://github.com/afair/dot-gedit.git" \
+                     "$HOME/$CONFIG/gedit/blackboard/blackboard.xml"
+
+set_gedit_colors     "$HOME/.local/share/gedit/styles/solarized-dark.xml" \
+                     "https://github.com/mattcan/solarized-gedit.git" \
+                     "$HOME/$CONFIG/gedit/solarized/solarized-dark.xml"
 
 set_mutt_colors      "$HOME/.muttrc" \
                      "https://github.com/altercation/mutt-colors-solarized.git" \
@@ -220,14 +229,6 @@ set_tmux_config      "$HOME/.tmux.conf" \
                      "https://gist.github.com/3247d5a1c172167e593c.git" \
                      "$HOME/$CONFIG/tmux/tmux.conf" \
                      "source-file ~/$CONFIG/tmux/tmux.conf"
-
-set_gedit_colors     "$HOME/.local/share/gedit/styles/blackboard.xml" \
-                     "https://github.com/afair/dot-gedit.git" \
-                     "$HOME/$CONFIG/gedit/blackboard/blackboard.xml"
-
-set_gedit_colors     "$HOME/.local/share/gedit/styles/solarized-dark.xml" \
-                     "https://github.com/mattcan/solarized-gedit.git" \
-                     "$HOME/$CONFIG/gedit/solarized/solarized-dark.xml"
 
 set_vim_config       "$HOME/.vimrc.local" \
                      "https://gist.github.com/00a60c7355c27c692262.git" \
