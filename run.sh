@@ -10,49 +10,49 @@ echo "#                                             "
 echo "# http://keegoid.mit-license.org              "
 echo "# --------------------------------------------"
 
-# set to true (0) prevent clearing the screen
-DEBUG=1
+# --------------------------  SETUP PARAMETERS
 
-# library files
-LIBS='base.sh software.sh git.sh'
-LIBS_DIR='includes'
+# library file
+source includes/libkm.sh
 
-# source function libraries
-for lib in $LIBS; do
-   [ -d "$LIBS_DIR" ] && { source "$LIBS_DIR/$lib" > /dev/null 2>&1 && echo "sourced: $LIBS_DIR/$lib" || echo "can't find: $LIBS_DIR/$lib"; }
-done
-
-# project directory
+APP_NAME="ubuntu-quick-config"
 PROJECT="$PWD"
+
+# set to true (0) to prevent clearing the screen and report errors
+DEBUG_MODE=1
+
+# make sure $HOME variable is set
+variable_set $HOME
 
 # config for server
 confirm "Is this a server?"
 IS_SERVER=$?
 
 # make sure curl and git are installed
-install_apt "curl git"
+program_must_exist curl
+program_must_exist git
+
+# --------------------------  FUNCTIONS
 
 # if any files in home are not owned by home user, fix that
 fix_permissions() {
    # set ownership
    pause "Press [Enter] to make sure all files in $HOME are owned by $(logname)" true
-   sudo chown --preserve-root -cR $(logname):$(logname) "$HOME"
+   sudo chown --preserve-root -cR $(logname):$(logname) $HOME
 }
 
 # display message before exit
 exit_msg() {
-   echo
-   echo -e "${LIGHT_GRAY} Lastly: execute sudo ./sudoers.sh to increase the sudo timeout. ${STD}"
-   echo
-   echo "Thanks for using this ubuntu-quick-config script."
+   notify "Lastly: execute sudo ./sudoers.sh to increase the sudo timeout."
+   msg             "\nThanks for using $APP_NAME."
+   msg             "© `date +%Y` http://keegoid.mit-license.org/"
 }
 
-# --------------------------------------------
-# display the menu
-# --------------------------------------------
+# --------------------------  MENU OPTIONS
+
 display_menu() {
-      [ $DEBUG -eq 0 ] || clear
-      echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~"	
+      [ $DEBUG_MODE -eq 0 ] || clear
+      echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~"
    if [ $IS_SERVER -eq 0 ]; then
       echo "     M A I N - M E N U     "
       echo "          server           "
@@ -70,41 +70,42 @@ display_menu() {
       echo "7. QUIT"
 }
 
-# --------------------------------------------
-# user selection
-# --------------------------------------------
+# --------------------------  USER SELECTION
+
 select_options() {
    local choice
    # make sure we're always starting from the right place
    cd "$PROJECT"
    read -rp "Enter choice [1 - 7]: " choice
    case $choice in
-      1) run_script linux_update.sh    $DEBUG;;
-      2) run_script git_config.sh      $DEBUG;;
-      3) run_script ssh_key.sh         $DEBUG;;
-      4) run_script system_config.sh   $DEBUG;;
-      5) run_script wordpress_dev.sh   $DEBUG;;
+      1) run_script linux_update.sh "scripts";;
+      2) run_script git_config.sh "scripts";;
+      3) run_script ssh_key.sh "scripts";;
+      4) run_script system_config.sh "scripts";;
+      5) run_script wordpress_dev.sh "scripts";;
       6) fix_permissions;;
       7) exit_msg && exit 0;;
       *) echo -e "${RED} Error... ${STD}" && sleep 1
    esac
+
+   # check for program errors
+   RET=$?
+   debug
 }
 
-# --------------------------------------------
 # trap Ctrl+Z to return to the main menu
-# --------------------------------------------
 trap "echo; menu_loop" SIGTSTP
 
-# --------------------------------------------
-# main loop (infinite)
-# --------------------------------------------
+# --------------------------  MAIN
+
 menu_loop() {
+   # infinite loop until user exits
    while true; do
       display_menu
       select_options
       pause
    done
 }
-# call menu loop before program end
+# start program
 menu_loop
 
