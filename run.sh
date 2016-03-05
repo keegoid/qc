@@ -45,7 +45,7 @@ fix_permissions() {
 exit_msg() {
    notify "Lastly: execute sudo ./sudoers.sh to increase the sudo timeout."
    msg             "\nThanks for using $APP_NAME."
-   msg             "© `date +%Y` http://keegoid.mit-license.org/"
+   msg             "© `date +%Y` http://keegoid.mit-license.org"
 }
 
 # --------------------------  MENU OPTIONS
@@ -62,12 +62,11 @@ display_menu() {
    fi
       echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~"
       echo "1. INSTALLS & UPDATES"
-      echo "2. GIT CONFIG"
-      echo "3. SSH KEY"
-      echo "4. SYSTEM CONFIG"
-      echo "5. WORDPRESS DEVELOPMENT"
-      echo "6. FIX PERMISSIONS"
-      echo "7. QUIT"
+      echo "2. SSH KEY"
+      echo "3. SYSTEM CONFIG"
+      echo "4. WORDPRESS DEVELOPMENT"
+      echo "5. FIX PERMISSIONS"
+      echo "6. QUIT"
 }
 
 # --------------------------  USER SELECTION
@@ -76,15 +75,14 @@ select_options() {
    local choice
    # make sure we're always starting from the right place
    cd "$PROJECT"
-   read -rp "Enter choice [1 - 7]: " choice
+   read -rp "Enter choice [1 - 6]: " choice
    case $choice in
       1) run_script linux_update.sh "scripts";;
-      2) run_script git_config.sh "scripts";;
-      3) run_script ssh_key.sh "scripts";;
-      4) run_script system_config.sh "scripts";;
-      5) run_script wordpress_dev.sh "scripts";;
-      6) fix_permissions;;
-      7) exit_msg && exit 0;;
+      2) run_script ssh_key.sh "scripts";;
+      3) run_script system_config.sh "scripts";;
+      4) run_script wordpress_dev.sh "scripts";;
+      5) fix_permissions;;
+      6) exit_msg && exit 0;;
       *) echo -e "${RED} Error... ${STD}" && sleep 1
    esac
 
