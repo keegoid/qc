@@ -87,13 +87,13 @@ msg() {
 }
 
 debug() {
-   if [ $DEBUG_MODE -eq 1 ] && [ $RET -gt 0 ]; then
+   if [ "$DEBUG_MODE" -eq 1 ] && [ "$RET" -gt 0 ]; then
       msg "An error occurred in function \"${FUNCNAME[$i+1]}\" on line ${BASH_LINENO[$i+1]}."
    fi
 }
 
 success() {
-   if [ -z "$RET" ] || [ $RET -eq 0 ]; then
+   if [ -z "$RET" ] || [ "$RET" -eq 0 ]; then
       msg "${GREEN_CHK} ${1}${2}"
    fi
 }
@@ -119,22 +119,10 @@ script_name() {
 # --------------------------  CHECKS
 
 is_root() {
-#   [ $(id -u) -eq 0 ] && return 0 || error "must be root"
-   [ $EUID -eq 0 ] && return 0 || error "must be root"
+#   [ "$(id -u)" -eq 0 ] && return 0 || error "must be root"
+   [ "$EUID" -eq 0 ] && return 0 || error "must be root"
 }
  
-program_exists() {
-   local result
-   command -v $1 >/dev/null 2>&1 || { result=1; }
-
-   # fail on non-zero return value
-   if [ $result -ne 0 ]; then
-      return 1
-   fi
-
-   return 0
-}
-
 not_installed() {
    [ -n "$(apt-cache policy ${1} | grep 'Installed: (none)')" ] && return 0 || return 1
 }
@@ -195,10 +183,10 @@ confirm() {
 }
 
 program_must_exist() {
-   program_exists $1
+   not_installed $1
 
    # throw error on non-zero return value
-   if [ $? -ne 0 ]; then
+   if [ "$?" -eq 0 ]; then
       notify "You must have $1 installed to continue."
       pause "Press [Enter] to install it now" true
       sudo apt-get -y install "$1"
@@ -211,8 +199,7 @@ apt_check() {
    local pkg_version
 
    for pkg in "${apt_check_list[@]}"; do
-#      if not_installed $pkg; then
-      if program_exists $pkg; then
+      if not_installed $pkg; then
          pkg_version=$(dpkg -s "${pkg}" 2>&1 | grep 'Version:' | cut -d " " -f 2)
          space_count="$(expr 20 - "${#pkg}")"
          pack_space_count="$(expr 30 - "${#pkg_version}")"
@@ -314,7 +301,7 @@ run_script() {
    chmod +x "${name}"
 
    # clear the screen and run the script
-   [ $DEBUG_MODE -eq 0 ] || clear
+   [ "$DEBUG_MODE" -eq 0 ] || clear
    . ./"${name}"
    result=$?
    echo "script: ${name} has finished"
@@ -344,7 +331,7 @@ source_rvm() {
 apt_install() {
    apt_check
 
-   if [[ ${#apt_install_list[@]} = 0 ]]; then
+   if [[ "${#apt_install_list[@]}" -eq 0 ]]; then
       echo -e "No apt packages to install\n"
    else
       # update all of the package references before installing anything
@@ -372,7 +359,7 @@ install_apt() {
 
    # install applications in the list
    for apt in $names; do
-      if ! program_exists $apt; then
+      if not_installed $apt; then
          echo
          read -p "Press [Enter] to install $apt..."
          [ -z "${repo}" ] && sudo apt-get -y install "$apt" || { sudo apt-add-repository "${repo}"; sudo apt-get update; sudo apt-get -y install "$apt"; }
@@ -388,7 +375,7 @@ gem_install() {
    program_must_exist "ruby"
    program_must_exist "rubygems-integration"
 
-   if [[ ${#gem_install_list[@]} = 0 ]]; then
+   if [[ "${#gem_install_list[@]}" -eq 0 ]]; then
       echo -e "No gems to install\n"
    else
       # install required gems
@@ -428,7 +415,7 @@ npm_install() {
       sudo ln -s "$(which nodejs)" /usr/bin/node
    fi
 
-   if [[ ${#npm_install_list[@]} = 0 ]]; then
+   if [[ "${#npm_install_list[@]}" -eq 0 ]]; then
       echo -e "No npms to install\n"
    else
       # install required npms
@@ -468,7 +455,7 @@ pip_install() {
    program_must_exist "python-pip"
    program_must_exist "python-keyring"
 
-   if [[ ${#pip_install_list[@]} = 0 ]]; then
+   if [[ "${#pip_install_list[@]}" -eq 0 ]]; then
       echo -e "No pips to install\n"
    else
       # install required pips
@@ -510,7 +497,7 @@ install_ruby() {
 
 # install the keybase cli client
 install_keybase() {
-   if ! program_exists "keybase"; then
+   if not_installed "keybase"; then
       # change to tmp directory to download file and then back to original directory
       cd /tmp
       curl -O https://dist.keybase.io/linux/deb/keybase-latest-amd64.deb && sudo dpkg -i keybase-latest-amd64.deb
@@ -520,7 +507,7 @@ install_keybase() {
 
 # install newer version of virtualbox
 install_virtualbox() {
-   if ! program_exists "virtualbox-5.0"; then
+   if not_installed "virtualbox-5.0"; then
       # add virtualbox to sources list if not already there
       if ! grep -q "virtualbox" /etc/apt/sources.list; then
          echo "deb http://download.virtualbox.org/virtualbox/debian trusty contrib" | sudo tee --append /etc/apt/sources.list
@@ -535,7 +522,7 @@ install_virtualbox() {
 
 # install newer version of vagrant
 install_vagrant() {
-   if ! program_exists "vagrant"; then
+   if not_installed "vagrant"; then
       # change to tmp directory to download file and then back to original directory
       cd /tmp
       echo "downloading vagrant..."
