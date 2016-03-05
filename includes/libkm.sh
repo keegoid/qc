@@ -86,8 +86,14 @@ msg() {
    printf '%b\n' "$1" >&2
 }
 
+debug() {
+   if [ $DEBUG_MODE -eq 1 ] && [ $RET -gt 0 ]; then
+      msg "An error occurred in function \"${FUNCNAME[$i+1]}\" on line ${BASH_LINENO[$i+1]}."
+   fi
+}
+
 success() {
-   if [ "$ret" -eq '0' ]; then
+   if [ -z "$RET" ] || [ $RET -eq 0 ]; then
       msg "${GREEN_CHK} ${1}${2}"
    fi
 }
@@ -105,12 +111,6 @@ notify() {
    msg "${GRAY_BLACK} ${1}${2} ${NONE_WHITE}"
 }
 
-debug() {
-   if [ "$debug_mode" -eq '1' ] && [ "$ret" -gt '1' ]; then
-      msg "An error occurred in function \"${FUNCNAME[$i+1]}\" on line ${BASH_LINENO[$i+1]}, we're sorry for that."
-   fi
-}
-
 script_name() {
 #   echo "$(basename "$(test -L "$0" && readlink "$0" || echo "$0")")"
    echo -n "$1" && trim_longest_left_pattern "$0" "/" && echo "$2"
@@ -120,15 +120,15 @@ script_name() {
 
 is_root() {
 #   [ $(id -u) -eq 0 ] && return 0 || error "must be root"
-   [ "$EUID" -eq 0 ] && return 0 || error "must be root"
+   [ $EUID -eq 0 ] && return 0 || error "must be root"
 }
  
 program_exists() {
-   local ret='0'
-   command -v $1 >/dev/null 2>&1 || { local ret='1'; }
+   local result
+   command -v $1 >/dev/null 2>&1 || { result=1; }
 
    # fail on non-zero return value
-   if [ "$ret" -ne 0 ]; then
+   if [ $result -ne 0 ]; then
       return 1
    fi
 
@@ -198,7 +198,7 @@ program_must_exist() {
    program_exists $1
 
    # throw error on non-zero return value
-   if [ "$?" -ne 0 ]; then
+   if [ $? -ne 0 ]; then
       notify "You must have $1 installed to continue."
       pause "Press [Enter] to install it now" true
       sudo apt-get -y install "$1"
@@ -291,33 +291,38 @@ lnif() {
    if [ -e "$1" ]; then
       ln -sf "$1" "$2"
    fi
-   ret="$?"
+   RET="$?"
    debug
 }
 
 # run a script from another script
 # $1 -> name of script to be run
-# $2 -> debug mode? (optional)
+# $2 -> script directory
 run_script() {
    local name="$1"
+   local scripts="$2"
+   local result
 
    # make sure dos2unix is installed
    program_must_exist "dos2unix"
 
    # change to scripts directory to run scripts
-   cd scripts
+   [ -n "$scripts" ] && cd $scripts
 
    # get script ready to run
    dos2unix -k -q "${name}"
    chmod +x "${name}"
 
    # clear the screen and run the script
-   [ "${2}" = true ] || clear
+   [ $DEBUG_MODE -eq 0 ] || clear
    . ./"${name}"
+   result=$?
    echo "script: ${name} has finished"
 
    # change back to original directory
-   cd - >/dev/null
+   [ -n "$scripts" ] && cd - >/dev/null
+
+   return $result
 }
 
 # source rvm after installing non-package management version of ruby
@@ -634,7 +639,6 @@ authorized_ssh_key() {
 get_public_key() {
    local url="$1"
    local apt_keys="$HOME/apt_keys"
-   local ret
 
    [ -z "${url}" ] && alert "missing URL to public key" && return 1
    pause "Press [Enter] to download and import the GPG Key..."
