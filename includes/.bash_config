@@ -1,5 +1,0 @@
-# additional config for ~/.bashrc
-
-# source /usr/share/autojump/autojump.sh
-. /usr/share/autojump/autojump.sh
-
