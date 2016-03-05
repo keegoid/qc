@@ -23,7 +23,6 @@ set_aliases() {
    local src_cmd="$4"
 
    if [ -f $repo_file_path ]; then
-      pause "Press [Enter] to update $repo_file_path" true
       cd $repo_dir && echo "updating $repo_file_path..." && git pull && cd - >/dev/null
    else
       pause "Press [Enter] to configure $conf_file_path" true
@@ -81,34 +80,15 @@ EOF
    success "successfully configured: $conf_file_path"
 }
 
-# --------------------------  TERMINAL PROFILE
+# --------------------------  GEDIT COLORS & TERMINAL PROFILE
 
-set_terminal_profile() {
-   local repo_url="$1"
-   local repo_dir=$(trim_shortest_right_pattern "$2" "/")
-   local repo_file_path="$2"
-
-   # solarized color scheme
-   if [ -f $repo_file_path ]; then
-      pause "Press [Enter] to update $repo_file_path" true
-      cd $repo_dir && echo "updating $repo_file_path..." && git pull && { run_script install.sh; RET=$?; success "successfully updated: gnome-terminal profile"; } && cd - >/dev/null
-   else
-      pause "Press [Enter] to run $repo_file_path" true
-      git clone $repo_url $repo_dir && run_script install.sh && success "successfully configured: gnome-terminal with solarized colors"
-   fi
-}
-
-# --------------------------  GEDIT
-
-set_gedit_colors() {
+set_copied_colors() {
    local conf_file_path="$1"
    local repo_url="$2"
    local repo_dir=$(trim_shortest_right_pattern "$3" "/")
    local repo_file_path="$3"
 
-   # solarized and blackboard color schemes
    if [ -f $repo_file_path ]; then
-      pause "Press [Enter] to update $repo_file_path" true
       cd $repo_dir && echo "updating $repo_file_path..." && git pull && cp $repo_file_path $conf_file_path && cd - >/dev/null
    else
       pause "Press [Enter] to configure $conf_file_path" true
@@ -116,28 +96,9 @@ set_gedit_colors() {
    fi
 }
 
-# --------------------------  MUTT
+# --------------------------  MUTT, TMUX & VIM
 
-set_mutt_colors() {
-   local conf_file_path="$1"
-   local repo_url="$2"
-   local repo_dir=$(trim_shortest_right_pattern "$3" "/")
-   local repo_file_path="$3"
-   local src_cmd="$4"
-
-   # solarized color scheme
-   if [ -f $repo_file_path ]; then
-      pause "Press [Enter] to update $repo_file_path" true
-      cd $repo_dir && echo "updating $repo_file_path..." && git pull && cd - >/dev/null
-   else
-      pause "Press [Enter] to configure $conf_file_path" true
-      git clone $repo_url $repo_dir && echo -e "$src_cmd" >> $conf_file_path && success "successfully configured: $conf_file_path"
-   fi
-}
-
-# --------------------------  TMUX
-
-set_tmux_config() {
+set_sourced_config() {
    local conf_file_path="$1"
    local repo_url="$2"
    local repo_dir=$(trim_shortest_right_pattern "$3" "/")
@@ -145,25 +106,6 @@ set_tmux_config() {
    local src_cmd="$4"
 
    if [ -f $repo_file_path ]; then
-      pause "Press [Enter] to update $repo_file_path" true
-      cd $repo_dir && echo "updating $repo_file_path..." && git pull && cd - >/dev/null
-   else
-      pause "Press [Enter] to configure $conf_file_path" true
-      git clone $repo_url $repo_dir && echo "$src_cmd" > $conf_file_path && success "successfully configured: $conf_file_path"
-   fi
-}
-
-# --------------------------  VIM
-
-set_vim_config() {
-   local conf_file_path="$1"
-   local repo_url="$2"
-   local repo_dir=$(trim_shortest_right_pattern "$3" "/")
-   local repo_file_path="$3"
-   local src_cmd="$4"
-
-   if [ -f $repo_file_path ]; then
-      pause "Press [Enter] to update $repo_file_path" true
       cd $repo_dir && echo "updating $repo_file_path..." && git pull && cd - >/dev/null
    else
       pause "Press [Enter] to configure $conf_file_path" true
@@ -181,7 +123,6 @@ set_git_ignore() {
 
    # global ignore
    if [ -f $repo_file_path ]; then
-      pause "Press [Enter] to update $repo_file_path" true
       cd $repo_dir && echo "updating $repo_file_path..." && git pull && cp $repo_file_path $conf_file_path && cd - >/dev/null
    else
       pause "Press [Enter] to configure $conf_file_path" true
@@ -209,28 +150,35 @@ set_autojump         "$HOME/.bashrc" \
 
 set_terminal_history "$HOME/.inputrc"
 
-set_terminal_profile "https://github.com/Anthony25/gnome-terminal-colors-solarized.git" \
-                     "$HOME/$CONFIG/terminal/profile/install.sh"
+# terminal profile
+set_copied_colors    "$HOME/.gconf/apps/gnome-terminal/profiles/Default/%gconf.xml" \
+                     "https://gist.github.com/dad1663d2463db32c6e8.git" \
+                     "$HOME/$CONFIG/terminal/profile/gconf.xml"
 
-set_gedit_colors     "$HOME/.local/share/gedit/styles/blackboard.xml" \
+# gedit color scheme
+set_copied_colors    "$HOME/.local/share/gedit/styles/blackboard.xml" \
                      "https://github.com/afair/dot-gedit.git" \
                      "$HOME/$CONFIG/gedit/blackboard/blackboard.xml"
 
-set_gedit_colors     "$HOME/.local/share/gedit/styles/solarized-dark.xml" \
+# gedit color scheme
+set_copied_colors    "$HOME/.local/share/gedit/styles/solarized-dark.xml" \
                      "https://github.com/mattcan/solarized-gedit.git" \
                      "$HOME/$CONFIG/gedit/solarized/solarized-dark.xml"
 
-set_mutt_colors      "$HOME/.muttrc" \
+# mutt color scheme
+set_sourced_config   "$HOME/.muttrc" \
                      "https://github.com/altercation/mutt-colors-solarized.git" \
                      "$HOME/$CONFIG/mutt/colors/mutt-colors-solarized-dark-16.muttrc" \
                      "# source colorscheme file\nsource ~/$CONFIG/mutt/colors/mutt-colors-solarized-dark-16.muttrc"
 
-set_tmux_config      "$HOME/.tmux.conf" \
+# tmux config
+set_sourced_config   "$HOME/.tmux.conf" \
                      "https://gist.github.com/3247d5a1c172167e593c.git" \
                      "$HOME/$CONFIG/tmux/tmux.conf" \
                      "source-file ~/$CONFIG/tmux/tmux.conf"
 
-set_vim_config       "$HOME/.vimrc.local" \
+# vim config
+set_sourced_config   "$HOME/.vimrc.local" \
                      "https://gist.github.com/00a60c7355c27c692262.git" \
                      "$HOME/$CONFIG/vim/vim.conf" \
                      "\" source config file\n:so ~/$CONFIG/vim/vim.conf"
