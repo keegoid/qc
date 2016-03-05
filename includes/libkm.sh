@@ -17,7 +17,7 @@
 
 # note: true=0 and false=1 in bash
 
-source colors.sh
+source $PROJECT/includes/colors.sh
 
 # --------------------------  DECLARE VARIABLES
 
@@ -83,7 +83,7 @@ trim_longest_right_pattern() {
 # --------------------------  MESSAGES
 
 msg() {
-   printf '%b\n' "$1" >&2
+   echo -e "$1"
 }
 
 debug() {
@@ -200,14 +200,15 @@ apt_check() {
 
    for pkg in "${apt_check_list[@]}"; do
       if not_installed $pkg; then
+         echo -e " ${YELLOW_BLACK} * $pkg [not installed] ${NONE_WHITE}"
+         apt_install_list+=($pkg)
+      else
          pkg_version=$(dpkg -s "${pkg}" 2>&1 | grep 'Version:' | cut -d " " -f 2)
          space_count="$(expr 20 - "${#pkg}")"
          pack_space_count="$(expr 30 - "${#pkg_version}")"
          real_space="$(expr ${space_count} + ${pack_space_count} + ${#pkg_version})"
-         printf " ${GREEN_CHK} $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
-      else
-         echo " ${YELLOW_BLACK}* $pkg [not installed]${NONE_WHITE}"
-         apt_install_list+=($pkg)
+         echo -en " ${GREEN_CHK}"
+         printf " $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
       fi
    done
 }
@@ -218,14 +219,15 @@ gem_check() {
    local pkg_version
 
    for pkg in "${gem_check_list[@]}"; do
-      if gem list $pkg -i; then
+      if gem list $pkg -i >/dev/null; then
          pkg_version=$(gem list "${pkg}" | grep "${pkg}" | cut -d " " -f 2 | cut -d "(" -f 2 | cut -d ")" -f 1)
          space_count="$(expr 20 - "${#pkg}")"
          pack_space_count="$(expr 30 - "${#pkg_version}")"
          real_space="$(expr ${space_count} + ${pack_space_count} + ${#pkg_version})"
-         printf " ${GREEN_CHK} $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
+         echo -en " ${GREEN_CHK}"
+         printf " $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
       else
-         echo " ${YELLOW_BLACK}* $pkg [not installed]${NONE_WHITE}"
+         echo -e " ${YELLOW_BLACK} * $pkg [not installed] ${NONE_WHITE}"
          gem_install_list+=($pkg)
       fi
    done
@@ -242,9 +244,10 @@ npm_check() {
          space_count="$(expr 20 - "${#pkg}")"
          pack_space_count="$(expr 30 - "${#pkg_version}")"
          real_space="$(expr ${space_count} + ${pack_space_count} + ${#pkg_version})"
-         printf " ${GREEN_CHK} $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
+         echo -en " ${GREEN_CHK}"
+         printf " $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
       else
-         echo " ${YELLOW_BLACK}* $pkg [not installed]${NONE_WHITE}"
+         echo -e " ${YELLOW_BLACK} * $pkg [not installed] ${NONE_WHITE}"
          npm_install_list+=($pkg)
       fi
    done
@@ -263,9 +266,10 @@ pip_check() {
          space_count="$(expr 20 - "${#pkg}")"
          pack_space_count="$(expr 30 - "${#pkg_version}")"
          real_space="$(expr ${space_count} + ${pack_space_count} + ${#pkg_version})"
-         printf " ${GREEN_CHK}* $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
+         echo -en " ${GREEN_CHK}"
+         printf " $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
       else
-         echo " ${YELLOW_BLACK}* $pkg_trim [not installed]${NONE_WHITE}"
+         echo -e " ${YELLOW_BLACK} * $pkg_trim [not installed] ${NONE_WHITE}"
          pip_install_list+=($pkg)
       fi
    done
@@ -549,7 +553,7 @@ gen_ssh_key() {
    echo
    # check if id_rsa exists
    if [ -f "${ssh_dir}/id_rsa" ]; then
-      echo "${ssh_dir}/id_rsa already exists"
+      notify "${ssh_dir}/id_rsa already exists"
    else
       # create a new ssh key with provided ssh key comment
       pause "Press [Enter] to generate a new SSH key at: ${ssh_dir}/id_rsa" true
@@ -599,7 +603,7 @@ authorized_ssh_key() {
    echo "incoming SSH connections to a server"
    echo
    if [ -f "${ssh_dir}/authorized_keys" ]; then
-      echo "${ssh_dir}/authorized_keys already exists for ${u}"
+      notify "${ssh_dir}/authorized_keys already exists for ${u}"
    else
 #      passwd "${u}"
 #      echo
@@ -686,8 +690,7 @@ clone_repo()
    [ -z "${use_ssh}" ] && use_ssh=false
 
    if [ -d "${repos_dir}/${2}" ]; then
-      echo
-      echo "${2} directory already exists, skipping clone operation..."
+      notify "${2} directory already exists, skipping clone operation..."
    else
       echo
       echo "*** NOTE ***"
@@ -725,7 +728,7 @@ set_remote_repo()
 
    if git config --list | grep -q "${address}"; then
       echo
-      echo "remote repo already configured: ${address}"
+      notify "remote repo already configured: ${address}"
    else
       echo
       if [ "$set_upstream" = true ]; then

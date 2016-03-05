@@ -65,7 +65,7 @@ declare -r RED_X="${NONE_RED}[✘]${NONE_WHITE}"
 
 # --------------------------  TESTING
 
-if [ $DEBUG_COLORS = 0 ]; then
+if [ "$DEBUG_COLORS" = 0 ]; then
    echo -e "${GRAY_BLACK} ...some text... ${NONE_WHITE}"
    echo -e "${TEAL_BLACK} ...some text... ${NONE_WHITE}"
    echo -e "${PURPLE_BLACK} ...some text... ${NONE_WHITE}"
