@@ -9,7 +9,12 @@ echo "#                                             "
 echo "# http://keegoid.mit-license.org              "
 echo "# --------------------------------------------"
 
-if [ $IS_SERVER -eq 0 ]; then
+# --------------------------  AUTHORIZED SSH KEY (server)
+
+set_authorized_key() {
+   local client_alive=60
+   local ssh_port=22
+
    pause "Press [Enter] to configure sshd service" true
    # make a copy of the original sshd config file
    sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.original
@@ -17,27 +22,19 @@ if [ $IS_SERVER -eq 0 ]; then
    sudo chmod a-w /etc/ssh/sshd_config.original
 
    # client allive interval
-   CLIENT_ALIVE=60
-   SSH_PORT=22
-   read -ep "Enter the client alive interval in seconds to prevent SSH from dropping out: " -i "60" CLIENT_ALIVE
-   read -ep "Enter the ssh port number to use on the server: " -i "22" SSH_PORT
+   read -ep "Enter the client alive interval in seconds to prevent SSH from dropping out: " -i "60" client_alive
+   read -ep "Enter the ssh port number to use on the server: " -i "22" ssh_port
 
    # edit /etc/ssh/sshd_config
    sudo sed -i.bak -e "{
-      s|#Port 22|Port $SSH_PORT|
-      s|#ClientAliveInterval 0|ClientAliveInterval $CLIENT_ALIVE|
+      s|#Port 22|Port $ssh_port|
+      s|#ClientAliveInterval 0|ClientAliveInterval $client_alive|
       }" /etc/ssh/sshd_config
    echo
-   echo -e "SSH port set to $SSH_PORT\nclient alive interval set to $CLIENT_ALIVE"
-
-   # add public SSH key for new ssh user
-   SSH_DIRECTORY=$HOME/.ssh
-
-   # generate SSH keypair
-#   gen_ssh_keys $SSH_DIRECTORY "$SSH_COMMENT" $(logname)
+   echo -e "SSH port set to $ssh_port\nclient alive interval set to $client_alive"
 
    # add authorized key for ssh user
-   authorized_ssh_keys $SSH_DIRECTORY $(logname)
+   authorized_ssh_key $HOME/.ssh $(logname)
 
    # use ufw to limit login attempts too
    echo
@@ -60,8 +57,9 @@ if [ $IS_SERVER -eq 0 ]; then
    echo
    pause "Press [Enter] to restart the ssh service..."
    sudo service ssh restart
-else
-   # generate an RSA SSH keypair if none exists
-   gen_ssh_keys $HOME/.ssh $(logname)
-fi
+}
+
+# --------------------------  MAIN
+
+[ $IS_SERVER -eq 0 ] && set_authorized_key || gen_ssh_key $HOME/.ssh $(logname)
 
