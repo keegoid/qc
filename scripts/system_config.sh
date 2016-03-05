@@ -63,6 +63,7 @@ set_terminal_history() {
    local conf_file_path="$1"
    local conf_cmd="$2"
 
+   [ -f $conf_file_path ] || touch $conf_file_path
    if grep -q "backward-char" $conf_file_path >/dev/null 2>&1; then
       notify "already added terminal history lookup"
    else
@@ -178,6 +179,7 @@ set_sourced_config   "$HOME/.tmux.conf" \
                      "source-file ~/$CONFIG/tmux/tmux.conf"
 
 # vim config
+[ -d "$HOME/.spf13-vim-3" ] || program_must_exist vim-gtk && install_spf13_vim
 set_sourced_config   "$HOME/.vimrc.local" \
                      "https://gist.github.com/00a60c7355c27c692262.git" \
                      "$HOME/$CONFIG/vim/vim.conf" \

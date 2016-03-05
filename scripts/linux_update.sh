@@ -20,7 +20,7 @@ fi
 # --------------------------  PROMPT FOR PROGRAMS
 
 if [ "$IS_SERVER" -eq 0 ]; then
-   read -ep "Enter apps to install with apt-get: " -i 'gnupg2 lynx openssh-server xclip vim' APTS
+   read -ep "Enter apps to install with apt-get: " -i 'gnupg2 lynx openssh-server xclip vim-gtk' APTS
 else
    read -ep "Enter apps to install with apt-get: " -i 'autojump build-essential cmake checkinstall cvs dconf-cli deluge git-core gnupg2 gufw lynx mercurial nautilus-open-terminal subversion silversearcher-ag tmux x11vnc xclip vim-gtk vlc' APTS
    read -ep "Enter apps to install with gem: " -i 'gist' GEMS
@@ -46,4 +46,7 @@ pip_install
 
 # install keybase
 install_keybase
+
+# install spf13-vim
+install_spf13_vim
 

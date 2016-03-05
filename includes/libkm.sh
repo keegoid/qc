@@ -336,7 +336,8 @@ apt_install() {
    apt_check
 
    if [[ "${#apt_install_list[@]}" -eq 0 ]]; then
-      echo -e "No apt packages to install\n"
+      notify "No packages to install"
+      echo
    else
       # update all of the package references before installing anything
       if [ "${1}" -eq 0 ]; then
@@ -380,7 +381,8 @@ gem_install() {
    program_must_exist "rubygems-integration"
 
    if [[ "${#gem_install_list[@]}" -eq 0 ]]; then
-      echo -e "No gems to install\n"
+      notify "No gems to install"
+      echo
    else
       # install required gems
       pause "Press [Enter] to install gems" true
@@ -420,7 +422,8 @@ npm_install() {
    fi
 
    if [[ "${#npm_install_list[@]}" -eq 0 ]]; then
-      echo -e "No npms to install\n"
+      notify "No npms to install"
+      echo
    else
       # install required npms
       pause "Press [Enter] to install npms" true
@@ -460,7 +463,8 @@ pip_install() {
    program_must_exist "python-keyring"
 
    if [[ "${#pip_install_list[@]}" -eq 0 ]]; then
-      echo -e "No pips to install\n"
+      notify "No pips to install"
+      echo
    else
       # install required pips
       pause "Press [Enter] to install pips" true
@@ -499,6 +503,15 @@ install_ruby() {
    source_rmv
 }
 
+# install or update spf13-vim
+install_spf13_vim() {
+   [ -d "$HOME/.spf13-vim-3" ] && echo "updating spf13-vim..." || echo "installing spf13-vim..."
+   # change to tmp directory to download file and then back to original directory
+   cd /tmp
+   curl https://j.mp/spf13-vim3 -L > spf13-vim.sh && sh spf13-vim.sh && success "successfully configured: $HOME/.spf13-vim-3"
+   cd - >/dev/null
+}
+
 # install the keybase cli client
 install_keybase() {
    if not_installed "keybase"; then
@@ -506,6 +519,9 @@ install_keybase() {
       cd /tmp
       curl -O https://dist.keybase.io/linux/deb/keybase-latest-amd64.deb && sudo dpkg -i keybase-latest-amd64.deb
       cd - >/dev/null
+   else
+      notify "keybase is already installed"
+      echo
    fi
 }
 
