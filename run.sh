@@ -12,14 +12,14 @@ echo "# --------------------------------------------"
 
 # --------------------------  SETUP PARAMETERS
 
-# library file
-source includes/libkm.sh
-
 APP_NAME="ubuntu-quick-config"
 PROJECT="$PWD"
 
 # set to true (0) to prevent clearing the screen and report errors
 DEBUG_MODE=1
+
+# library file
+source includes/libkm.sh
 
 # make sure $HOME variable is set
 variable_set $HOME
@@ -43,6 +43,7 @@ fix_permissions() {
 
 # display message before exit
 exit_msg() {
+   echo
    notify "Lastly: execute sudo ./sudoers.sh to increase the sudo timeout."
    msg             "\nThanks for using $APP_NAME."
    msg             "© `date +%Y` http://keegoid.mit-license.org"
@@ -83,7 +84,7 @@ select_options() {
       4) run_script wordpress_dev.sh "scripts";;
       5) fix_permissions;;
       6) exit_msg && exit 0;;
-      *) echo -e "${RED} Error... ${STD}" && sleep 1
+      *) alert "Error..." && sleep 1
    esac
 
    # check for program errors
