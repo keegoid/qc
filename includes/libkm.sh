@@ -565,7 +565,7 @@ gen_ssh_key() {
    local u="$2"
 
    echo
-   echo "Note: ${ssh_dir} is for public/private key pairs to establish SSH connections to remote systems"
+   notify "Note: ${ssh_dir} is for public/private key pairs to establish SSH connections to remote systems"
    echo
    # check if id_rsa exists
    if [ -f "${ssh_dir}/id_rsa" ]; then
@@ -586,7 +586,7 @@ gen_ssh_key() {
       echo
       cat "${ssh_dir}/id_rsa.pub"
       echo
-      read -p "Press [Enter] to continue..."
+      pause
    fi
    echo
    echo "Have you copied id_rsa.pub (above) to the SSH keys section"
@@ -648,7 +648,7 @@ get_public_key() {
    local apt_keys="$HOME/apt_keys"
 
    [ -z "${url}" ] && alert "missing URL to public key" && return 1
-   pause "Press [Enter] to download and import the GPG Key..."
+   pause "Press [Enter] to download and import the GPG Key"
    mkdir -pv "$apt_keys"
    cd "$apt_keys"
 #   echo "changing directory to $_"
@@ -687,8 +687,8 @@ configure_git()
    git config --global pull.default matching
    # create a global .gitignore file
    git config --global core.excludesfile "$HOME/.gitignore_global"
-   echo "git was configured"
-   read -p "Press [Enter] to view the config..."
+   success "git was configured"
+   pause "Press [Enter] to view the config"
    git config --list
 }
 
@@ -709,9 +709,9 @@ clone_repo()
       notify "${2} directory already exists, skipping clone operation..."
    else
       echo
-      echo "*** NOTE ***"
-      echo "Make sure \"github.com/${address}\" exists."
-      read -p "Press [Enter] to clone ${address} at GitHub..."
+      notify "*** NOTE ***"
+      notify "Make sure \"github.com/${address}\" exists."
+      pause "Press [Enter] to clone ${address} at GitHub"
       if [ "$use_ssh" = true ]; then
          git clone "git@github.com:${address}"
       else
@@ -748,17 +748,18 @@ set_remote_repo()
    else
       echo
       if [ "$set_upstream" = true ]; then
-         read -p "Press [Enter] to assign upstream repository..."
+         pause "Press [Enter] to assign upstream repository"
          if [ "$use_ssh" = true ]; then
             git remote add upstream "git@github.com:${address}" && echo "remote upstream added: git@github.com:${address}"
          else
             git remote add upstream "https://github.com/${address}" && echo "remote upstream added: https://github.com/${address}"
          fi
       else
-         echo "*** NOTE ***"
-         echo "Make sure \"github.com/${address}\" exists."
-         echo "Either fork and rename it, or create a new repository in your GitHub."
-         read -p "Press [Enter] to assign remote origin repository..."
+         echo
+         notify "*** NOTE ***"
+         notify "Make sure \"github.com/${address}\" exists."
+         notify "Either fork and rename it, or create a new repository in your GitHub."
+         pause "Press [Enter] to assign remote origin repository"
          if [ "$use_ssh" = true ]; then
             git remote add origin "git@github.com:${address}" && echo "remote origin added: git@github.com:${address}"
          else
@@ -776,7 +777,7 @@ create_branch()
    local branch_name="$1"
    
    echo
-   read -p "Press [Enter] to create a git branch for your site at ${branch_name}..."
+   pause "Press [Enter] to create a git branch for your site at ${branch_name}"
    git checkout -b "${branch_name}"
 
    # some work and some commits happen
@@ -785,11 +786,11 @@ create_branch()
    #git rebase upstream/master or git rebase interactive upstream/master
 
    echo
-   read -p "Press [Enter] to push changes and set branch origin in config..."
+   pause "Press [Enter] to push changes and set branch origin in config"
    git push -u origin "${branch_name}"
 
    echo
-   read -p "Press [Enter] to checkout the master branch again..."
+   pause "Press [Enter] to checkout the master branch again"
    git checkout master
 
    # above could also be done with:
@@ -809,14 +810,14 @@ merge_upstream()
 {
    # pull in changes not present in local repository, without modifying local files
    echo
-   read -p "Press [Enter] to fetch changes from upstream repository..."
+   pause "Press [Enter] to fetch changes from upstream repository"
    git fetch upstream && echo "upstream fetch done"
 
    # merge any changes fetched into local working files
    echo
-   echo "*** NOTE ***"
-   echo "If merging changes, press \":wq enter\" to accept the merge message in vi."
-   read -p "Press [Enter] to merge changes..."
+   notify "*** NOTE ***"
+   notify "If merging changes, press \":wq enter\" to accept the merge message in vi."
+   pause "Press [Enter] to merge changes"
    git merge upstream/master
 
    # or combine fetch and merge with:
