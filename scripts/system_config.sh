@@ -31,9 +31,9 @@ do_backup() {
   fi
 }
 
-# --------------------------  ALIASES
+# --------------------------  ALIASES, MUTT, TMUX & VIM
 
-set_aliases() {
+set_sourced_config() {
    local conf_file_path="$1"
    local repo_url="$2"
    local repo_dir=$(trim_shortest_right_pattern "$3" "/")
@@ -41,12 +41,73 @@ set_aliases() {
    local src_cmd="$4"
 
    if grep -q "$repo_file_path" "$conf_file_path" >/dev/null 2>&1; then
-      notify "already set $conf_file_path"
+      notify "already set $repo_file_path in $conf_file_path"
       cd $repo_dir && echo "$repo_file_path - checking for updates..." && git pull && cd - >/dev/null
    else
       pause "Press [Enter] to configure $conf_file_path" true
-      git clone $repo_url $repo_dir && echo -e "$src_cmd" >> $conf_file_path && source $conf_file_path && success "successfully configured: $conf_file_path"
+      git clone $repo_url $repo_dir && echo -e "$src_cmd" >> $conf_file_path && success "successfully configured: $conf_file_path"
    fi
+}
+
+# --------------------------  GEDIT COLORS & TERMINAL PROFILE
+
+set_copied_config() {
+   local conf_file_path="$1"
+   local repo_url="$2"
+   local repo_dir=$(trim_shortest_right_pattern "$3" "/")
+   local repo_file_path="$3"
+
+   if [ -f $repo_file_path ]; then
+      cd $repo_dir && echo "$repo_file_path - checking for updates..." && git pull && cp $repo_file_path $conf_file_path && cd - >/dev/null
+   else
+      pause "Press [Enter] to configure $conf_file_path" true
+      git clone $repo_url $repo_dir && cp $repo_file_path $conf_file_path && success "successfully configured: $conf_file_path"
+   fi
+}
+
+# --------------------------  GIT
+
+set_git_ignore() {
+   local conf_file_path="$1"
+   local repo_url="$2"
+   local repo_dir=$(trim_shortest_right_pattern "$3" "/")
+   local repo_file_path="$3"
+
+   # global ignore
+   if [ -f $repo_file_path ]; then
+      cd $repo_dir && echo "$repo_file_path - checking for updates..." && git pull && cp $repo_file_path $conf_file_path && cd - >/dev/null
+   else
+      pause "Press [Enter] to configure $conf_file_path" true
+      git clone $repo_url $repo_dir && cp $repo_file_path $conf_file_path
+      read -ep "your name for git commit logs: " -i 'Keegan Mullaney' real_name
+      read -ep "your email for git commit logs: " -i 'keeganmullaney@gmail.com' email_address
+      read -ep "your preferred text editor for git commits: " -i 'vi' git_editor
+      configure_git "$real_name" "$email_address" "$git_editor"
+      RET=$?
+      success "successfully configured: $conf_file_path"
+   fi
+}
+
+# --------------------------  TERMINAL HISTORY LOOKUP (also awesome)
+
+set_terminal_history() {
+   local conf_file_path="$1"
+
+   [ -f $conf_file_path ] || touch $conf_file_path
+   if grep -q "backward-char" $conf_file_path >/dev/null 2>&1; then
+      notify "already added terminal history lookup"
+   else
+      pause "Press [Enter] to configure .inputrc" true
+cat << 'EOF' >> $conf_file_path 
+# terminal history lookup
+'\e[A': history-search-backward
+'\e[B': history-search-forward
+'\e[C': forward-char
+'\e[D': backward-char
+EOF
+   fi
+   REF="$?"
+   success "successfully configured: $conf_file_path"
 }
 
 # --------------------------  TERMINAL COLOR PROMPTS
@@ -76,86 +137,6 @@ set_autojump() {
    fi
 }
 
-# --------------------------  TERMINAL HISTORY LOOKUP (also awesome)
-
-set_terminal_history() {
-   local conf_file_path="$1"
-   local conf_cmd="$2"
-
-   [ -f $conf_file_path ] || touch $conf_file_path
-   if grep -q "backward-char" $conf_file_path >/dev/null 2>&1; then
-      notify "already added terminal history lookup"
-   else
-      pause "Press [Enter] to configure .inputrc" true
-cat << 'EOF' >> $conf_file_path 
-# terminal history lookup
-'\e[A': history-search-backward
-'\e[B': history-search-forward
-'\e[C': forward-char
-'\e[D': backward-char
-EOF
-   fi
-   REF="$?"
-   success "successfully configured: $conf_file_path"
-}
-
-# --------------------------  GEDIT COLORS & TERMINAL PROFILE
-
-set_copied_colors() {
-   local conf_file_path="$1"
-   local repo_url="$2"
-   local repo_dir=$(trim_shortest_right_pattern "$3" "/")
-   local repo_file_path="$3"
-
-   if [ -f $repo_file_path ]; then
-      cd $repo_dir && echo "$repo_file_path - checking for updates..." && git pull && cp $repo_file_path $conf_file_path && cd - >/dev/null
-   else
-      pause "Press [Enter] to configure $conf_file_path" true
-      git clone $repo_url $repo_dir && cp $repo_file_path $conf_file_path && success "successfully configured: $conf_file_path"
-   fi
-}
-
-# --------------------------  MUTT, TMUX & VIM
-
-set_sourced_config() {
-   local conf_file_path="$1"
-   local repo_url="$2"
-   local repo_dir=$(trim_shortest_right_pattern "$3" "/")
-   local repo_file_path="$3"
-   local src_cmd="$4"
-
-   if grep -q "$repo_file_path" "$conf_file_path" >/dev/null 2>&1; then
-      notify "already set $conf_file_path"
-      cd $repo_dir && echo "$repo_file_path - checking for updates..." && git pull && cd - >/dev/null
-   else
-      pause "Press [Enter] to configure $conf_file_path" true
-      git clone $repo_url $repo_dir && echo -e "$src_cmd" >> $conf_file_path && success "successfully configured: $conf_file_path"
-   fi
-}
-
-# --------------------------  GIT
-
-set_git_ignore() {
-   local conf_file_path="$1"
-   local repo_url="$2"
-   local repo_dir=$(trim_shortest_right_pattern "$3" "/")
-   local repo_file_path="$3"
-
-   # global ignore
-   if [ -f $repo_file_path ]; then
-      cd $repo_dir && echo "$repo_file_path - checking for updates..." && git pull && cp $repo_file_path $conf_file_path && cd - >/dev/null
-   else
-      pause "Press [Enter] to configure $conf_file_path" true
-      git clone $repo_url $repo_dir && cp $repo_file_path $conf_file_path
-      read -ep "your name for git commit logs: " -i 'Keegan Mullaney' real_name
-      read -ep "your email for git commit logs: " -i 'keeganmullaney@gmail.com' email_address
-      read -ep "your preferred text editor for git commits: " -i 'vi' git_editor
-      configure_git "$real_name" "$email_address" "$git_editor"
-      RET=$?
-      success "successfully configured: $conf_file_path"
-   fi
-}
-
 # --------------------------  MAIN
 
 do_backup            "$HOME/.bashrc"
@@ -168,32 +149,11 @@ do_backup            "$HOME/.bashrc"
                      "$HOME/.vimrc.local"
                      "$HOME/.gitignore_global"
 
-set_aliases          "$HOME/.bashrc" \
+# aliases
+set_sourced_config   "$HOME/.bashrc" \
                      "https://gist.github.com/9d74e08779c1db6cb7b7" \
                      "$CONFIG/bash/aliases/bash_aliases" \
                      "\n# source alias file\nif [ -f $CONFIG/bash/aliases/bash_aliases ]; then\n   . $CONFIG/bash/aliases/bash_aliases\nfi"
-
-set_terminal_color   "$HOME/.bashrc"
-
-set_autojump         "$HOME/.bashrc" \
-                     "\n# source autojump file\nif [ -f /usr/share/autojump/autojump.sh ]; then\n   . /usr/share/autojump/autojump.sh\nfi"
-
-set_terminal_history "$HOME/.inputrc"
-
-# terminal profile
-set_copied_colors    "$HOME/.gconf/apps/gnome-terminal/profiles/Default/%gconf.xml" \
-                     "https://gist.github.com/dad1663d2463db32c6e8.git" \
-                     "$CONFIG/terminal/profile/gconf.xml"
-
-# gedit color scheme
-set_copied_colors    "$HOME/.local/share/gedit/styles/blackboard.xml" \
-                     "https://github.com/afair/dot-gedit.git" \
-                     "$CONFIG/gedit/blackboard/blackboard.xml"
-
-# gedit color scheme
-set_copied_colors    "$HOME/.local/share/gedit/styles/solarized-dark.xml" \
-                     "https://github.com/mattcan/solarized-gedit.git" \
-                     "$CONFIG/gedit/solarized/solarized-dark.xml"
 
 # mutt color scheme
 set_sourced_config   "$HOME/.muttrc" \
@@ -213,6 +173,31 @@ set_sourced_config   "$HOME/.vimrc.local" \
                      "$CONFIG/vim/vim.conf" \
                      "\" source config file\n:so $CONFIG/vim/vim.conf"
 
+# terminal profile
+set_copied_config    "$HOME/.gconf/apps/gnome-terminal/profiles/Default/%gconf.xml" \
+                     "https://gist.github.com/dad1663d2463db32c6e8.git" \
+                     "$CONFIG/terminal/profile/gconf.xml"
+
+# gedit color scheme
+set_copied_config    "$HOME/.local/share/gedit/styles/blackboard.xml" \
+                     "https://github.com/afair/dot-gedit.git" \
+                     "$CONFIG/gedit/blackboard/blackboard.xml"
+
+# gedit color scheme
+set_copied_config    "$HOME/.local/share/gedit/styles/solarized-dark.xml" \
+                     "https://github.com/mattcan/solarized-gedit.git" \
+                     "$CONFIG/gedit/solarized/solarized-dark.xml"
+
 set_git_ignore       "$HOME/.gitignore_global" \
                      "https://gist.github.com/efa547b362910ac7077c.git" \
                      "$CONFIG/git/gitignore_global"
+                     
+set_terminal_history "$HOME/.inputrc"
+
+set_terminal_color   "$HOME/.bashrc"
+
+set_autojump         "$HOME/.bashrc" \
+                     "\n# source autojump file\nif [ -f /usr/share/autojump/autojump.sh ]; then\n   . /usr/share/autojump/autojump.sh\nfi"
+
+[ "$?" -eq 0 ] && source "$HOME/.bashrc"
+
