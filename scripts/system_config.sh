@@ -191,6 +191,11 @@ set_copied_config    "$HOME/.local/share/gedit/styles/solarized-dark.xml" \
                      "https://github.com/mattcan/solarized-gedit.git" \
                      "$CONFIG/gedit/solarized/solarized-dark.xml"
 
+# gedit color scheme
+set_copied_config    "$HOME/.local/share/gedit/styles/solarized-light.xml" \
+                     "https://github.com/mattcan/solarized-gedit.git" \
+                     "$CONFIG/gedit/solarized/solarized-light.xml"
+
 set_git_ignore       "$HOME/.gitignore_global" \
                      "https://gist.github.com/efa547b362910ac7077c.git" \
                      "$CONFIG/git/gitignore_global"
