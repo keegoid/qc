@@ -25,9 +25,9 @@ Quickly configures a fresh install of [Ubuntu 14.04 64-bit][tt] on a workstation
 - add useful [shell aliases][sa]
 - make the [terminal][gt] easier to read and use with:
     - colored prompts
+    - dark profile
     - [autojump][aj]
     - [incremental history searching][ihs]
-    - [dark solarized color scheme][tsolar]
 - add [blackboard][bb] and [solarized][gsolar] color schemes to [gedit][gedit]
 - add [solarized][msolar] color scheme to [Mutt][mutt]
 - configure [tmux][tmux]
@@ -82,6 +82,7 @@ SEE: http://keegoid.mit-license.org
 [msolar]:   https://github.com/altercation/mutt-colors-solarized
 [bb]:       https://github.com/afair/dot-gedit
 [tmux]:     https://tmux.github.io/
+[mutt]:     http://www.mutt.org/
 [vb]:       https://www.virtualbox.org/
 [vg]:       https://www.vagrantup.com/
 [vvv]:      https://github.com/Varying-Vagrant-Vagrants/VVV
