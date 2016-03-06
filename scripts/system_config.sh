@@ -45,14 +45,14 @@ set_sourced_config() {
 
    if grep -q "$repo_file_path" "$conf_file_path" >/dev/null 2>&1; then
       notify "already set $repo_file_path in $conf_file_path"
-      cd $repo_dir && echo "$repo_file_path - checking for updates..." && git pull && cd - >/dev/null
+      cd $repo_dir && echo "checking for updates: $repo_file_path" && git pull && cd - >/dev/null
    else
       pause "Press [Enter] to configure $conf_file_path" true
-      git clone $repo_url $repo_dir && echo -e "$src_cmd" >> $conf_file_path && success "successfully configured: $conf_file_path"
+      git clone $repo_url $repo_dir && echo -e "$src_cmd" >> $conf_file_path && success "configured: $conf_file_path"
    fi
 }
 
-# --------------------------  GEDIT COLORS & TERMINAL PROFILE
+# --------------------------  GEDIT COLORS, TERMINAL PROFILE, GIT IGNORE
 
 set_copied_config() {
    local conf_file_path="$1"
@@ -60,34 +60,28 @@ set_copied_config() {
    local repo_dir=$(trim_shortest_right_pattern "$3" "/")
    local repo_file_path="$3"
 
-   if [ -f $repo_file_path ]; then
-      cd $repo_dir && echo "$repo_file_path - checking for updates..." && git pull && cp $repo_file_path $conf_file_path && cd - >/dev/null
+   if [ -f $repo_file_path ] && [ -f $conf_file_path ]; then
+      notify "already set $repo_file_path in $conf_file_path"
+      cd $repo_dir && echo "checking for updates: $repo_file_path" && git pull && cp $repo_file_path $conf_file_path && success "updated: $conf_file_path" && cd - >/dev/null
    else
       pause "Press [Enter] to configure $conf_file_path" true
-      git clone $repo_url $repo_dir && cp $repo_file_path $conf_file_path && success "successfully configured: $conf_file_path"
+      git clone $repo_url $repo_dir && cp $repo_file_path $conf_file_path && success "configured: $conf_file_path"
    fi
+   RET="$?"
 }
 
-# --------------------------  GIT
+# --------------------------  GIT CONFIG
 
-set_git_ignore() {
+set_git_config() {
    local conf_file_path="$1"
-   local repo_url="$2"
-   local repo_dir=$(trim_shortest_right_pattern "$3" "/")
-   local repo_file_path="$3"
 
-   # global ignore
-   if [ -f $repo_file_path ]; then
-      cd $repo_dir && echo "$repo_file_path - checking for updates..." && git pull && cp $repo_file_path $conf_file_path && cd - >/dev/null
-   else
-      pause "Press [Enter] to configure $conf_file_path" true
-      git clone $repo_url $repo_dir && cp $repo_file_path $conf_file_path
+   if [ "$RET" -eq 0 ]; then
       read -ep "your name for git commit logs: " -i 'Keegan Mullaney' real_name
       read -ep "your email for git commit logs: " -i 'keeganmullaney@gmail.com' email_address
       read -ep "your preferred text editor for git commits: " -i 'vi' git_editor
       configure_git "$real_name" "$email_address" "$git_editor"
-      RET=$?
-      success "successfully configured: $conf_file_path"
+      RET="$?"
+      success "configured: $conf_file_path"
    fi
 }
 
@@ -108,9 +102,9 @@ cat << 'EOF' >> $conf_file_path
 '\e[C': forward-char
 '\e[D': backward-char
 EOF
+      REF="$?"
+      success "configured: $conf_file_path"
    fi
-   REF="$?"
-   success "successfully configured: $conf_file_path"
 }
 
 # --------------------------  TERMINAL COLOR PROMPTS
@@ -120,7 +114,7 @@ set_terminal_color() {
 
    if grep -q "#force_color_prompt=yes" $conf_file_path >/dev/null 2>&1; then
       pause "Press [Enter] to activate color terminal prompts" true
-      sed -i.bak -e "s|#force_color_prompt=yes|force_color_prompt=yes|" $conf_file_path && source $conf_file_path && success "successfully configured: $conf_file_path with color terminal prompts"
+      sed -i.bak -e "s|#force_color_prompt=yes|force_color_prompt=yes|" $conf_file_path && source $conf_file_path && success "configured: $conf_file_path with color terminal prompts"
    else
       notify "already set color prompts"
    fi
@@ -136,7 +130,7 @@ set_autojump() {
       notify "already added autojump (usage: j directory)"
    else
       pause "Press [Enter] to configure autojump for gnome-terminal" true
-      echo -e "$src_cmd" >> $conf_file_path && source $conf_file_path && success "successfully configured: $conf_file_path"
+      echo -e "$src_cmd" >> $conf_file_path && source $conf_file_path && success "configured: $conf_file_path with autojump"
    fi
 }
 
@@ -196,10 +190,12 @@ set_copied_config    "$HOME/.local/share/gedit/styles/solarized-light.xml" \
                      "https://github.com/mattcan/solarized-gedit.git" \
                      "$CONFIG/gedit/solarized/solarized-light.xml"
 
-set_git_ignore       "$HOME/.gitignore_global" \
+set_copied_config    "$HOME/.gitignore_global" \
                      "https://gist.github.com/efa547b362910ac7077c.git" \
                      "$CONFIG/git/gitignore_global"
-                     
+
+set_git_config       "$HOME/.gitconfig" \
+
 set_terminal_history "$HOME/.inputrc"
 
 set_terminal_color   "$HOME/.bashrc"
