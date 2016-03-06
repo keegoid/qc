@@ -29,7 +29,7 @@ do_backup() {
          [ -e "$i" ] && [ ! -L "$i" ] && cp "$i" "$BACKUP-$today/$name" && success "made backup: ~/.uqc/backup-$today/$name";
       done
       RET="$?"
-      debug
+      debug "do_backup"
   fi
   return 0
 }

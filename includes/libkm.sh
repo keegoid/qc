@@ -88,7 +88,8 @@ msg() {
 
 debug() {
    if [ "$DEBUG_MODE" -eq 1 ] && [ "$RET" -gt 0 ]; then
-      msg "An error occurred in function \"${FUNCNAME[$i+1]}\" on line ${BASH_LINENO[$i+1]}."
+#      msg "An error occurred in function \"${FUNCNAME[$i+1]}\" on line ${BASH_LINENO[$i+1]}."
+      msg "${RED_BLACK} An error occured in function $1. ${NONE_WHITE}"
    fi
 }
 
