@@ -19,16 +19,19 @@ echo "# --------------------------------------------"
 do_backup() {
    local name
 
+   confirm "Backup config files before making changes?" false
+   [ "$?" -gt 0 ] && return 1
    if [ -e "$1" ] || [ -e "$2" ] || [ -e "$3" ] || [ -e "$4" ] || [ -e "$5" ] || [ -e "$6" ] || [ -e "$7" ] || [ -e "$8" ] || [ -e "$9" ]; then
       today=`date +%Y%m%d_%s`
       [ -d "$BACKUP-$today" ] || mkdir -pv "$BACKUP-$today"
       for i in "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9"; do
          name=$(trim_longest_left_pattern "$i" "/")
-         [ -e "$i" ] && [ ! -L "$i" ] && cp "$i" "$BACKUP-$today/$name" && success "successfully backed up $i to $BACKUP-$today/$name";
+         [ -e "$i" ] && [ ! -L "$i" ] && cp "$i" "$BACKUP-$today/$name" && success "made backup: ~/.uqc/backup-$today/$name";
       done
       RET="$?"
       debug
   fi
+  return 0
 }
 
 # --------------------------  ALIASES, MUTT, TMUX & VIM
@@ -139,14 +142,14 @@ set_autojump() {
 
 # --------------------------  MAIN
 
-do_backup            "$HOME/.bashrc"
-                     "$HOME/.inputrc"
-                     "$HOME/.gconf/apps/gnome-terminal/profiles/Default/%gconf.xml"
-                     "$HOME/.local/share/gedit/styles/blackboard.xml"
-                     "$HOME/.local/share/gedit/styles/solarized-dark.xml"
-                     "$HOME/.muttrc"
-                     "$HOME/.tmux.conf"
-                     "$HOME/.vimrc.local"
+do_backup            "$HOME/.bashrc" \
+                     "$HOME/.inputrc" \
+                     "$HOME/.gconf/apps/gnome-terminal/profiles/Default/%gconf.xml" \
+                     "$HOME/.local/share/gedit/styles/blackboard.xml" \
+                     "$HOME/.local/share/gedit/styles/solarized-dark.xml" \
+                     "$HOME/.muttrc" \
+                     "$HOME/.tmux.conf" \
+                     "$HOME/.vimrc.local" \
                      "$HOME/.gitignore_global"
 
 # aliases

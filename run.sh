@@ -26,7 +26,7 @@ variable_set $HOME
 
 # config for server
 confirm "Is this a server?"
-IS_SERVER=$?
+IS_SERVER="$?"
 
 # make sure curl and git are installed
 program_must_exist curl
