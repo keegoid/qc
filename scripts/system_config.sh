@@ -21,10 +21,10 @@ do_backup() {
 
    confirm "Backup config files before making changes?" false
    [ "$?" -gt 0 ] && return 1
-   if [ -e "$1" ] || [ -e "$2" ] || [ -e "$3" ] || [ -e "$4" ] || [ -e "$5" ] || [ -e "$6" ] || [ -e "$7" ] || [ -e "$8" ] || [ -e "$9" ]; then
+   if [ -e "$1" ] || [ -e "$2" ] || [ -e "$3" ] || [ -e "$4" ] || [ -e "$5" ] || [ -e "$6" ] || [ -e "$7" ] || [ -e "$8" ] || [ -e "$9" ] || [ -e "$10" ]; then
       today=`date +%Y%m%d_%s`
       [ -d "$BACKUP-$today" ] || mkdir -pv "$BACKUP-$today"
-      for i in "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9"; do
+      for i in "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"; do
          name=$(trim_longest_left_pattern "$i" "/")
          [ -e "$i" ] && [ ! -L "$i" ] && cp "$i" "$BACKUP-$today/$name" && success "made backup: ~/.uqc/backup-$today/$name";
       done
@@ -141,6 +141,7 @@ do_backup            "$HOME/.bashrc" \
                      "$HOME/.gconf/apps/gnome-terminal/profiles/Default/%gconf.xml" \
                      "$HOME/.local/share/gedit/styles/blackboard.xml" \
                      "$HOME/.local/share/gedit/styles/solarized-dark.xml" \
+                     "$HOME/.local/share/gedit/styles/solarized-light.xml" \
                      "$HOME/.muttrc" \
                      "$HOME/.tmux.conf" \
                      "$HOME/.vimrc.local" \
