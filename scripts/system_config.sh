@@ -13,6 +13,7 @@ echo "# --------------------------------------------"
 
 [ -z "$CONFIG" ] && CONFIG="$HOME/.uqc"
 [ -z "$BACKUP" ] && BACKUP="$CONFIG/backup"
+[ -z "$SYNCED" ] && SYNCED="$HOME/Dropbox/Config"
 
 # --------------------------  BACKUPS
 
@@ -182,6 +183,8 @@ set_sourced_config   "$HOME/.vimrc.local" \
                      "https://gist.github.com/00a60c7355c27c692262.git" \
                      "$CONFIG/vim/vim.conf" \
                      "\" source config file\n:so $CONFIG/vim/vim.conf"
+
+[ -d "$SYNCED/vim" ] || mkdir -pv "$SYNCED/vim" && notify2 "note: vim spellfile will be located in $SYNCED/vim, you can change this in $CONFIG/vim/vim.conf"
 
 # terminal profile
 set_copied_config    "$HOME/.gconf/apps/gnome-terminal/profiles/Default/%gconf.xml" \
