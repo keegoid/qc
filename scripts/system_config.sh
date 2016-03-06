@@ -11,7 +11,25 @@ echo "# --------------------------------------------"
 
 # --------------------------  SETUP PARAMETERS
 
-read -ep "Directory to use for config files: ~/" -i "Dropbox/Config" CONFIG
+[ -z "$CONFIG" ] && CONFIG="$HOME/.uqc"
+[ -z "$BACKUP" ] && BACKUP="$CONFIG/backup"
+
+# --------------------------  BACKUPS
+
+do_backup() {
+   local name
+
+   if [ -e "$1" ] || [ -e "$2" ] || [ -e "$3" ] || [ -e "$4" ] || [ -e "$5" ] || [ -e "$6" ] || [ -e "$7" ] || [ -e "$8" ] || [ -e "$9" ]; then
+      today=`date +%Y%m%d_%s`
+      [ -d "$BACKUP-$today" ] || mkdir -pv "$BACKUP-$today"
+      for i in "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9"; do
+         name=$(trim_longest_left_pattern "$i" "/")
+         [ -e "$i" ] && [ ! -L "$i" ] && cp "$i" "$BACKUP-$today/$name" && success "successfully backed up $i to $BACKUP-$today/$name";
+      done
+      RET="$?"
+      debug
+  fi
+}
 
 # --------------------------  ALIASES
 
@@ -22,8 +40,9 @@ set_aliases() {
    local repo_file_path="$3"
    local src_cmd="$4"
 
-   if [ -f $repo_file_path ]; then
-      cd $repo_dir && echo "updating $repo_file_path..." && git pull && cd - >/dev/null
+   if grep -q "$repo_file_path" "$conf_file_path" >/dev/null 2>&1; then
+      notify "already set $conf_file_path"
+      cd $repo_dir && echo "$repo_file_path - checking for updates..." && git pull && cd - >/dev/null
    else
       pause "Press [Enter] to configure $conf_file_path" true
       git clone $repo_url $repo_dir && echo -e "$src_cmd" >> $conf_file_path && source $conf_file_path && success "successfully configured: $conf_file_path"
@@ -68,7 +87,7 @@ set_terminal_history() {
       notify "already added terminal history lookup"
    else
       pause "Press [Enter] to configure .inputrc" true
-cat << 'EOF' > $conf_file_path 
+cat << 'EOF' >> $conf_file_path 
 # terminal history lookup
 '\e[A': history-search-backward
 '\e[B': history-search-forward
@@ -76,8 +95,7 @@ cat << 'EOF' > $conf_file_path
 '\e[D': backward-char
 EOF
    fi
-
-   REF=$?
+   REF="$?"
    success "successfully configured: $conf_file_path"
 }
 
@@ -90,7 +108,7 @@ set_copied_colors() {
    local repo_file_path="$3"
 
    if [ -f $repo_file_path ]; then
-      cd $repo_dir && echo "updating $repo_file_path..." && git pull && cp $repo_file_path $conf_file_path && cd - >/dev/null
+      cd $repo_dir && echo "$repo_file_path - checking for updates..." && git pull && cp $repo_file_path $conf_file_path && cd - >/dev/null
    else
       pause "Press [Enter] to configure $conf_file_path" true
       git clone $repo_url $repo_dir && cp $repo_file_path $conf_file_path && success "successfully configured: $conf_file_path"
@@ -106,11 +124,12 @@ set_sourced_config() {
    local repo_file_path="$3"
    local src_cmd="$4"
 
-   if [ -f $repo_file_path ]; then
-      cd $repo_dir && echo "updating $repo_file_path..." && git pull && cd - >/dev/null
+   if grep -q "$repo_file_path" "$conf_file_path" >/dev/null 2>&1; then
+      notify "already set $conf_file_path"
+      cd $repo_dir && echo "$repo_file_path - checking for updates..." && git pull && cd - >/dev/null
    else
       pause "Press [Enter] to configure $conf_file_path" true
-      git clone $repo_url $repo_dir && echo -e "$src_cmd" > $conf_file_path && success "successfully configured: $conf_file_path"
+      git clone $repo_url $repo_dir && echo -e "$src_cmd" >> $conf_file_path && success "successfully configured: $conf_file_path"
    fi
 }
 
@@ -124,7 +143,7 @@ set_git_ignore() {
 
    # global ignore
    if [ -f $repo_file_path ]; then
-      cd $repo_dir && echo "updating $repo_file_path..." && git pull && cp $repo_file_path $conf_file_path && cd - >/dev/null
+      cd $repo_dir && echo "$repo_file_path - checking for updates..." && git pull && cp $repo_file_path $conf_file_path && cd - >/dev/null
    else
       pause "Press [Enter] to configure $conf_file_path" true
       git clone $repo_url $repo_dir && cp $repo_file_path $conf_file_path
@@ -139,10 +158,20 @@ set_git_ignore() {
 
 # --------------------------  MAIN
 
+do_backup            "$HOME/.bashrc"
+                     "$HOME/.inputrc"
+                     "$HOME/.gconf/apps/gnome-terminal/profiles/Default/%gconf.xml"
+                     "$HOME/.local/share/gedit/styles/blackboard.xml"
+                     "$HOME/.local/share/gedit/styles/solarized-dark.xml"
+                     "$HOME/.muttrc"
+                     "$HOME/.tmux.conf"
+                     "$HOME/.vimrc.local"
+                     "$HOME/.gitignore_global"
+
 set_aliases          "$HOME/.bashrc" \
                      "https://gist.github.com/9d74e08779c1db6cb7b7" \
-                     "$HOME/$CONFIG/bash/aliases/bash_aliases" \
-                     "\n# source alias file\nif [ -f ~/$CONFIG/bash/aliases/bash_aliases ]; then\n   . ~/$CONFIG/bash/aliases/bash_aliases\nfi"
+                     "$CONFIG/bash/aliases/bash_aliases" \
+                     "\n# source alias file\nif [ -f $CONFIG/bash/aliases/bash_aliases ]; then\n   . $CONFIG/bash/aliases/bash_aliases\nfi"
 
 set_terminal_color   "$HOME/.bashrc"
 
@@ -154,37 +183,36 @@ set_terminal_history "$HOME/.inputrc"
 # terminal profile
 set_copied_colors    "$HOME/.gconf/apps/gnome-terminal/profiles/Default/%gconf.xml" \
                      "https://gist.github.com/dad1663d2463db32c6e8.git" \
-                     "$HOME/$CONFIG/terminal/profile/gconf.xml"
+                     "$CONFIG/terminal/profile/gconf.xml"
 
 # gedit color scheme
 set_copied_colors    "$HOME/.local/share/gedit/styles/blackboard.xml" \
                      "https://github.com/afair/dot-gedit.git" \
-                     "$HOME/$CONFIG/gedit/blackboard/blackboard.xml"
+                     "$CONFIG/gedit/blackboard/blackboard.xml"
 
 # gedit color scheme
 set_copied_colors    "$HOME/.local/share/gedit/styles/solarized-dark.xml" \
                      "https://github.com/mattcan/solarized-gedit.git" \
-                     "$HOME/$CONFIG/gedit/solarized/solarized-dark.xml"
+                     "$CONFIG/gedit/solarized/solarized-dark.xml"
 
 # mutt color scheme
 set_sourced_config   "$HOME/.muttrc" \
                      "https://github.com/altercation/mutt-colors-solarized.git" \
-                     "$HOME/$CONFIG/mutt/colors/mutt-colors-solarized-dark-16.muttrc" \
-                     "# source colorscheme file\nsource ~/$CONFIG/mutt/colors/mutt-colors-solarized-dark-16.muttrc"
+                     "$CONFIG/mutt/colors/mutt-colors-solarized-dark-16.muttrc" \
+                     "# source colorscheme file\nsource $CONFIG/mutt/colors/mutt-colors-solarized-dark-16.muttrc"
 
 # tmux config
 set_sourced_config   "$HOME/.tmux.conf" \
                      "https://gist.github.com/3247d5a1c172167e593c.git" \
-                     "$HOME/$CONFIG/tmux/tmux.conf" \
-                     "source-file ~/$CONFIG/tmux/tmux.conf"
+                     "$CONFIG/tmux/tmux.conf" \
+                     "source-file $CONFIG/tmux/tmux.conf"
 
 # vim config
-[ -d "$HOME/.spf13-vim-3" ] || program_must_exist vim-gtk && install_spf13_vim
 set_sourced_config   "$HOME/.vimrc.local" \
                      "https://gist.github.com/00a60c7355c27c692262.git" \
-                     "$HOME/$CONFIG/vim/vim.conf" \
-                     "\" source config file\n:so ~/$CONFIG/vim/vim.conf"
+                     "$CONFIG/vim/vim.conf" \
+                     "\" source config file\n:so $CONFIG/vim/vim.conf"
 
 set_git_ignore       "$HOME/.gitignore_global" \
                      "https://gist.github.com/efa547b362910ac7077c.git" \
-                     "$HOME/$CONFIG/git/gitignore_global"
+                     "$CONFIG/git/gitignore_global"
