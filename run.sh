@@ -88,8 +88,8 @@ select_options() {
    esac
 
    # check for program errors
-   RET=$?
-   debug
+   RET="$?"
+   debug "select_options"
 }
 
 # trap Ctrl+Z to return to the main menu

@@ -64,7 +64,7 @@ set_copied_config() {
    local repo_dir=$(trim_shortest_right_pattern "$3" "/")
    local repo_file_path="$3"
 
-   if [ -f $repo_file_path ] && [ -f $conf_file_path ]; then
+   if [ -f $repo_file_path ]; then
       notify "already set $repo_file_path in $conf_file_path"
       cd $repo_dir && echo "checking for updates: $repo_file_path" && git pull && cp $repo_file_path $conf_file_path && success "updated: $conf_file_path" && cd - >/dev/null
    else
