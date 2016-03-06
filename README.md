@@ -21,7 +21,7 @@ Quickly configures a fresh install of [Ubuntu 14.04 64-bit][tt] on a workstation
 ## What it can do
 
 - update [Ubuntu][ubuntu] and install some programs using apt-get, gem, npm and pip
-- generate an [RSA key][sshkey] for remote [SSH sessions][ssh] (this is not a [GPG key][gpgkey])
+- generate an [RSA key][sshkey] for remote [SSH sessions][ssh]
 - add useful [shell aliases][sa]
 - make the [terminal][gt] easier to read and use with:
     - colored prompts
