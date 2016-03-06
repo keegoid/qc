@@ -112,6 +112,14 @@ notify() {
    msg "${GRAY_BLACK} ${1}${2} ${NONE_WHITE}"
 }
 
+notify2() {
+   msg "${YELLOW_BLACK} ${1}${2} ${NONE_WHITE}"
+}
+
+notify3() {
+   msg "${BLUE_BLACK} ${1}${2} ${NONE_WHITE}"
+}
+
 script_name() {
 #   echo "$(basename "$(test -L "$0" && readlink "$0" || echo "$0")")"
    echo -n "$1" && trim_longest_left_pattern "$0" "/" && echo "$2"
@@ -188,7 +196,7 @@ program_must_exist() {
 
    # throw error on non-zero return value
    if [ "$?" -eq 0 ]; then
-      notify "You must have $1 installed to continue."
+      notify2 "You must have $1 installed to continue."
       pause "Press [Enter] to install it now" true
       sudo apt-get -y install "$1"
     fi
@@ -309,7 +317,7 @@ run_script() {
    [ "$DEBUG_MODE" -eq 0 ] || clear
    . ./"${name}"
    result=$?
-   echo "script: ${name} has finished"
+   notify3 "script: ${name} has finished"
 
    # change back to original directory
    [ -n "$scripts" ] && cd - >/dev/null
@@ -566,7 +574,7 @@ gen_ssh_key() {
    local u="$2"
 
    echo
-   notify "Note: ${ssh_dir} is for public/private key pairs to establish SSH connections to remote systems"
+   notify3 "Note: ${ssh_dir} is for public/private key pairs to establish SSH connections to remote systems"
    echo
    # check if id_rsa exists
    if [ -f "${ssh_dir}/id_rsa" ]; then
@@ -688,7 +696,6 @@ configure_git()
    git config --global pull.default matching
    # create a global .gitignore file
    git config --global core.excludesfile "$HOME/.gitignore_global"
-   success "git was configured"
    pause "Press [Enter] to view the config"
    git config --list
 }
@@ -710,8 +717,8 @@ clone_repo()
       notify "${2} directory already exists, skipping clone operation..."
    else
       echo
-      notify "*** NOTE ***"
-      notify "Make sure \"github.com/${address}\" exists."
+      notify2 "*** NOTE ***"
+      notify2 "Make sure \"github.com/${address}\" exists."
       pause "Press [Enter] to clone ${address} at GitHub"
       if [ "$use_ssh" = true ]; then
          git clone "git@github.com:${address}"
@@ -757,9 +764,9 @@ set_remote_repo()
          fi
       else
          echo
-         notify "*** NOTE ***"
-         notify "Make sure \"github.com/${address}\" exists."
-         notify "Either fork and rename it, or create a new repository in your GitHub."
+         notify2 "*** NOTE ***"
+         notify2 "Make sure \"github.com/${address}\" exists."
+         notify2 "Either fork and rename it, or create a new repository in your GitHub."
          pause "Press [Enter] to assign remote origin repository"
          if [ "$use_ssh" = true ]; then
             git remote add origin "git@github.com:${address}" && echo "remote origin added: git@github.com:${address}"
@@ -816,8 +823,8 @@ merge_upstream()
 
    # merge any changes fetched into local working files
    echo
-   notify "*** NOTE ***"
-   notify "If merging changes, press \":wq enter\" to accept the merge message in vi."
+   notify2 "*** NOTE ***"
+   notify2 "If merging changes, press \":wq enter\" to accept the merge message in vi."
    pause "Press [Enter] to merge changes"
    git merge upstream/master
 
