@@ -25,8 +25,10 @@ do_backup() {
       today=`date +%Y%m%d_%s`
       [ -d "$BACKUP-$today" ] || mkdir -pv "$BACKUP-$today"
       for i in "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"; do
-         name=$(trim_longest_left_pattern "$i" "/")
-         [ -e "$i" ] && [ ! -L "$i" ] && cp "$i" "$BACKUP-$today/$name" && success "made backup: ~/.uqc/backup-$today/$name";
+         if [ -e "$i" ] && [ ! -L "$i" ]; then
+            name=$(trim_longest_left_pattern "$i" "/")
+            cp "$i" "$BACKUP-$today/$name" && success "made backup: ~/.uqc/backup-$today/$name"
+         fi
       done
       RET="$?"
       debug "do_backup"
@@ -50,6 +52,8 @@ set_sourced_config() {
       pause "Press [Enter] to configure $conf_file_path" true
       git clone $repo_url $repo_dir && echo -e "$src_cmd" >> $conf_file_path && success "configured: $conf_file_path"
    fi
+   RET="$?"
+   debug "set_sourced_config"
 }
 
 # --------------------------  GEDIT COLORS, TERMINAL PROFILE, GIT IGNORE
@@ -68,6 +72,7 @@ set_copied_config() {
       git clone $repo_url $repo_dir && cp $repo_file_path $conf_file_path && success "configured: $conf_file_path"
    fi
    RET="$?"
+   debug "set_copied_config"
 }
 
 # --------------------------  GIT CONFIG
@@ -83,6 +88,8 @@ set_git_config() {
       RET="$?"
       success "configured: $conf_file_path"
    fi
+   RET="$?"
+   debug "set_git_config"
 }
 
 # --------------------------  TERMINAL HISTORY LOOKUP (also awesome)
@@ -102,9 +109,10 @@ cat << 'EOF' >> $conf_file_path
 '\e[C': forward-char
 '\e[D': backward-char
 EOF
-      REF="$?"
       success "configured: $conf_file_path"
    fi
+   RET="$?"
+   debug "set_terminal_history"
 }
 
 # --------------------------  TERMINAL COLOR PROMPTS
@@ -118,6 +126,8 @@ set_terminal_color() {
    else
       notify "already set color prompts"
    fi
+   RET="$?"
+   debug "set_terminal_color"
 }
 
 # --------------------------  AUTOJUMP (so awesome)
@@ -132,6 +142,8 @@ set_autojump() {
       pause "Press [Enter] to configure autojump for gnome-terminal" true
       echo -e "$src_cmd" >> $conf_file_path && source $conf_file_path && success "configured: $conf_file_path with autojump"
    fi
+   RET="$?"
+   debug "set_autojump"
 }
 
 # --------------------------  MAIN
