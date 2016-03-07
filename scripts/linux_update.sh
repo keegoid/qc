@@ -72,6 +72,7 @@ apt_install "$UPDATE"
 
 # --------------------------  INSTALL FROM CUSTOM SCRIPTS
 
+echo
 confirm "Install ruby with rbenv and ruby-build?" true
 [ "$?" -eq 0 ] && install_rbenv_ruby
 

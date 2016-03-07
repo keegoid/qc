@@ -271,7 +271,7 @@ apt_check() {
       else
          pkg_version=$(dpkg -s "${pkg}" 2>&1 | grep 'Version:' | cut -d " " -f 2)
          space_count="$(expr 20 - "${#pkg}")"
-         pack_space_count="$(expr 30 - "${#pkg_version}")"
+         pack_space_count="$(expr 20 - "${#pkg_version}")"
          real_space="$(expr ${space_count} + ${pack_space_count} + ${#pkg_version})"
          echo -en " ${GREEN_CHK}"
          printf " $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
@@ -288,7 +288,7 @@ gem_check() {
       if gem list $pkg -i >/dev/null; then
          pkg_version=$(gem list "${pkg}" | grep "${pkg}" | cut -d " " -f 2 | cut -d "(" -f 2 | cut -d ")" -f 1)
          space_count="$(expr 20 - "${#pkg}")"
-         pack_space_count="$(expr 30 - "${#pkg_version}")"
+         pack_space_count="$(expr 20 - "${#pkg_version}")"
          real_space="$(expr ${space_count} + ${pack_space_count} + ${#pkg_version})"
          echo -en " ${GREEN_CHK}"
          printf " $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
@@ -308,7 +308,7 @@ npm_check() {
       if npm ls -gs | grep -q "$pkg"; then
          pkg_version=$(npm ls -gs | grep "${pkg}" | cut -d "@" -f 2)
          space_count="$(expr 20 - "${#pkg}")"
-         pack_space_count="$(expr 30 - "${#pkg_version}")"
+         pack_space_count="$(expr 20 - "${#pkg_version}")"
          real_space="$(expr ${space_count} + ${pack_space_count} + ${#pkg_version})"
          echo -en " ${GREEN_CHK}"
          printf " $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
@@ -330,7 +330,7 @@ pip_check() {
       if pip list | grep "$pkg_trim" >/dev/null 2>&1; then
          pkg_version=$(pip list | grep "${pkg_trim}" | cut -d " " -f 2 | tr -d "(" | tr -d ")")
          space_count="$(expr 20 - "${#pkg}")"
-         pack_space_count="$(expr 30 - "${#pkg_version}")"
+         pack_space_count="$(expr 20 - "${#pkg_version}")"
          real_space="$(expr ${space_count} + ${pack_space_count} + ${#pkg_version})"
          echo -en " ${GREEN_CHK}"
          printf " $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
@@ -385,12 +385,13 @@ run_script() {
 # append source cmd to conf file if not set already
 set_source_cmd() {
    local conf_file="$1"
-   local src_cmd="$2"
+   local match="$2"
+   local src_cmd="$3"
 
-   if grep -q "$src_cmd" "$conf_file" >/dev/null 2>&1; then
-      notify "already set $src_cmd in $conf_file"
+   if grep -q "$match" "$conf_file" >/dev/null 2>&1; then
+      notify "already set $match in $conf_file"
    else
-      echo "$src_cmd" >> "$conf_file" && success "configured: $src_cmd in $conf_file"
+      echo "$src_cmd" >> "$conf_file" && success "configured: $match in $conf_file"
    fi
    RET="$?"
    debug
@@ -472,31 +473,33 @@ install_rvm_ruby() {
 
 install_rbenv_ruby() {
    # rbenv
-   set_sourced_config   "$HOME/.bashrc" \
+   set_sourced_config   "$HOME/.profile" \
                         "https://github.com/rbenv/rbenv.git" \
                         "$HOME/.rbenv/" \
                         "$HOME/.rbenv" \
-                        'export PATH="$HOME/.rbenv/bin:$PATH"'
+                        '[[ ":$PATH:" =~ ":$HOME/.rbenv/bin:" ]] || PATH="$HOME/.rbenv/bin:$PATH"'
 
    # optional, to speed up rbenv
    [ -d "$HOME/.rbenv" ] && cd "$HOME/.rbenv" && src/configure && make -C src && cd - >/dev/null
 
-   # add rbenv init - command to .bashrc
-   set_source_cmd       "$HOME/.bashrc" \
-                        'eval "$(rbenv init -)"'
+   # add rbenv init - command to .profile
+   set_source_cmd       "$HOME/.profile" \
+                        '"eval "$(rbenv init -)"' \
+                        '[[ ":$PATH:" =~ ":$HOME/.rbenv/shims:" ]] || eval "$(rbenv init -)"'
 
    # ruby-build
-   set_sourced_config   "$HOME/.bashrc" \
+   set_sourced_config   "$HOME/.profile" \
                         "https://github.com/rbenv/ruby-build.git" \
                         "$HOME/.rbenv/plugins/ruby-build/" \
                         "$HOME/.rbenv/plugins/ruby-build" \
-                        'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"'
+                        '[[ ":$PATH:" =~ ":$HOME/.rbenv/plugins/ruby-build/bin:" ]] || PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"'
 
    # tell rubygems not to install docs for each package locally
    set_source_cmd       "$HOME/.gemrc" \
+                        'gem: --no-ri --no-rdoc' \
                         'gem: --no-ri --no-rdoc'
 
-   source "$HOME/.bashrc"
+   source "$HOME/.profile"
 
    # check that rbenv is working
    type rbenv
@@ -514,15 +517,6 @@ install_rbenv_ruby() {
    debug
 }
 
-# install or update spf13-vim
-install_spf13_vim() {
-   [ -d "$HOME/.spf13-vim-3" ] && echo "updating spf13-vim..." || echo "installing spf13-vim..."
-   # change to tmp directory to download file and then back to original directory
-   cd /tmp
-   curl https://j.mp/spf13-vim3 -L > spf13-vim.sh && sh spf13-vim.sh && success "successfully configured: $HOME/.spf13-vim-3"
-   cd - >/dev/null
-}
-
 # install the keybase cli client
 install_keybase() {
    if not_installed "keybase"; then
@@ -533,6 +527,40 @@ install_keybase() {
    else
       notify "keybase is already installed"
       echo
+   fi
+}
+
+# install or update spf13-vim
+install_spf13_vim() {
+   [ -d "$HOME/.spf13-vim-3" ] && echo "updating spf13-vim..." || echo "installing spf13-vim..."
+   # change to tmp directory to download file and then back to original directory
+   cd /tmp
+   curl https://j.mp/spf13-vim3 -L > spf13-vim.sh && sh spf13-vim.sh && success "successfully configured: $HOME/.spf13-vim-3"
+   cd - >/dev/null
+}
+
+# install or update the flockport installer and utility
+install_flockport() {
+   local start="$PWD"
+
+   run_flockport() {
+      cd /tmp
+      wget -q https://www.flockport.com/download2/flockport-install.tar.xz -O- | tar -xpJ 
+      cd flockport-install && sudo ./flockport.run && success "successfully configured: flockport"
+      cd $start
+      RET="$?"
+      debug
+   }
+
+   if which flockport >/dev/null && flockport version | grep -q "Flockport Version"; then
+      confirm "flockport is already installed, attempt to update it?" true
+      if [ "$?" -eq 0 ]; then
+         echo "updating flockport..."
+         run_flockport
+      fi
+   else
+      echo "installing flockport..."
+      run_flockport
    fi
 }
 
@@ -576,7 +604,6 @@ apt_install() {
 
    if [[ "${#apt_install_list[@]}" -eq 0 ]]; then
       notify "No packages to install"
-      echo
    else
       # update all of the package references before installing anything
       if [ "${1}" -eq 0 ]; then
@@ -590,7 +617,6 @@ apt_install() {
 
       # clean up apt caches
       sudo apt-get clean
-      echo
    fi
 }
 
@@ -622,12 +648,10 @@ gem_install() {
 
    if [[ "${#gem_install_list[@]}" -eq 0 ]]; then
       notify "No gems to install"
-      echo
    else
       # install required gems
       pause "Press [Enter] to install gems" true
       gem install ${gem_install_list[@]}
-      echo
    fi
 }
 
@@ -664,12 +688,10 @@ npm_install() {
 
    if [[ "${#npm_install_list[@]}" -eq 0 ]]; then
       notify "No npms to install"
-      echo
    else
       # install required npms
       pause "Press [Enter] to install npms" true
       sudo npm install -g ${npm_install_list[@]}
-      echo
    fi
 }
 
@@ -706,12 +728,10 @@ pip_install() {
 
    if [[ "${#pip_install_list[@]}" -eq 0 ]]; then
       notify "No pips to install"
-      echo
    else
       # install required pips
       pause "Press [Enter] to install pips" true
       sudo -H pip install ${pip_install_list[@]}
-      echo
    fi
 }
 
