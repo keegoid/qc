@@ -83,13 +83,13 @@ select_options() {
       3) run_script ssh_key.sh "scripts";;
       4) run_script wordpress_flockport.sh "scripts";;
       5) fix_permissions;;
-      6) exit_msg && exit 0;;
+      6) exit_msg && exec $SHELL && exit 0;;
       *) alert "Error..." && sleep 1
    esac
 
    # check for program errors
    RET="$?"
-   debug "select_options"
+   debug
 }
 
 # trap Ctrl+Z to return to the main menu
