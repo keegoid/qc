@@ -32,7 +32,7 @@ do_backup() {
          fi
       done
       RET="$?"
-      debug "do_backup"
+      debug
   fi
   return 0
 }
@@ -51,7 +51,7 @@ set_git_config() {
       success "configured: $conf_file"
    fi
    RET="$?"
-   debug "set_git_config"
+   debug
 }
 
 # --------------------------  TERMINAL HISTORY LOOKUP (also awesome)
@@ -74,7 +74,7 @@ EOF
       success "configured: $conf_file"
    fi
    RET="$?"
-   debug "set_terminal_history"
+   debug
 }
 
 # --------------------------  TERMINAL COLOR PROMPTS
@@ -89,7 +89,7 @@ set_terminal_color() {
       notify "already set color prompts"
    fi
    RET="$?"
-   debug "set_terminal_color"
+   debug
 }
 
 # --------------------------  AUTOJUMP (so awesome)
@@ -105,7 +105,7 @@ set_autojump() {
       echo -e "$src_cmd" >> $conf_file && source $conf_file && success "configured: $conf_file with autojump"
    fi
    RET="$?"
-   debug "set_autojump"
+   debug
 }
 
 # --------------------------  MAIN
