@@ -144,8 +144,8 @@ msg() {
 
 debug() {
    if [ "$DEBUG_MODE" -eq 1 ] && [ "$RET" -gt 0 ]; then
-#      msg "An error occurred in function \"${FUNCNAME[$i+1]}\" on line ${BASH_LINENO[$i+1]}."
-      msg "${RED_BLACK} An error occured in function $1. ${NONE_WHITE}"
+#      alert "An error occurred in function ${FUNCNAME[1]} on line ${BASH_LINENO[0]}."
+      alert "${FUNCNAME[1]}(${BASH_LINENO[0]}): An error has occurred."
    fi
 }
 
@@ -162,6 +162,7 @@ error() {
 
 alert() {
    msg "${RED_BLACK} ${1}${2} ${NONE_WHITE}"
+   pause
 }
 
 notify() {
@@ -386,11 +387,13 @@ set_source_cmd() {
    local conf_file="$1"
    local src_cmd="$2"
 
-   if grep -q $src_cmd $conf_file >/dev/null 2>&1; then
+   if grep -q "$src_cmd" "$conf_file" >/dev/null 2>&1; then
       notify "already set $src_cmd in $conf_file"
    else
-      echo $src_comd >> $conf_file && success "configured: $src_cmd in $HOME/.bashrc"
+      echo "$src_cmd" >> "$conf_file" && success "configured: $src_cmd in $conf_file"
    fi
+   RET="$?"
+   debug
 }
 
 # clone or pull git repo and source repo file in conf file
@@ -398,18 +401,24 @@ set_sourced_config() {
    local conf_file="$1"
    local repo_url="$2"
    local repo_dir=$(trim_shortest_right_pattern "$3" "/")
-   local repo_file=$(trim_longest_left_pattern "$3" "/")
-   local src_cmd="$4"
+   local repo_file=$(trim_longest_left_pattern "$4" "/")
+   local src_cmd="$5"
+   local today=`date +%Y%m%d_%s`
 
-   if grep -q "$repo_file" "$conf_file" >/dev/null 2>&1; then
-      notify "already set $repo_file in $conf_file"
-      cd $repo_dir && echo "checking for updates: $repo_file" && git pull && cd - >/dev/null
+   if [ -n "$repo_file" ]; then
+      if grep -q "$repo_file" "$conf_file" >/dev/null 2>&1; then
+         notify "already set $repo_file in $conf_file"
+         cd $repo_dir && echo "checking for updates: $repo_file" && git pull && cd - >/dev/null
+      else
+         pause "Press [Enter] to configure $repo_file in $conf_file" true
+         [ -d "$repo_dir" ] && notify2 "$repo_dir already exists. Will save a copy, delete and clone again." && cp -r $repo_dir $repo_dir-$today && rm -rf $repo_dir
+         git clone "$repo_url" "$repo_dir" && echo -e "$src_cmd" >> "$conf_file" && success "configured: $repo_file in $conf_file"
+      fi
    else
-      pause "Press [Enter] to configure $repo_file in $conf_file" true
-      git clone $repo_url $repo_dir && echo -e "$src_cmd" >> $conf_file && success "configured: $repo_file in $conf_file"
+      alert "repo_file variable is empty"
    fi
    RET="$?"
-   debug "set_sourced_config"
+   debug
 }
 
 # clone or pull git repo and copy repo file onto conf file
@@ -417,17 +426,23 @@ set_copied_config() {
    local conf_file="$1"
    local repo_url="$2"
    local repo_dir=$(trim_shortest_right_pattern "$3" "/")
-   local repo_file=$(trim_longest_left_pattern "$3" "/")
+   local repo_file=$(trim_longest_left_pattern "$4" "/")
+   local today=`date +%Y%m%d_%s`
 
-   if [ -f $repo_file ]; then
-      notify "already set $repo_file in $conf_file"
-      cd $repo_dir && echo "checking for updates: $repo_file" && git pull && cp $repo_file $conf_file && success "updated: $conf_file" && cd - >/dev/null
+   if [ -n "$repo_file" ]; then
+      if [ -f $repo_file ]; then
+         notify "already set $repo_file in $conf_file"
+         cd $repo_dir && echo "checking for updates: $repo_file" && git pull && cp $repo_file $conf_file && success "updated: $conf_file" && cd - >/dev/null
+      else
+         pause "Press [Enter] to configure $conf_file" true
+         [ -d "$repo_dir" ] && notify2 "$repo_dir already exists. Will save a copy, delete and clone again." && cp -r $repo_dir $repo_dir-$today && rm -rf $repo_dir
+         git clone "$repo_url" "$repo_dir" && cp $repo_file $conf_file && success "configured: $conf_file"
+      fi
    else
-      pause "Press [Enter] to configure $conf_file" true
-      git clone $repo_url $repo_dir && cp $repo_file $conf_file && success "configured: $conf_file"
+      alert "repo_file variable is empty"
    fi
    RET="$?"
-   debug "set_copied_config"
+   debug
 }
 
 # source rvm after installing non-package management version of ruby
@@ -440,6 +455,8 @@ source_rvm() {
       echo "source /usr/local/rvm/scripts/rvm" >> $HOME/.bashrc
       source /usr/local/rvm/scripts/rvm && echo "rvm sourced and added to .bashrc"
    fi
+   RET="$?"
+   debug
 }
 
 # --------------------------  INSTALL FROM CUSTOM SCRIPTS
@@ -460,15 +477,13 @@ install_rbenv_ruby() {
                         "$HOME/.rbenv/" \
                         "$HOME/.rbenv" \
                         'export PATH="$HOME/.rbenv/bin:$PATH"'
-pause
+
    # optional, to speed up rbenv
    [ -d "$HOME/.rbenv" ] && cd "$HOME/.rbenv" && src/configure && make -C src && cd - >/dev/null
-pause
+
    # add rbenv init - command to .bashrc
    set_source_cmd       "$HOME/.bashrc" \
                         'eval "$(rbenv init -)"'
-pause
-   exec $SHELL
 
    # ruby-build
    set_sourced_config   "$HOME/.bashrc" \
@@ -476,19 +491,19 @@ pause
                         "$HOME/.rbenv/plugins/ruby-build/" \
                         "$HOME/.rbenv/plugins/ruby-build" \
                         'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"'
-pause
-   exec $SHELL
 
    # tell rubygems not to install docs for each package locally
    set_source_cmd       "$HOME/.gemrc" \
                         'gem: --no-ri --no-rdoc'
-pause
-   # check that rbenv is working and install ruby
+
+   source "$HOME/.bashrc"
+
+   # check that rbenv is working
    type rbenv
    rbenv version
-pause
+
+   # install ruby
    [ "$?" -eq 0 ] && rbenv install 2.2.3
-pause
    [ "$?" -eq 0 ] && rbenv global 2.2.3
 
    # check ruby and rubygem versions
@@ -496,7 +511,7 @@ pause
    gem env home
 
    RET="$?"
-   debug "install_rbenv_ruby"
+   debug
 }
 
 # install or update spf13-vim
@@ -556,6 +571,7 @@ install_vagrant() {
 # loop through install list and install any packages that are in the list
 # $1 -> to update sources or not
 apt_install() {
+   echo
    apt_check
 
    if [[ "${#apt_install_list[@]}" -eq 0 ]]; then
@@ -597,6 +613,7 @@ install_apt() {
 
 # loop through install list and install any gems that are in the list
 gem_install() {
+   echo
    gem_check
 
    # make sure ruby is installed
@@ -635,6 +652,7 @@ install_gem() {
 
 # loop through install list and install any npms that are in the list
 npm_install() {
+   echo
    npm_check
 
    # make sure npm is installed
@@ -679,6 +697,7 @@ install_npm() {
 
 # loop through install list and install any pips that are in the list
 pip_install() {
+   echo
    pip_check
 
    # make sure dependencies are installed
