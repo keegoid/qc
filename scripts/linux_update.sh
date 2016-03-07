@@ -27,20 +27,34 @@ RUBY_DEPENDENCIES_LIST='libffi-dev libreadline-dev libsqlite3-dev libssl-dev lib
 # --------------------------  PROMPT FOR PROGRAMS
 
 if [ "$IS_SERVER" -eq 0 ]; then
-   read -ep "Enter apps to install with apt-get: " -i "$SERVER_APTS_LIST" APTS
+   notify "Server packages to install (none to skip)"
+   read -ep "   : " -i "$SERVER_APTS_LIST"         APTS1
 else
-   notify2 "You'll have a chance to modify the following default packages prior to installation."
+   notify2 "The following default packages can be modified prior to installation."
    echo
-   echo -e "${TEAL_BLACK} WORKSTATION: ${NONE_WHITE} $DEFAULT_WORKSTATION_LIST"
-   echo -e "${PURPLE_BLACK} DEVELOPER: ${NONE_WHITE} $DEFAULT_DEV_LIST"
-   echo -e "${BLUE_BLACK} RUBY DEPENDENCIES: ${NONE_WHITE} $RUBY_DEPENDENCIES_LIST"
+   echo "WORKSTATION"
+   echo "DEVELOPER"
+   echo "RUBY DEPENDENCIES"
+   echo "GEMs, NPMs, PIPs"
    echo
-   read -ep "Enter workstation apps to install: " -i "$DEFAULT_WORKSTATION_LIST" APTS1
-   read -ep "Enter developer apps to install: " -i "$DEFAULT_DEV_LIST" APTS2
-   read -ep "Enter ruby dependencies to install: " -i "$RUBY_DEPENDENCIES_LIST" APTS3
-   read -ep "Enter apps to install with gem: " -i 'bundler gist' GEMS
-   read -ep "Enter apps to install with npm: " -i 'doctoc' NPMS
-   read -ep "Enter apps to install with pip: " -i 'jrnl[encrypted]' PIPS
+   notify "Workstation packages to install (none to skip)"
+   read -ep "   : " -i "$DEFAULT_WORKSTATION_LIST" APTS1
+   echo
+   notify "Developer packages to install"
+   read -ep "   : " -i "$DEFAULT_DEV_LIST"         APTS2
+   echo
+   notify "Ruby dependencies to install"
+   read -ep "   : " -i "$RUBY_DEPENDENCIES_LIST"   APTS3
+   echo
+   notify "Packages to install with gem"
+   read -ep "   : " -i 'bundler gist'              GEMS
+   echo
+   notify "Packages to install with npm"
+   read -ep "   : " -i 'doctoc'                    NPMS
+   echo
+   notify "Packages to install with pip"
+   read -ep "   : " -i 'jrnl[encrypted]'           PIPS
+   echo
 fi
 
 # --------------------------  ARRAY ASSIGNMENTS
