@@ -37,49 +37,10 @@ do_backup() {
   return 0
 }
 
-# --------------------------  ALIASES, MUTT, TMUX & VIM
-
-set_sourced_config() {
-   local conf_file_path="$1"
-   local repo_url="$2"
-   local repo_dir=$(trim_shortest_right_pattern "$3" "/")
-   local repo_file_path="$3"
-   local src_cmd="$4"
-
-   if grep -q "$repo_file_path" "$conf_file_path" >/dev/null 2>&1; then
-      notify "already set $repo_file_path in $conf_file_path"
-      cd $repo_dir && echo "checking for updates: $repo_file_path" && git pull && cd - >/dev/null
-   else
-      pause "Press [Enter] to configure $conf_file_path" true
-      git clone $repo_url $repo_dir && echo -e "$src_cmd" >> $conf_file_path && success "configured: $conf_file_path"
-   fi
-   RET="$?"
-   debug "set_sourced_config"
-}
-
-# --------------------------  GEDIT COLORS, TERMINAL PROFILE, GIT IGNORE
-
-set_copied_config() {
-   local conf_file_path="$1"
-   local repo_url="$2"
-   local repo_dir=$(trim_shortest_right_pattern "$3" "/")
-   local repo_file_path="$3"
-
-   if [ -f $repo_file_path ]; then
-      notify "already set $repo_file_path in $conf_file_path"
-      cd $repo_dir && echo "checking for updates: $repo_file_path" && git pull && cp $repo_file_path $conf_file_path && success "updated: $conf_file_path" && cd - >/dev/null
-   else
-      pause "Press [Enter] to configure $conf_file_path" true
-      git clone $repo_url $repo_dir && cp $repo_file_path $conf_file_path && success "configured: $conf_file_path"
-   fi
-   RET="$?"
-   debug "set_copied_config"
-}
-
 # --------------------------  GIT CONFIG
 
 set_git_config() {
-   local conf_file_path="$1"
+   local conf_file="$1"
 
    if [ "$RET" -eq 0 ]; then
       read -ep "your name for git commit logs: " -i 'Keegan Mullaney' real_name
@@ -87,7 +48,7 @@ set_git_config() {
       read -ep "your preferred text editor for git commits: " -i 'vi' git_editor
       configure_git "$real_name" "$email_address" "$git_editor"
       RET="$?"
-      success "configured: $conf_file_path"
+      success "configured: $conf_file"
    fi
    RET="$?"
    debug "set_git_config"
@@ -96,21 +57,21 @@ set_git_config() {
 # --------------------------  TERMINAL HISTORY LOOKUP (also awesome)
 
 set_terminal_history() {
-   local conf_file_path="$1"
+   local conf_file="$1"
 
-   [ -f $conf_file_path ] || touch $conf_file_path
-   if grep -q "backward-char" $conf_file_path >/dev/null 2>&1; then
+   [ -f $conf_file ] || touch $conf_file
+   if grep -q "backward-char" $conf_file >/dev/null 2>&1; then
       notify "already added terminal history lookup"
    else
       pause "Press [Enter] to configure .inputrc" true
-cat << 'EOF' >> $conf_file_path 
+cat << 'EOF' >> $conf_file 
 # terminal history lookup
 '\e[A': history-search-backward
 '\e[B': history-search-forward
 '\e[C': forward-char
 '\e[D': backward-char
 EOF
-      success "configured: $conf_file_path"
+      success "configured: $conf_file"
    fi
    RET="$?"
    debug "set_terminal_history"
@@ -119,11 +80,11 @@ EOF
 # --------------------------  TERMINAL COLOR PROMPTS
 
 set_terminal_color() {
-   local conf_file_path="$1"
+   local conf_file="$1"
 
-   if grep -q "#force_color_prompt=yes" $conf_file_path >/dev/null 2>&1; then
+   if grep -q "#force_color_prompt=yes" $conf_file >/dev/null 2>&1; then
       pause "Press [Enter] to activate color terminal prompts" true
-      sed -i.bak -e "s|#force_color_prompt=yes|force_color_prompt=yes|" $conf_file_path && source $conf_file_path && success "configured: $conf_file_path with color terminal prompts"
+      sed -i.bak -e "s|#force_color_prompt=yes|force_color_prompt=yes|" $conf_file && source $conf_file && success "configured: $conf_file with color terminal prompts"
    else
       notify "already set color prompts"
    fi
@@ -134,14 +95,14 @@ set_terminal_color() {
 # --------------------------  AUTOJUMP (so awesome)
 
 set_autojump() {
-   local conf_file_path="$1"
+   local conf_file="$1"
    local src_cmd="$2"
 
-   if grep -q "autojump/autojump.sh" $conf_file_path >/dev/null 2>&1; then
+   if grep -q "autojump/autojump.sh" $conf_file >/dev/null 2>&1; then
       notify "already added autojump (usage: j directory)"
    else
       pause "Press [Enter] to configure autojump for gnome-terminal" true
-      echo -e "$src_cmd" >> $conf_file_path && source $conf_file_path && success "configured: $conf_file_path with autojump"
+      echo -e "$src_cmd" >> $conf_file && source $conf_file && success "configured: $conf_file with autojump"
    fi
    RET="$?"
    debug "set_autojump"

@@ -33,6 +33,62 @@ gem_check_list=()
 npm_check_list=()
 pip_check_list=()
 
+# names and versions of repositories/software
+SN=( NGINX   OPENSSL   RUBY  )
+SV=( 1.9.3   1.0.2d    2.2.3 )
+
+# URLs to check software versions for latest versions
+#   NGINX   nginx.org/download/
+# OPENSSL   www.openssl.org/source/
+#    RUBY   www.ruby-lang.org/en/downloads/
+
+# verstion variable assignments (determined by array order)
+NGINX_V="${SV[0]}"
+OPENSSL_V="${SV[1]}"
+RUBY_V="${SV[2]}"
+
+# software download URLs
+NGINX_URL="http://nginx.org/download/nginx-${NGINX_V}.tar.gz"
+OPENSSL_URL="http://www.openssl.org/source/openssl-${OPENSSL_V}.tar.gz"
+RUBY_URL="https://get.rvm.io"
+WORDPRESS_URL="http://wordpress.org/latest.tar.gz"
+
+# GPG public keys
+RUBY_KEY='D39DC0E3'
+
+# --------------------------  CUSTOM SOFTWARE
+
+# set software versions
+# $1 -> software list (space-separated)
+function set_software_versions()
+{
+   local swl="$1"
+   local version
+   echo
+   for ((i=0; i<${#SN[@]}; i++)); do
+      if echo $swl | grep -qw "${SN[i]}"; then
+         read -ep "Enter software version for ${SN[i]}: " -i "${SV[i]}" version
+         SV[i]="$version"
+      fi
+   done
+}
+
+# download and extract software
+# $1 -> list of URLs to software (space-separated)
+function get_software()
+{
+   local list="$1"
+   local name
+
+   echo
+   for url in ${list}; do
+      name="${url##*/}"
+      read -p "Press enter to download and extract: $name"
+      wget -nc $url
+      tar -xzf $name
+   done
+}
+
 # --------------------------  STRING MANIPULATION
 
 # converts a string to lower case
@@ -325,6 +381,55 @@ run_script() {
    return $result
 }
 
+# append source cmd to conf file if not set already
+set_source_cmd() {
+   local conf_file="$1"
+   local src_cmd="$2"
+
+   if grep -q $src_cmd $conf_file >/dev/null 2>&1; then
+      notify "already set $src_cmd in $conf_file"
+   else
+      echo $src_comd >> $conf_file && success "configured: $src_cmd in $HOME/.bashrc"
+   fi
+}
+
+# clone or pull git repo and source repo file in conf file
+set_sourced_config() {
+   local conf_file="$1"
+   local repo_url="$2"
+   local repo_dir=$(trim_shortest_right_pattern "$3" "/")
+   local repo_file=$(trim_longest_left_pattern "$3" "/")
+   local src_cmd="$4"
+
+   if grep -q "$repo_file" "$conf_file" >/dev/null 2>&1; then
+      notify "already set $repo_file in $conf_file"
+      cd $repo_dir && echo "checking for updates: $repo_file" && git pull && cd - >/dev/null
+   else
+      pause "Press [Enter] to configure $repo_file in $conf_file" true
+      git clone $repo_url $repo_dir && echo -e "$src_cmd" >> $conf_file && success "configured: $repo_file in $conf_file"
+   fi
+   RET="$?"
+   debug "set_sourced_config"
+}
+
+# clone or pull git repo and copy repo file onto conf file
+set_copied_config() {
+   local conf_file="$1"
+   local repo_url="$2"
+   local repo_dir=$(trim_shortest_right_pattern "$3" "/")
+   local repo_file=$(trim_longest_left_pattern "$3" "/")
+
+   if [ -f $repo_file ]; then
+      notify "already set $repo_file in $conf_file"
+      cd $repo_dir && echo "checking for updates: $repo_file" && git pull && cp $repo_file $conf_file && success "updated: $conf_file" && cd - >/dev/null
+   else
+      pause "Press [Enter] to configure $conf_file" true
+      git clone $repo_url $repo_dir && cp $repo_file $conf_file && success "configured: $conf_file"
+   fi
+   RET="$?"
+   debug "set_copied_config"
+}
+
 # source rvm after installing non-package management version of ruby
 source_rvm() {
    echo
@@ -337,7 +442,116 @@ source_rvm() {
    fi
 }
 
-# --------------------------  INSTALL SHIT
+# --------------------------  INSTALL FROM CUSTOM SCRIPTS
+
+install_rvm_ruby() {
+   pause "Press [Enter] to install ruby via rvm" true
+   if ! ruby -v | grep -q "ruby ${RUBY_V}"; then
+      gpg2 --keyserver hkp://keys.gnupg.net --recv-keys "$RUBY_KEY"
+      curl -sSL "$RUBY_URL" | bash -s stable --ruby="${RUBY_V}"
+   fi
+   source_rvm
+}
+
+install_rbenv_ruby() {
+   # rbenv
+   set_sourced_config   "$HOME/.bashrc" \
+                        "https://github.com/rbenv/rbenv.git" \
+                        "$HOME/.rbenv/" \
+                        "$HOME/.rbenv" \
+                        'export PATH="$HOME/.rbenv/bin:$PATH"'
+pause
+   # optional, to speed up rbenv
+   [ -d "$HOME/.rbenv" ] && cd "$HOME/.rbenv" && src/configure && make -C src && cd - >/dev/null
+pause
+   # add rbenv init - command to .bashrc
+   set_source_cmd       "$HOME/.bashrc" \
+                        'eval "$(rbenv init -)"'
+pause
+   exec $SHELL
+
+   # ruby-build
+   set_sourced_config   "$HOME/.bashrc" \
+                        "https://github.com/rbenv/ruby-build.git" \
+                        "$HOME/.rbenv/plugins/ruby-build/" \
+                        "$HOME/.rbenv/plugins/ruby-build" \
+                        'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"'
+pause
+   exec $SHELL
+
+   # tell rubygems not to install docs for each package locally
+   set_source_cmd       "$HOME/.gemrc" \
+                        'gem: --no-ri --no-rdoc'
+pause
+   # check that rbenv is working and install ruby
+   type rbenv
+   rbenv version
+pause
+   [ "$?" -eq 0 ] && rbenv install 2.2.3
+pause
+   [ "$?" -eq 0 ] && rbenv global 2.2.3
+
+   # check ruby and rubygem versions
+   ruby -v
+   gem env home
+
+   RET="$?"
+   debug "install_rbenv_ruby"
+}
+
+# install or update spf13-vim
+install_spf13_vim() {
+   [ -d "$HOME/.spf13-vim-3" ] && echo "updating spf13-vim..." || echo "installing spf13-vim..."
+   # change to tmp directory to download file and then back to original directory
+   cd /tmp
+   curl https://j.mp/spf13-vim3 -L > spf13-vim.sh && sh spf13-vim.sh && success "successfully configured: $HOME/.spf13-vim-3"
+   cd - >/dev/null
+}
+
+# install the keybase cli client
+install_keybase() {
+   if not_installed "keybase"; then
+      # change to tmp directory to download file and then back to original directory
+      cd /tmp
+      curl -O https://dist.keybase.io/linux/deb/keybase-latest-amd64.deb && sudo dpkg -i keybase-latest-amd64.deb
+      cd - >/dev/null
+   else
+      notify "keybase is already installed"
+      echo
+   fi
+}
+
+# install newer version of virtualbox
+install_virtualbox() {
+   if not_installed "virtualbox-5.0"; then
+      # add virtualbox to sources list if not already there
+      if ! grep -q "virtualbox" /etc/apt/sources.list; then
+         echo "deb http://download.virtualbox.org/virtualbox/debian trusty contrib" | sudo tee --append /etc/apt/sources.list
+      fi
+      # add signing key
+      wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add -
+      # update sources and install the latest virtualbox
+      sudo apt-get update
+      install_apt "virtualbox-5.0"
+   fi
+}
+
+# install newer version of vagrant
+install_vagrant() {
+   if not_installed "vagrant"; then
+      # change to tmp directory to download file and then back to original directory
+      cd /tmp
+      echo "downloading vagrant..."
+      curl -O https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.deb && sudo dpkg -i vagrant_1.8.1_x86_64.deb
+      cd - >/dev/null
+   fi
+   # install vagrant-hostsupdater
+   [ -z "$(vagrant plugin list | grep hostsupdater)" ] && echo -e "${LIGHT_GRAY} NOTE: a vpn may be required in China for this... ${STD}" && vagrant plugin install vagrant-hostsupdater
+   # install vagrant-triggers
+   [ -z "$(vagrant plugin list | grep triggers)" ] && echo -e "${LIGHT_GRAY} NOTE: a vpn may be required in China for this... ${STD}" && vagrant plugin install vagrant-triggers
+}
+
+# --------------------------  INSTALL FROM PACKAGE MANAGERS
 
 # loop through install list and install any packages that are in the list
 # $1 -> to update sources or not
@@ -395,7 +609,7 @@ gem_install() {
    else
       # install required gems
       pause "Press [Enter] to install gems" true
-      sudo gem install ${gem_install_list[@]}
+      gem install ${gem_install_list[@]}
       echo
    fi
 }
@@ -414,7 +628,7 @@ install_gem() {
       if ! $(gem list "$app" -i); then
          echo
          read -p "Press [Enter] to install $app..."
-         sudo gem install "$app"
+         gem install "$app"
       fi
    done
 }
@@ -500,68 +714,6 @@ install_pip() {
          sudo pip install "$app"
       fi
    done
-}
-
-install_ruby() {
-   echo
-   read -p "Press [Enter] to install ruby and rubygems..."
-   if ! ruby -v | grep -q "ruby ${RUBY_V}"; then
-      gpg2 --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
-      curl -L "$RUBY_URL" | bash -s stable --ruby="${RUBY_V}"
-   fi
-   source_rmv
-}
-
-# install or update spf13-vim
-install_spf13_vim() {
-   [ -d "$HOME/.spf13-vim-3" ] && echo "updating spf13-vim..." || echo "installing spf13-vim..."
-   # change to tmp directory to download file and then back to original directory
-   cd /tmp
-   curl https://j.mp/spf13-vim3 -L > spf13-vim.sh && sh spf13-vim.sh && success "successfully configured: $HOME/.spf13-vim-3"
-   cd - >/dev/null
-}
-
-# install the keybase cli client
-install_keybase() {
-   if not_installed "keybase"; then
-      # change to tmp directory to download file and then back to original directory
-      cd /tmp
-      curl -O https://dist.keybase.io/linux/deb/keybase-latest-amd64.deb && sudo dpkg -i keybase-latest-amd64.deb
-      cd - >/dev/null
-   else
-      notify "keybase is already installed"
-      echo
-   fi
-}
-
-# install newer version of virtualbox
-install_virtualbox() {
-   if not_installed "virtualbox-5.0"; then
-      # add virtualbox to sources list if not already there
-      if ! grep -q "virtualbox" /etc/apt/sources.list; then
-         echo "deb http://download.virtualbox.org/virtualbox/debian trusty contrib" | sudo tee --append /etc/apt/sources.list
-      fi
-      # add signing key
-      wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add -
-      # update sources and install the latest virtualbox
-      sudo apt-get update
-      install_apt "virtualbox-5.0"
-   fi
-}
-
-# install newer version of vagrant
-install_vagrant() {
-   if not_installed "vagrant"; then
-      # change to tmp directory to download file and then back to original directory
-      cd /tmp
-      echo "downloading vagrant..."
-      curl -O https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.deb && sudo dpkg -i vagrant_1.8.1_x86_64.deb
-      cd - >/dev/null
-   fi
-   # install vagrant-hostsupdater
-   [ -z "$(vagrant plugin list | grep hostsupdater)" ] && echo -e "${LIGHT_GRAY} NOTE: a vpn may be required in China for this... ${STD}" && vagrant plugin install vagrant-hostsupdater
-   # install vagrant-triggers
-   [ -z "$(vagrant plugin list | grep triggers)" ] && echo -e "${LIGHT_GRAY} NOTE: a vpn may be required in China for this... ${STD}" && vagrant plugin install vagrant-triggers
 }
 
 # --------------------------  SSH AND GPG KEYS...(in other words, FUN)
