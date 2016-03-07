@@ -54,7 +54,6 @@ else
    echo
    notify "Packages to install with pip"
    read -ep "   : " -i 'jrnl[encrypted]'           PIPS
-   echo
 fi
 
 # --------------------------  ARRAY ASSIGNMENTS
@@ -73,8 +72,8 @@ apt_install "$UPDATE"
 
 # --------------------------  INSTALL FROM CUSTOM SCRIPTS
 
-confirm "Install ruby?" true
-[ "$?" -eq 0 ] && install_ruby
+confirm "Install ruby with rbenv and ruby-build?" true
+[ "$?" -eq 0 ] && install_rbenv_ruby
 
 confirm "Install keybase?" true
 [ "$?" -eq 0 ] && install_keybase
