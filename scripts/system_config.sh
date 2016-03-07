@@ -20,7 +20,7 @@ echo "# --------------------------------------------"
 do_backup() {
    local name
 
-   confirm "Backup config files before making changes?" false
+   confirm "Backup config files before making changes?" true
    [ "$?" -gt 0 ] && return 1
    if [ -e "$1" ] || [ -e "$2" ] || [ -e "$3" ] || [ -e "$4" ] || [ -e "$5" ] || [ -e "$6" ] || [ -e "$7" ] || [ -e "$8" ] || [ -e "$9" ] || [ -e "$10" ]; then
       today=`date +%Y%m%d_%s`

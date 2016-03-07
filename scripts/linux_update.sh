@@ -45,6 +45,7 @@ npm_install
 pip_install
 
 # install keybase
+confirm "Install Keybase?" true
 install_keybase
 
 # install spf13-vim

@@ -163,10 +163,10 @@ pause() {
 
 confirm() {
    local text="$1"
-   local preferNo="$2" # optional
+   local preferYes="$2" # optional
 
    # check preference
-   if [ -n "${preferNo}" ] && [ "${preferNo}" = false ]; then
+   if [ -n "${preferYes}" ] && [ "${preferYes}" = true ]; then
       # prompt user with preference for Yes
       read -rp "${text} [Y/n] " response
       case $response in

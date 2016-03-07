@@ -65,7 +65,7 @@ display_menu() {
       echo "1. INSTALLS & UPDATES"
       echo "2. SYSTEM CONFIG"
       echo "3. SSH KEY"
-      echo "4. WORDPRESS DEVELOPMENT"
+      echo "4. WORDPRESS CONTAINER"
       echo "5. FIX PERMISSIONS"
       echo "6. QUIT"
 }

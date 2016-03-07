@@ -11,10 +11,10 @@ echo "# --------------------------------------------"
 
 pause "" true
 # wordpress development
-if confirm "install virtualbox and vagrant for VVV?" false; then
+if confirm "install virtualbox and vagrant for VVV?" true; then
    install_virtualbox
    install_vagrant
-   if confirm "clone VVV and VV for WordPress development?" false; then
+   if confirm "clone VVV and VV for WordPress development?" true; then
       read -ep "Directory to use for repositories: ~/" -i "Dropbox/Repos" REPOS
       clone_vvv "$REPOS"
       clone_vv "$REPOS"
