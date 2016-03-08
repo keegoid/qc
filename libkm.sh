@@ -17,7 +17,7 @@
 
 # note: true=0 and false=1 in bash
 
-source $PROJECT/includes/colors.sh
+source colors.sh
 
 # --------------------------  DECLARE VARIABLES
 
@@ -401,10 +401,12 @@ set_source_cmd() {
 set_sourced_config() {
    local conf_file="$1"
    local repo_url="$2"
+   local repo_file=$(trim_longest_left_pattern "$3" "/")
    local repo_dir=$(trim_shortest_right_pattern "$3" "/")
-   local repo_file=$(trim_longest_left_pattern "$4" "/")
-   local src_cmd="$5"
+   local src_cmd="$4"
    local today=`date +%Y%m%d_%s`
+
+   [ -z "$repo_file"  ] && repo_file=$(trim_longest_left_pattern "$repo_dir" "/")
 
    if [ -n "$repo_file" ]; then
       if grep -q "$repo_file" "$conf_file" >/dev/null 2>&1; then
@@ -426,9 +428,11 @@ set_sourced_config() {
 set_copied_config() {
    local conf_file="$1"
    local repo_url="$2"
+   local repo_file=$(trim_longest_left_pattern "$3" "/")
    local repo_dir=$(trim_shortest_right_pattern "$3" "/")
-   local repo_file=$(trim_longest_left_pattern "$4" "/")
    local today=`date +%Y%m%d_%s`
+
+   [ -z "$repo_file"  ] && repo_file=$(trim_longest_left_pattern "$repo_dir" "/")
 
    if [ -n "$repo_file" ]; then
       if [ -f $repo_file ]; then
@@ -476,7 +480,6 @@ install_rbenv_ruby() {
    set_sourced_config   "$HOME/.profile" \
                         "https://github.com/rbenv/rbenv.git" \
                         "$HOME/.rbenv/" \
-                        "$HOME/.rbenv" \
                         '[[ ":$PATH:" =~ ":$HOME/.rbenv/bin:" ]] || PATH="$HOME/.rbenv/bin:$PATH"'
 
    # optional, to speed up rbenv
@@ -491,7 +494,6 @@ install_rbenv_ruby() {
    set_sourced_config   "$HOME/.profile" \
                         "https://github.com/rbenv/ruby-build.git" \
                         "$HOME/.rbenv/plugins/ruby-build/" \
-                        "$HOME/.rbenv/plugins/ruby-build" \
                         '[[ ":$PATH:" =~ ":$HOME/.rbenv/plugins/ruby-build/bin:" ]] || PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"'
 
    # tell rubygems not to install docs for each package locally
