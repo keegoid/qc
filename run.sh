@@ -19,7 +19,7 @@ APP_NAME="ubuntu-quick-config"
 PROJECT="$PWD"
 
 # set to true (0) to prevent clearing the screen and report errors
-DEBUG_MODE=1
+DEBUG_MODE=0
 
 # make sure $HOME variable is set
 variable_set $HOME
@@ -52,7 +52,7 @@ exit_msg() {
 # --------------------------  MENU OPTIONS
 
 display_menu() {
-      [ "$DEBUG_MODE" -eq 0 ] || clear
+      [ "$DEBUG_MODE" -eq 1 ] || clear
       echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~"
    if [ "$IS_SERVER" -eq 0 ]; then
       echo "     M A I N - M E N U     "
