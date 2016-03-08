@@ -397,28 +397,28 @@ set_source_cmd() {
    debug
 }
 
-# clone or pull git repo and source repo file in conf file
+# clone or pull git repo and source repo name in conf file
 set_sourced_config() {
    local conf_file="$1"
    local repo_url="$2"
-   local repo_file=$(trim_longest_left_pattern "$3" "/")
+   local repo_name=$(trim_longest_left_pattern "$3" "/")
    local repo_dir=$(trim_shortest_right_pattern "$3" "/")
    local src_cmd="$4"
    local today=`date +%Y%m%d_%s`
 
-   [ -z "$repo_file"  ] && repo_file=$(trim_longest_left_pattern "$repo_dir" "/")
+   [ -z "$repo_name"  ] && repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
 
-   if [ -n "$repo_file" ]; then
-      if grep -q "$repo_file" "$conf_file" >/dev/null 2>&1; then
-         notify "already set $repo_file in $conf_file"
-         cd $repo_dir && echo "checking for updates: $repo_file" && git pull && cd - >/dev/null
+   if [ -n "$repo_name" ]; then
+      if grep -q "$repo_name" "$conf_file" >/dev/null 2>&1; then
+         notify "already set $repo_name in $conf_file"
+         cd $repo_dir && echo "checking for updates: $repo_name" && git pull && cd - >/dev/null
       else
-         pause "Press [Enter] to configure $repo_file in $conf_file" true
+         pause "Press [Enter] to configure $repo_name in $conf_file" true
          [ -d "$repo_dir" ] && notify2 "$repo_dir already exists. Will save a copy, delete and clone again." && cp -r $repo_dir $repo_dir-$today && rm -rf $repo_dir
-         git clone "$repo_url" "$repo_dir" && echo -e "$src_cmd" >> "$conf_file" && success "configured: $repo_file in $conf_file"
+         git clone "$repo_url" "$repo_dir" && echo -e "$src_cmd" >> "$conf_file" && success "configured: $repo_name in $conf_file"
       fi
    else
-      alert "repo_file variable is empty"
+      alert "repo_name variable is empty"
    fi
    RET="$?"
    debug
@@ -428,11 +428,9 @@ set_sourced_config() {
 set_copied_config() {
    local conf_file="$1"
    local repo_url="$2"
-   local repo_file=$(trim_longest_left_pattern "$3" "/")
+   local repo_file="$3"
    local repo_dir=$(trim_shortest_right_pattern "$3" "/")
    local today=`date +%Y%m%d_%s`
-
-   [ -z "$repo_file"  ] && repo_file=$(trim_longest_left_pattern "$repo_dir" "/")
 
    if [ -n "$repo_file" ]; then
       if [ -f $repo_file ]; then
