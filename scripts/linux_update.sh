@@ -37,7 +37,7 @@ else
    echo "RUBY DEPENDENCIES"
    echo "GEMs, NPMs, PIPs"
    echo
-   notify "Workstation packages to install (none to skip)"
+   notify "Workstation packages to install (delete all to skip)"
    read -ep "   : " -i "$DEFAULT_WORKSTATION_LIST" APTS1
    echo
    notify "Developer packages to install"
