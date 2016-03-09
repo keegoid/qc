@@ -554,6 +554,7 @@ create_alpine_lxd_image() {
    local repo_url="$1"
    local repo_name=$(trim_longest_left_pattern "$2" "/")
    local repo_dir=$(trim_shortest_right_pattern "$2" "/")
+   local image_name="alpine-latest"
 
    [ -z "$repo_name"  ] && repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
 
@@ -571,8 +572,11 @@ create_alpine_lxd_image() {
    cd "$repo_dir"
    # remove any previous images
    rm -f alpine-v*.tar.gz
+   # count number of matches for alpine-latest and add one
+   local image_cnt=$(lxc image list | grep -c alpine-latest)
+   [ "$image_cnt" -gt 0 ] && image_name="$image_name-$image_cnt"
    # download and build the latest alpine image and add it to lxc
-   sudo ./build-alpine && lxc image import alpine-v*.tar.gz --alias alpine-latest && success "successfully created alpine linux lxd image and imported to lxc"
+   sudo ./build-alpine && lxc image import alpine-v*.tar.gz --alias "$image_name" && success "successfully created alpine linux lxd image and imported to lxc"
    cd - >/dev/null
    lxc image list
 }
