@@ -557,6 +557,7 @@ create_alpine_lxd_image() {
 
    [ -z "$repo_name"  ] && repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
 
+   # update or clone alpine-lxd-image repo
    if [ -d "$repo_dir" ]; then
       notify "already set $repo_name"
       cd $repo_dir && echo "checking for updates: $repo_name" && git pull && cd - >/dev/null
@@ -567,7 +568,12 @@ create_alpine_lxd_image() {
 
    [ $(not_installed lxd) ] && install_lxd
 
-   cd "$repo_dir" && sudo ./build-alpine && lxc image import alpine-v*.tar.gz --alias alpine-latest && success "successfully created alpine linux lxd image and imported to lxc" && cd - >/dev/null
+   cd "$repo_dir"
+   # remove any previous images
+   rm -f alpine-v*.tar.gz
+   # download and build the latest alpine image and add it to lxc
+   sudo ./build-alpine && lxc image import alpine-v*.tar.gz --alias alpine-latest && success "successfully created alpine linux lxd image and imported to lxc"
+   cd - >/dev/null
    lxc image list
 }
 
