@@ -21,7 +21,7 @@ fi
 
 DEFAULT_SERVER_LIST='gnupg2 lynx openssh-server xclip vim-gtk'
 DEFAULT_WORKSTATION_LIST='autojump deluge gnupg2 gufw lynx nautilus-open-terminal silversearcher-ag tmux x11vnc xclip vim-gtk vlc'
-DEFAULT_DEV_LIST='build-essential cmake checkinstall cvs dconf-cli git-core mercurial subversion'
+DEFAULT_DEV_LIST='build-essential cmake checkinstall cvs dconf-cli git-core lxc mercurial subversion'
 RUBY_DEPENDENCIES_LIST='libffi-dev libreadline-dev libsqlite3-dev libssl-dev libxml2-dev libxslt1-dev libyaml-dev python-software-properties sqlite3libcurl4-openssl-dev zlib1g-dev'
 
 # --------------------------  PROMPT FOR PROGRAMS
@@ -82,8 +82,14 @@ confirm "Install keybase?" true
 confirm "Install spf13-vim?" true
 [ "$?" -eq 0 ] && install_spf13_vim
 
-confirm "Install flockport?" true
-[ "$?" -eq 0 ] && install_flockport
+confirm "Install LXD?" true
+[ "$?" -eq 0 ] && install_lxd
+
+confirm "Create Alpine Linux image for LXD?" true
+if [ "$?" -eq 0 ]; then
+   create_alpine_lxd_image "https://github.com/saghul/lxd-alpine-builder.git" \
+                           "$HOME/.uqc/lxd/lxd-alpine-builder/"
+fi
 
 # --------------------------  INSTALL FROM OTHER PACKAGE MANAGERS
 

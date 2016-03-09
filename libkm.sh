@@ -539,6 +539,38 @@ install_spf13_vim() {
    cd - >/dev/null
 }
 
+# install or update LXD for LXC containers
+install_lxd() {
+   program_must_exist lxc
+   if not_installed lxd; then
+      sudo add-apt-repository -y ppa:ubuntu-lxc/lxd-stable && sudo apt-get update && sudo apt-get -y dist-upgrade && sudo apt-get -y -t trusty-backports install lxd criu && success "successfuly installed: LXD (\"lex-dee\")"
+   else
+      notify "already installed LXD"
+   fi
+}
+
+# create a base alpine linux image for LXD
+create_alpine_lxd_image() {
+   local repo_url="$1"
+   local repo_name=$(trim_longest_left_pattern "$2" "/")
+   local repo_dir=$(trim_shortest_right_pattern "$2" "/")
+
+   [ -z "$repo_name"  ] && repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
+
+   if [ -d "$repo_dir" ]; then
+      notify "already set $repo_name"
+      cd $repo_dir && echo "checking for updates: $repo_name" && git pull && cd - >/dev/null
+   else
+      pause "Press [Enter] to configure $repo_name" true
+      git clone "$repo_url" "$repo_dir" && success "configured: $repo_name"
+   fi
+
+   [ $(not_installed lxd) ] && install_lxd
+
+   cd "$repo_dir" && sudo ./build-alpine && lxc image import alpine-v*.tar.gz --alias alpine-latest && success "successfully created alpine linux lxd image and imported to lxc" && cd - >/dev/null
+   lxc image list
+}
+
 # install or update the flockport installer and utility
 install_flockport() {
    local start="$PWD"
@@ -569,6 +601,7 @@ install_virtualbox() {
    if not_installed "virtualbox-5.0"; then
       # add virtualbox to sources list if not already there
       if ! grep -q "virtualbox" /etc/apt/sources.list; then
+         sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup
          echo "deb http://download.virtualbox.org/virtualbox/debian trusty contrib" | sudo tee --append /etc/apt/sources.list
       fi
       # add signing key
