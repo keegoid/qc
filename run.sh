@@ -65,9 +65,10 @@ display_menu() {
       echo "1. INSTALLS & UPDATES"
       echo "2. SYSTEM CONFIG"
       echo "3. SSH KEY"
-      echo "4. WORDPRESS CONTAINER"
-      echo "5. FIX PERMISSIONS"
-      echo "6. QUIT"
+      echo "4. ALPINE LXD IMAGE & CONTAINER"
+      echo "5. WORDPRESS SETUP ON ALPINE CONTAINER"
+      echo "6. FIX PERMISSIONS"
+      echo "7. QUIT"
 }
 
 # --------------------------  USER SELECTION
@@ -76,14 +77,15 @@ select_options() {
    local choice
    # make sure we're always starting from the right place
    cd "$PROJECT"
-   read -rp "Enter choice [1 - 6]: " choice
+   read -rp "Enter choice [1 - 7]: " choice
    case $choice in
       1) run_script linux_update.sh "scripts";;
       2) run_script system_config.sh "scripts";;
       3) run_script ssh_key.sh "scripts";;
-      4) run_script wordpress_flockport.sh "scripts";;
-      5) fix_permissions;;
-      6) exit_msg && exit 0;;
+      4) run_script lxd.sh "scripts";;
+      5) run_script wordpress_setup.sh "scripts";;
+      6) fix_permissions;;
+      7) exit_msg && exit 0;;
       *) alert "Error..." && sleep 1
    esac
 

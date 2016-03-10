@@ -81,10 +81,3 @@ confirm "Install spf13-vim?" true
 confirm "Install LXD?" true
 [ "$?" -eq 0 ] && install_lxd
 
-confirm "Create Alpine Linux image for LXD?" true
-[ "$?" -eq 0 ] && newgrp lxd && create_alpine_lxd_image  "https://github.com/saghul/lxd-alpine-builder.git" \
-                                           "$HOME/.uqc/lxd/lxd-alpine-builder/" && newgrp
-
-confirm "Create LXD container from newly created image?" true
-[ "$?" -eq 0 ] && newgrp lxd && create_lxd_container && newgrp
-
