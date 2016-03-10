@@ -406,10 +406,10 @@ set_sourced_config() {
    local src_cmd="$4"
    local today=`date +%Y%m%d_%s`
 
-   [ -z "$repo_name"  ] && repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
+   [ -z "$repo_name" ] && repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
 
    if [ -n "$repo_name" ]; then
-      if grep -q "$repo_name" "$conf_file" >/dev/null 2>&1; then
+      if [ -d "$repo_dir" ] && [ -n $(grep "$repo_name" "$conf_file") ]; then
          notify "already set $repo_name in $conf_file"
          cd $repo_dir && echo "checking for updates: $repo_name" && git pull && cd - >/dev/null
       else
@@ -557,7 +557,7 @@ create_alpine_lxd_image() {
    local image_name="alpine-latest"
    local image_cnt
 
-   [ -z "$repo_name"  ] && repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
+   [ -z "$repo_name" ] && repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
 
    # update or clone alpine-lxd-image repo
    if [ -d "$repo_dir" ]; then
@@ -568,7 +568,7 @@ create_alpine_lxd_image() {
       git clone "$repo_url" "$repo_dir" && success "configured: $repo_name"
    fi
 
-   [ $(not_installed lxd) ] && install_lxd
+   not_installed lxd && install_lxd
 
    # count number of matches for alpine-latest and add one
    image_cnt=$(lxc image list | grep -c $image_name)
