@@ -12,9 +12,9 @@ echo "# --------------------------------------------"
 # --------------------------  LXD IMAGE & CONTAINER
 
 confirm "Create Alpine Linux image for LXD?" true
-[ "$?" -eq 0 ] && newgrp lxd && create_alpine_lxd_image  "https://github.com/saghul/lxd-alpine-builder.git" \
-                                           "$HOME/.uqc/lxd/lxd-alpine-builder/" && newgrp
+[ "$?" -eq 0 ] && create_alpine_lxd_image  "https://github.com/saghul/lxd-alpine-builder.git" \
+                                           "$HOME/.uqc/lxd/lxd-alpine-builder/"
 
 confirm "Create LXD container from newly created image?" true
-[ "$?" -eq 0 ] && newgrp lxd && create_lxd_container && newgrp
+[ "$?" -eq 0 ] && create_lxd_container
 
