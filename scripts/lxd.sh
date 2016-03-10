@@ -17,7 +17,7 @@ echo "# --------------------------------------------"
 
 confirm "Create Alpine Linux image for LXD?" true
 [ "$?" -eq 0 ] && create_alpine_lxd_image  "https://github.com/saghul/lxd-alpine-builder.git" \
-                                           "$HOME/.uqc/lxd/lxd-alpine-builder/"
+                                           "$HOME/.quick-config/lxd/lxd-alpine-builder/"
 
 confirm "Create LXD container from newly created image?" true
 [ "$?" -eq 0 ] && create_lxd_container

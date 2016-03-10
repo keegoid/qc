@@ -11,7 +11,7 @@ echo "# --------------------------------------------"
 
 # --------------------------  SETUP PARAMETERS
 
-[ -z "$CONFIG" ] && CONFIG="$HOME/.uqc"
+[ -z "$CONFIG" ] && CONFIG="$HOME/.quick-config"
 [ -z "$BACKUP" ] && BACKUP="$CONFIG/backup"
 [ -z "$SYNCED" ] && SYNCED="$HOME/Dropbox/Config"
 
@@ -28,7 +28,7 @@ do_backup() {
       for i in "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"; do
          if [ -e "$i" ] && [ ! -L "$i" ]; then
             name=$(trim_longest_left_pattern "$i" "/")
-            cp "$i" "$BACKUP-$today/$name" && success "made backup: ~/.uqc/backup-$today/$name"
+            cp "$i" "$BACKUP-$today/$name" && success "made backup: $BACKUP-$today/$name"
          fi
       done
       RET="$?"

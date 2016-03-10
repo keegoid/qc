@@ -579,9 +579,8 @@ create_alpine_lxd_image() {
    sudo rm alpine-v*.tar.gz
    # download and build the latest alpine image
    sudo ./build-alpine
-   # set permissions and owner
+   # set permissions
    sudo chmod 664 alpine-v*.tar.gz
-   sudo chown -R $(logname):$(logname) $HOME/.uqc/lxd
    # add newly created image to lxc
    [ -f alpine-v*.tar.gz ] && lxc image import alpine-v*.tar.gz --alias "$image_name" && success "successfully created alpine linux lxd image and imported into lxc"
    cd - >/dev/null

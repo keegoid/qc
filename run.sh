@@ -15,7 +15,7 @@ source libkm.sh
 
 # --------------------------  SETUP PARAMETERS
 
-APP_NAME="ubuntu-quick-config"
+APP_NAME="quick-config"
 PROJECT="$PWD"
 
 # set to true (0) to prevent clearing the screen and report errors
