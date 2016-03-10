@@ -543,7 +543,7 @@ install_spf13_vim() {
 install_lxd() {
    program_must_exist lxc
    if not_installed lxd; then
-      sudo add-apt-repository -y ppa:ubuntu-lxc/lxd-stable && sudo apt-get update && sudo apt-get -y dist-upgrade && sudo apt-get -y -t trusty-backports install lxd criu && success "successfuly installed: LXD (\"lex-dee\")" && notify2 "You must log out and log back in for lxd command to work."
+      sudo add-apt-repository -y ppa:ubuntu-lxc/lxd-stable && sudo sed -i.bak -e "/trusty-backports/ s/^# //" /etc/apt/sources.list && sudo apt-get update && sudo apt-get -y dist-upgrade && sudo apt-get -y -t trusty-backports install lxd criu && success "successfuly installed: LXD (\"lex-dee\")" && notify2 "You must log out and log back in for lxc command to work."
    else
       notify "already installed LXD"
    fi
