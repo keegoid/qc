@@ -40,8 +40,8 @@ Quickly configures a fresh install of [Ubuntu 14.04 64-bit][tt] on a workstation
 
 ### Clone or download this project
 
-- HTTPS: `git clone https://github.com/keegoid/ubuntu-quick-config.git`
-- SSH: `git clone git@github.com:keegoid/ubuntu-quick-config.git`
+- HTTPS: `git clone https://github.com/keegoid/quick-config.git`
+- SSH: `git clone git@github.com:keegoid/quick-config.git`
 
 ### Run it
 
