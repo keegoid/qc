@@ -9,6 +9,10 @@ echo "#                                             "
 echo "# http://keegoid.mit-license.org              "
 echo "# --------------------------------------------"
 
+# --------------------------  LXC COMMAND
+
+[ $(lxc version) ] || { notify2 "You must log out and log back in before running this script."; return 1; }
+
 # --------------------------  LXD IMAGE & CONTAINER
 
 confirm "Create Alpine Linux image for LXD?" true
