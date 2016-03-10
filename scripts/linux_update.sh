@@ -39,19 +39,14 @@ else
    echo
    notify "Workstation packages to install (delete all to skip)"
    read -ep "   : " -i "$DEFAULT_WORKSTATION_LIST" APTS1
-   echo
    notify "Developer packages to install"
    read -ep "   : " -i "$DEFAULT_DEV_LIST"         APTS2
-   echo
    notify "Ruby dependencies to install"
    read -ep "   : " -i "$RUBY_DEPENDENCIES_LIST"   APTS3
-   echo
    notify "Packages to install with gem"
    read -ep "   : " -i 'bundler gist'              GEMS
-   echo
    notify "Packages to install with npm"
    read -ep "   : " -i 'doctoc'                    NPMS
-   echo
    notify "Packages to install with pip"
    read -ep "   : " -i 'jrnl[encrypted]'           PIPS
 fi
@@ -66,15 +61,16 @@ gem_check_list+=($GEMS)
 npm_check_list+=($NPMS)
 pip_check_list+=($PIPS)
 
-# --------------------------  INSTALL FROM PACKAGE MANAGER
+# --------------------------  INSTALL PACKAGES
 
 apt_install "$UPDATE"
-
-# --------------------------  INSTALL FROM CUSTOM SCRIPTS
-
-echo
 confirm "Install ruby with rbenv and ruby-build?" true
 [ "$?" -eq 0 ] && install_rbenv_ruby
+gem_install
+npm_install
+pip_install
+
+# --------------------------  INSTALL FROM CUSTOM SCRIPTS
 
 confirm "Install keybase?" true
 [ "$?" -eq 0 ] && install_keybase
@@ -86,14 +82,9 @@ confirm "Install LXD?" true
 [ "$?" -eq 0 ] && install_lxd
 
 confirm "Create Alpine Linux image for LXD?" true
-if [ "$?" -eq 0 ]; then
-   create_alpine_lxd_image "https://github.com/saghul/lxd-alpine-builder.git" \
-                           "$HOME/.uqc/lxd/lxd-alpine-builder/"
-fi
+[ "$?" -eq 0 ] && newgrp lxd && create_alpine_lxd_image  "https://github.com/saghul/lxd-alpine-builder.git" \
+                                           "$HOME/.uqc/lxd/lxd-alpine-builder/" && newgrp
 
-# --------------------------  INSTALL FROM OTHER PACKAGE MANAGERS
-
-gem_install
-npm_install
-pip_install
+confirm "Create LXD container from newly created image?" true
+[ "$?" -eq 0 ] && newgrp lxd && create_lxd_container && newgrp
 

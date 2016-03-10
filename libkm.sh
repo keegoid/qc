@@ -543,7 +543,7 @@ install_spf13_vim() {
 install_lxd() {
    program_must_exist lxc
    if not_installed lxd; then
-      sudo add-apt-repository -y ppa:ubuntu-lxc/lxd-stable && sudo apt-get update && sudo apt-get -y dist-upgrade && sudo apt-get -y -t trusty-backports install lxd criu && newgrp lxd && success "successfuly installed: LXD (\"lex-dee\")"
+      sudo add-apt-repository -y ppa:ubuntu-lxc/lxd-stable && sudo apt-get update && sudo apt-get -y dist-upgrade && sudo apt-get -y -t trusty-backports install lxd criu && success "successfuly installed: LXD (\"lex-dee\")"
    else
       notify "already installed LXD"
    fi
@@ -555,6 +555,7 @@ create_alpine_lxd_image() {
    local repo_name=$(trim_longest_left_pattern "$2" "/")
    local repo_dir=$(trim_shortest_right_pattern "$2" "/")
    local image_name="alpine-latest"
+   local image_cnt
 
    [ -z "$repo_name"  ] && repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
 
@@ -569,16 +570,38 @@ create_alpine_lxd_image() {
 
    [ $(not_installed lxd) ] && install_lxd
 
+   # count number of matches for alpine-latest and add one
+   image_cnt=$(lxc image list | grep -c $image_name)
+   image_name="$image_name-$image_cnt"
+
    cd "$repo_dir"
    # remove any previous images
-   rm -f alpine-v*.tar.gz
-   # count number of matches for alpine-latest and add one
-   local image_cnt=$(lxc image list | grep -c alpine-latest)
-   [ "$image_cnt" -gt 0 ] && image_name="$image_name-$image_cnt"
-   # download and build the latest alpine image and add it to lxc
-   sudo ./build-alpine && lxc image import alpine-v*.tar.gz --alias "$image_name" && success "successfully created alpine linux lxd image and imported to lxc"
+   sudo rm alpine-v*.tar.gz
+   # download and build the latest alpine image
+   sudo ./build-alpine
+   # set permissions and owner
+   sudo chmod 664 alpine-v*.tar.gz
+   sudo chown -R $(logname):$(logname) $HOME/.uqc/lxd
+   # add newly created image to lxc
+   [ -f alpine-v*.tar.gz ] && lxc image import alpine-v*.tar.gz --alias "$image_name" && success "successfully created alpine linux lxd image and imported into lxc"
    cd - >/dev/null
-   lxc image list
+}
+
+# create new lxd container from latest image
+# $1 -> lxd image name ending with -$image_cnt
+create_lxd_container() {
+   local image_name="alpine-latest"
+   local image_cnt=`expr $(lxc image list | grep -c $image_name) - 1`
+   image_name="$image_name-$image_cnt"
+   read -ep "Enter a container name to use with $image_name: " -i "alpine-wp-$image_cnt" container_name
+
+   # create and start container
+   lxc launch "$image_name" "$container_name"
+
+   # add container's ip to /etc/hosts
+   pause "Press [Enter] to add ${container_name}.dev to /etc/hosts"
+   local ipv4=$(lxc list | grep $container_name | cut -d "|" -f 4 | cut -d " " -f 2)
+   [ -n "$ipv4" ] && echo -e "${ipv4}\t${container_name}.dev" | sudo tee --append /etc/hosts && success "successfully created ${container_name}.dev and added $ipv4 to /etc/hosts"
 }
 
 # install or update the flockport installer and utility
@@ -642,7 +665,6 @@ install_vagrant() {
 # loop through install list and install any packages that are in the list
 # $1 -> to update sources or not
 apt_install() {
-   echo
    apt_check
 
    if [[ "${#apt_install_list[@]}" -eq 0 ]]; then
@@ -682,7 +704,6 @@ install_apt() {
 
 # loop through install list and install any gems that are in the list
 gem_install() {
-   echo
    gem_check
 
    # make sure ruby is installed
@@ -719,7 +740,6 @@ install_gem() {
 
 # loop through install list and install any npms that are in the list
 npm_install() {
-   echo
    npm_check
 
    # make sure npm is installed
@@ -762,12 +782,14 @@ install_npm() {
 
 # loop through install list and install any pips that are in the list
 pip_install() {
-   echo
    pip_check
 
    # make sure dependencies are installed
    program_must_exist "python-pip"
    program_must_exist "python-keyring"
+
+   # check for pip upgrade
+   sudo -H pip install --upgrade pip
 
    if [[ "${#pip_install_list[@]}" -eq 0 ]]; then
       notify "No pips to install"
@@ -786,6 +808,9 @@ install_pip() {
    # make sure dependencies are installed
    program_must_exist "python-pip"
    program_must_exist "python-keyring"
+
+   # check for pip upgrade
+   sudo -H pip install --upgrade pip
 
    # install pips in the list
    for app in $names; do
