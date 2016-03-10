@@ -1,5 +1,5 @@
-ubuntu-quick-config
-===================
+quick-config
+============
 
 Quickly configures a fresh install of [Ubuntu 14.04 64-bit][tt] on a workstation or server.
 
@@ -33,6 +33,7 @@ Quickly configures a fresh install of [Ubuntu 14.04 64-bit][tt] on a workstation
 - configure [tmux][tmux]
 - install and configure [spf13-vim][spf13] version of [VIM][vim], ideal for developers
 - configure [git][git] global settings
+- install [LXD][lxd], create an [Alpine Linux][alpine] image and use it to create an [LXC][lxc] container
 - install the latest [VirtualBox][vb], [Vagrant][vg] and setup [VVV][vvv] and [VV][vv] for [WordPress][wp] development
 
 ## Usage
@@ -71,6 +72,9 @@ SEE: http://keegoid.mit-license.org
 
 
 [ubuntu]:   http://www.ubuntu.com/global
+[lxd]:      https://linuxcontainers.org/lxd/introduction/
+[lxc]:      https://linuxcontainers.org/lxc/introduction/
+[alpine]:   http://alpinelinux.org/
 [gedit]:    https://wiki.gnome.org/Apps/Gedit
 [vim]:      http://www.vim.org/
 [spf13]:    http://vim.spf13.com/
