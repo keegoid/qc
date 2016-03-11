@@ -75,7 +75,7 @@ pip_install
 confirm "Install keybase?" true
 [ "$?" -eq 0 ] && install_keybase
 
-confirm "Install Sublime Text 3?" true
+confirm "Install Sublime Text?" true
 [ "$?" -eq 0 ] && install_subl
 
 confirm "Install LXD?" true
