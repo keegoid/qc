@@ -75,8 +75,8 @@ pip_install
 confirm "Install keybase?" true
 [ "$?" -eq 0 ] && install_keybase
 
-confirm "Install spf13-vim?" true
-[ "$?" -eq 0 ] && install_spf13_vim
+confirm "Install Sublime Text 3?" true
+[ "$?" -eq 0 ] && install_subl
 
 confirm "Install LXD?" true
 [ "$?" -eq 0 ] && install_lxd

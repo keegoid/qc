@@ -115,10 +115,10 @@ do_backup            "$HOME/.bashrc" \
                      "$HOME/.gconf/apps/gnome-terminal/profiles/Default/%gconf.xml" \
                      "$HOME/.local/share/gedit/styles/blackboard.xml" \
                      "$HOME/.local/share/gedit/styles/solarized-dark.xml" \
-                     "$HOME/.local/share/gedit/styles/solarized-light.xml" \
                      "$HOME/.muttrc" \
                      "$HOME/.tmux.conf" \
-                     "$HOME/.vimrc.local" \
+                     "$HOME/.vimrc" \
+                     "$HOME/.config/sublime-text-3/Packages/User/Preferences.sublime-settings" \
                      "$HOME/.gitignore_global"
 
 # aliases
@@ -140,17 +140,22 @@ set_sourced_config   "$HOME/.tmux.conf" \
                      "source-file $CONFIG/tmux/tmux.conf"
 
 # vim config
-set_sourced_config   "$HOME/.vimrc.local" \
+set_sourced_config   "$HOME/.vimrc" \
                      "https://gist.github.com/00a60c7355c27c692262.git" \
                      "$CONFIG/vim/vim.conf" \
                      "\" source config file\n:so $CONFIG/vim/vim.conf"
 
-[ -d "$SYNCED/vim" ] || mkdir -pv "$SYNCED/vim" && notify2 "note: vim spellfile will be located in $SYNCED/vim, you can change this in $CONFIG/vim/vim.conf"
+[ -d "$SYNCED/vim" ] || mkdir -pv "$SYNCED/vim" && notify3 "note: vim spellfile will be located in $SYNCED/vim, you can change this in $CONFIG/vim/vim.conf"
 
 # terminal profile
 set_copied_config    "$HOME/.gconf/apps/gnome-terminal/profiles/Default/%gconf.xml" \
                      "https://gist.github.com/dad1663d2463db32c6e8.git" \
                      "$CONFIG/terminal/profile/gconf.xml"
+
+# subl config
+set_copied_config    "$HOME/.config/sublime-text-3/Packages/User/Preferences.sublime-settings" \
+                     "https://gist.github.com/2ff3aa9ce91ff6e0e706.git" \
+                     "$CONFIG/subl/subl.conf"
 
 # gedit color scheme
 set_copied_config    "$HOME/.local/share/gedit/styles/blackboard.xml" \
@@ -161,11 +166,6 @@ set_copied_config    "$HOME/.local/share/gedit/styles/blackboard.xml" \
 set_copied_config    "$HOME/.local/share/gedit/styles/solarized-dark.xml" \
                      "https://github.com/mattcan/solarized-gedit.git" \
                      "$CONFIG/gedit/solarized/solarized-dark.xml"
-
-# gedit color scheme
-set_copied_config    "$HOME/.local/share/gedit/styles/solarized-light.xml" \
-                     "https://github.com/mattcan/solarized-gedit.git" \
-                     "$CONFIG/gedit/solarized/solarized-light.xml"
 
 set_copied_config    "$HOME/.gitignore_global" \
                      "https://gist.github.com/efa547b362910ac7077c.git" \

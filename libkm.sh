@@ -34,60 +34,24 @@ npm_check_list=()
 pip_check_list=()
 
 # names and versions of repositories/software
-SN=( NGINX   OPENSSL   RUBY  )
-SV=( 1.9.3   1.0.2d    2.2.3 )
+SN=( RUBY   SUBL )
+SV=( 2.2.3  3103 )
 
 # URLs to check software versions for latest versions
-#   NGINX   nginx.org/download/
-# OPENSSL   www.openssl.org/source/
 #    RUBY   www.ruby-lang.org/en/downloads/
+#    SUBL   https://www.sublimetext.com/3
 
 # verstion variable assignments (determined by array order)
-NGINX_V="${SV[0]}"
-OPENSSL_V="${SV[1]}"
-RUBY_V="${SV[2]}"
+RUBY_V="${SV[0]}"
+SUBL_V="${SV[1]}"
 
 # software download URLs
-NGINX_URL="http://nginx.org/download/nginx-${NGINX_V}.tar.gz"
-OPENSSL_URL="http://www.openssl.org/source/openssl-${OPENSSL_V}.tar.gz"
 RUBY_URL="https://get.rvm.io"
+SUBL_URL="https://download.sublimetext.com/sublime-text_build-${SUBL_V}_amd64.deb"
 WORDPRESS_URL="http://wordpress.org/latest.tar.gz"
 
 # GPG public keys
 RUBY_KEY='D39DC0E3'
-
-# --------------------------  CUSTOM SOFTWARE
-
-# set software versions
-# $1 -> software list (space-separated)
-function set_software_versions()
-{
-   local swl="$1"
-   local version
-   echo
-   for ((i=0; i<${#SN[@]}; i++)); do
-      if echo $swl | grep -qw "${SN[i]}"; then
-         read -ep "Enter software version for ${SN[i]}: " -i "${SV[i]}" version
-         SV[i]="$version"
-      fi
-   done
-}
-
-# download and extract software
-# $1 -> list of URLs to software (space-separated)
-function get_software()
-{
-   local list="$1"
-   local name
-
-   echo
-   for url in ${list}; do
-      name="${url##*/}"
-      read -p "Press enter to download and extract: $name"
-      wget -nc $url
-      tar -xzf $name
-   done
-}
 
 # --------------------------  STRING MANIPULATION
 
@@ -341,6 +305,39 @@ pip_check() {
    done
 }
 
+# --------------------------  CUSTOM SOFTWARE
+
+# set software versions
+# $1 -> software list (space-separated)
+function set_software_versions()
+{
+   local swl="$1"
+   local version
+   echo
+   for ((i=0; i<${#SN[@]}; i++)); do
+      if echo $swl | grep -qw "${SN[i]}"; then
+         read -ep "Enter software version for ${SN[i]}: " -i "${SV[i]}" version
+         SV[i]="$version"
+      fi
+   done
+}
+
+# download and extract software
+# $1 -> list of URLs to software (space-separated)
+function get_software()
+{
+   local list="$1"
+   local name
+
+   echo
+   for url in ${list}; do
+      name=$(trim_longest_left_pattern $url "/")
+      pause "Press enter to download and extract: $name"
+      wget -nc $url
+      tar -xzf $name
+   done
+}
+
 # --------------------------  MISC ACTIONS
 
 # create symlink if source file exists
@@ -526,7 +523,21 @@ install_keybase() {
       cd - >/dev/null
    else
       notify "keybase is already installed"
-      echo
+   fi
+}
+
+# install the Sublime Text
+install_subl() {
+   if not_installed "subl"; then
+      # change to tmp directory to download file and then back to original directory
+      cd /tmp
+      echo "downloading subl..."
+      curl -O "https://download.sublimetext.com/sublime-text_build-${SUBL_V}_amd64.deb" && sudo dpkg -i "sublime-text_build-${SUBL_V}_amd64.deb" && success "successfully installed: subl"
+      cd - >/dev/null
+      # set sublime-text as default text editor
+      sudo sed -i.bak -e "s|gedit|sublime_text|" /usr/share/applications/defaults.list
+   else
+      notify "subl is already installed"
    fi
 }
 
@@ -652,7 +663,7 @@ install_vagrant() {
       # change to tmp directory to download file and then back to original directory
       cd /tmp
       echo "downloading vagrant..."
-      curl -O https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.deb && sudo dpkg -i vagrant_1.8.1_x86_64.deb
+      curl -O https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.deb && sudo dpkg -i vagrant_1.8.1_x86_64.deb && success "successfully installed: vagrant"
       cd - >/dev/null
    fi
    # install vagrant-hostsupdater
