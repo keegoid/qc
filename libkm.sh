@@ -372,7 +372,7 @@ run_script() {
    chmod +x "${name}"
 
    # clear the screen and run the script
-   [ "$DEBUG_MODE" -eq 0 ] || clear
+   [ "$DEBUG_MODE" -eq 1 ] || clear
    . ./"${name}"
    result=$?
    notify3 "script: ${name} has finished"
@@ -410,7 +410,7 @@ set_sourced_config() {
    [ -z "$repo_name" ] && repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
 
    if [ -n "$repo_name" ]; then
-      if [ -d "$repo_dir" ] && [ -n $(grep "$repo_name" "$conf_file") ]; then
+      if [ -d "$repo_dir" ] && [ -n "$(grep $repo_name $conf_file)" ]; then
          notify "already set $repo_name in $conf_file"
          cd $repo_dir && echo "checking for updates: $repo_name" && git pull && cd - >/dev/null
       else
