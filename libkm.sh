@@ -804,9 +804,6 @@ pip_install() {
    program_must_exist "python-pip"
    program_must_exist "python-keyring"
 
-   # check for pip upgrade
-   sudo -H pip install --upgrade pip
-
    if [[ "${#pip_install_list[@]}" -eq 0 ]]; then
       notify "No pips to install"
    else
@@ -824,9 +821,6 @@ install_pip() {
    # make sure dependencies are installed
    program_must_exist "python-pip"
    program_must_exist "python-keyring"
-
-   # check for pip upgrade
-   sudo -H pip install --upgrade pip
 
    # install pips in the list
    for app in $names; do
