@@ -153,6 +153,7 @@ set_copied_config    "$HOME/.gconf/apps/gnome-terminal/profiles/Default/%gconf.x
                      "$CONFIG/terminal/profile/gconf.xml"
 
 # subl config
+                      mkdir -p "$HOME/.config/sublime-text-3/Packages/User"
 set_copied_config    "$HOME/.config/sublime-text-3/Packages/User/Preferences.sublime-settings" \
                      "https://gist.github.com/2ff3aa9ce91ff6e0e706.git" \
                      "$CONFIG/subl/subl.conf"
