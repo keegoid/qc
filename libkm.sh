@@ -591,7 +591,7 @@ create_alpine_lxd_image() {
 
    cd "$repo_dir"
    # remove any previous images
-   sudo rm alpine-v*.tar.gz
+   sudo rm alpine-v*.tar.gz >/dev/null 2>&1
    # download and build the latest alpine image
    sudo ./build-alpine
    # set permissions
@@ -617,7 +617,7 @@ create_lxd_container() {
    # add container's ip to /etc/hosts
    pause "Press [Enter] to add ${container_name}.dev to /etc/hosts"
    local ipv4=$(lxc list | grep $container_name | cut -d "|" -f 4 | cut -d " " -f 2)
-   [ -n "$ipv4" ] && echo -e "${ipv4}\t${container_name}.dev" | sudo tee --append /etc/hosts && success "successfully created ${container_name}.dev and added $ipv4 to /etc/hosts"
+   [ -n "$ipv4" ] && echo -e "${ipv4}\t${container_name}.dev" | sudo tee --append /etc/hosts && success "successfully created ${container_name}.dev and added $ipv4 to /etc/hosts" || notify2 "Couldn't add ${container_name}.dev to /etc/hosts, missing IP address on container."
 }
 
 # install or update the flockport installer and utility
