@@ -30,7 +30,7 @@ if [ "$IS_SERVER" -eq 0 ]; then
    notify "Server packages to install (none to skip)"
    read -ep "   : " -i "$SERVER_APTS_LIST"         APTS1
 else
-   notify2 "The following default packages can be modified prior to installation."
+   notify3 "The following default packages can be modified prior to installation."
    echo
    echo "WORKSTATION"
    echo "DEVELOPER"
@@ -61,7 +61,7 @@ gem_check_list+=($GEMS)
 npm_check_list+=($NPMS)
 pip_check_list+=($PIPS)
 
-# --------------------------  INSTALL PACKAGES
+# --------------------------  PACKAGES
 
 apt_install "$UPDATE"
 confirm "Install ruby with rbenv and ruby-build?" true
@@ -70,9 +70,9 @@ gem_install
 npm_install
 pip_install
 
-# --------------------------  INSTALL FROM CUSTOM SCRIPTS
+# --------------------------  CUSTOM SCRIPTS
 
-confirm "Install keybase?" true
+confirm "Install Keybase?" true
 [ "$?" -eq 0 ] && install_keybase
 
 confirm "Install Sublime Text?" true
@@ -80,4 +80,3 @@ confirm "Install Sublime Text?" true
 
 confirm "Install LXD?" true
 [ "$?" -eq 0 ] && install_lxd
-
