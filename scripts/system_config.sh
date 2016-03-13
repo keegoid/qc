@@ -15,28 +15,6 @@ echo "# --------------------------------------------"
 [ -z "$BACKUP" ] && BACKUP="$CONFIG/backup"
 [ -z "$SYNCED" ] && SYNCED="$HOME/Dropbox/Config"
 
-# --------------------------  BACKUPS
-
-do_backup() {
-   local name
-
-   confirm "Backup config files before making changes?" true
-   [ "$?" -gt 0 ] && return 1
-   if [ -e "$1" ] || [ -e "$2" ] || [ -e "$3" ] || [ -e "$4" ] || [ -e "$5" ] || [ -e "$6" ] || [ -e "$7" ] || [ -e "$8" ] || [ -e "$9" ] || [ -e "$10" ]; then
-      today=`date +%Y%m%d_%s`
-      [ -d "$BACKUP-$today" ] || mkdir -pv "$BACKUP-$today"
-      for i in "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"; do
-         if [ -e "$i" ] && [ ! -L "$i" ]; then
-            name=$(trim_longest_left_pattern "$i" "/")
-            cp "$i" "$BACKUP-$today/$name" && success "made backup: $BACKUP-$today/$name"
-         fi
-      done
-      RET="$?"
-      debug
-  fi
-  return 0
-}
-
 # --------------------------  GIT CONFIG
 
 set_git_config() {
@@ -110,7 +88,10 @@ set_autojump() {
 
 # --------------------------  MAIN
 
-do_backup            "$HOME/.bashrc" \
+pause "" true
+
+do_backup            "$BACKUP" \
+                     "$HOME/.bashrc" \
                      "$HOME/.inputrc" \
                      "$HOME/.gconf/apps/gnome-terminal/profiles/Default/%gconf.xml" \
                      "$HOME/.local/share/gedit/styles/blackboard.xml" \
@@ -118,7 +99,6 @@ do_backup            "$HOME/.bashrc" \
                      "$HOME/.muttrc" \
                      "$HOME/.tmux.conf" \
                      "$HOME/.vimrc" \
-                     "$HOME/.config/sublime-text-3/Packages/User/Preferences.sublime-settings" \
                      "$HOME/.gitignore_global"
 
 # aliases
@@ -151,12 +131,6 @@ set_sourced_config   "$HOME/.vimrc" \
 set_copied_config    "$HOME/.gconf/apps/gnome-terminal/profiles/Default/%gconf.xml" \
                      "https://gist.github.com/dad1663d2463db32c6e8.git" \
                      "$CONFIG/terminal/profile/gconf.xml"
-
-# subl config
-                      mkdir -p "$HOME/.config/sublime-text-3/Packages/User"
-set_copied_config    "$HOME/.config/sublime-text-3/Packages/User/Preferences.sublime-settings" \
-                     "https://gist.github.com/2ff3aa9ce91ff6e0e706.git" \
-                     "$CONFIG/subl/subl.conf"
 
 # gedit color scheme
 set_copied_config    "$HOME/.local/share/gedit/styles/blackboard.xml" \

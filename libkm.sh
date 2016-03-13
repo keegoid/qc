@@ -19,40 +19,6 @@
 
 source colors.sh
 
-# --------------------------  DECLARE VARIABLES
-
-# install lists (perform install)
-apt_install_list=()
-gem_install_list=()
-npm_install_list=()
-pip_install_list=()
-
-# check lists (check if installed)
-apt_check_list=()
-gem_check_list=()
-npm_check_list=()
-pip_check_list=()
-
-# names and versions of repositories/software
-SN=( RUBY   SUBL )
-SV=( 2.2.3  3103 )
-
-# URLs to check software versions for latest versions
-#    RUBY   www.ruby-lang.org/en/downloads/
-#    SUBL   https://www.sublimetext.com/3
-
-# verstion variable assignments (determined by array order)
-RUBY_V="${SV[0]}"
-SUBL_V="${SV[1]}"
-
-# software download URLs
-RUBY_URL="https://get.rvm.io"
-SUBL_URL="https://download.sublimetext.com/sublime-text_build-${SUBL_V}_amd64.deb"
-WORDPRESS_URL="http://wordpress.org/latest.tar.gz"
-
-# GPG public keys
-RUBY_KEY='D39DC0E3'
-
 # --------------------------  STRING MANIPULATION
 
 # converts a string to lower case
@@ -227,121 +193,6 @@ program_must_exist() {
     fi
 }
 
-# loop through check list and add missing packages to install list
-apt_check() {
-   local pkg
-   local pkg_version
-
-   for pkg in "${apt_check_list[@]}"; do
-      if not_installed $pkg; then
-         echo -e " ${YELLOW_BLACK} * $pkg [not installed] ${NONE_WHITE}"
-         apt_install_list+=($pkg)
-      else
-         pkg_version=$(dpkg -s "${pkg}" 2>&1 | grep 'Version:' | cut -d " " -f 2)
-         space_count="$(expr 20 - "${#pkg}")"
-         pack_space_count="$(expr 20 - "${#pkg_version}")"
-         real_space="$(expr ${space_count} + ${pack_space_count} + ${#pkg_version})"
-         echo -en " ${GREEN_CHK}"
-         printf " $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
-      fi
-   done
-}
-
-# loop through check list and add missing gems to install list
-gem_check() {
-   local pkg
-   local pkg_version
-
-   for pkg in "${gem_check_list[@]}"; do
-      if gem list $pkg -i >/dev/null; then
-         pkg_version=$(gem list "${pkg}" | grep "${pkg}" | cut -d " " -f 2 | cut -d "(" -f 2 | cut -d ")" -f 1)
-         space_count="$(expr 20 - "${#pkg}")"
-         pack_space_count="$(expr 20 - "${#pkg_version}")"
-         real_space="$(expr ${space_count} + ${pack_space_count} + ${#pkg_version})"
-         echo -en " ${GREEN_CHK}"
-         printf " $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
-      else
-         echo -e " ${YELLOW_BLACK} * $pkg [not installed] ${NONE_WHITE}"
-         gem_install_list+=($pkg)
-      fi
-   done
-}
-
-# loop through check list and add missing npms to install list
-npm_check() {
-   local pkg
-   local pkg_version
-
-   for pkg in "${npm_check_list[@]}"; do
-      if npm ls -gs | grep -q "$pkg"; then
-         pkg_version=$(npm ls -gs | grep "${pkg}" | cut -d "@" -f 2)
-         space_count="$(expr 20 - "${#pkg}")"
-         pack_space_count="$(expr 20 - "${#pkg_version}")"
-         real_space="$(expr ${space_count} + ${pack_space_count} + ${#pkg_version})"
-         echo -en " ${GREEN_CHK}"
-         printf " $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
-      else
-         echo -e " ${YELLOW_BLACK} * $pkg [not installed] ${NONE_WHITE}"
-         npm_install_list+=($pkg)
-      fi
-   done
-}
-
-# loop through check list and add missing pips to install list
-pip_check() {
-   local pkg
-   local pkg_trim
-   local pkg_version
-
-   for pkg in "${pip_check_list[@]}"; do
-      pkg_trim=$(trim_longest_right_pattern "$pkg" "[")
-      if pip list | grep "$pkg_trim" >/dev/null 2>&1; then
-         pkg_version=$(pip list | grep "${pkg_trim}" | cut -d " " -f 2 | tr -d "(" | tr -d ")")
-         space_count="$(expr 20 - "${#pkg}")"
-         pack_space_count="$(expr 20 - "${#pkg_version}")"
-         real_space="$(expr ${space_count} + ${pack_space_count} + ${#pkg_version})"
-         echo -en " ${GREEN_CHK}"
-         printf " $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
-      else
-         echo -e " ${YELLOW_BLACK} * $pkg_trim [not installed] ${NONE_WHITE}"
-         pip_install_list+=($pkg)
-      fi
-   done
-}
-
-# --------------------------  CUSTOM SOFTWARE
-
-# set software versions
-# $1 -> software list (space-separated)
-function set_software_versions()
-{
-   local swl="$1"
-   local version
-   echo
-   for ((i=0; i<${#SN[@]}; i++)); do
-      if echo $swl | grep -qw "${SN[i]}"; then
-         read -ep "Enter software version for ${SN[i]}: " -i "${SV[i]}" version
-         SV[i]="$version"
-      fi
-   done
-}
-
-# download and extract software
-# $1 -> list of URLs to software (space-separated)
-function get_software()
-{
-   local list="$1"
-   local name
-
-   echo
-   for url in ${list}; do
-      name=$(trim_longest_left_pattern $url "/")
-      pause "Press enter to download and extract: $name"
-      wget -nc $url
-      tar -xzf $name
-   done
-}
-
 # --------------------------  MISC ACTIONS
 
 # create symlink if source file exists
@@ -381,6 +232,28 @@ run_script() {
    [ -n "$scripts" ] && cd - >/dev/null
 
    return $result
+}
+
+# backup config files
+# $1 -> backup directory
+do_backup() {
+   local name
+
+   confirm "Backup config files before making changes?" true
+   [ "$?" -gt 0 ] && return 1
+   if [ -e "$2" ] || [ -e "$3" ] || [ -e "$4" ] || [ -e "$5" ] || [ -e "$6" ] || [ -e "$7" ] || [ -e "$8" ] || [ -e "$9" ] || [ -e "$10" ]; then
+      today=`date +%Y%m%d_%s`
+      [ -d "${1}-$today" ] || mkdir -pv "${1}-$today"
+      for i in "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"; do
+         if [ -e "$i" ] && [ ! -L "$i" ]; then
+            name=$(trim_longest_left_pattern "$i" "/")
+            cp "$i" "${1}-$today/$name" && success "made backup: ${1}-$today/$name"
+         fi
+      done
+      RET="$?"
+      debug
+   fi
+   return 0
 }
 
 # append source cmd to conf file if not set already
@@ -452,314 +325,7 @@ set_copied_config() {
    debug
 }
 
-# source rvm after installing non-package management version of ruby
-source_rvm() {
-   echo
-   read -p "Press [Enter] to start using rvm..."
-   if grep -q "/usr/local/rvm/scripts/rvm" $HOME/.bashrc; then
-      source /usr/local/rvm/scripts/rvm && echo "sourced rvm"
-   else
-      echo "source /usr/local/rvm/scripts/rvm" >> $HOME/.bashrc
-      source /usr/local/rvm/scripts/rvm && echo "rvm sourced and added to .bashrc"
-   fi
-
-   RET="$?"
-   debug
-}
-
-# --------------------------  INSTALL FROM CUSTOM SCRIPTS
-
-install_rvm_ruby() {
-   pause "Press [Enter] to install ruby via rvm" true
-   if ! ruby -v | grep -q "ruby ${RUBY_V}"; then
-      gpg2 --keyserver hkp://keys.gnupg.net --recv-keys "$RUBY_KEY"
-      curl -sSL "$RUBY_URL" | bash -s stable --ruby="${RUBY_V}"
-   fi
-   source_rvm
-}
-
-install_rbenv_ruby() {
-   # rbenv
-   set_sourced_config   "$HOME/.profile" \
-                        "https://github.com/rbenv/rbenv.git" \
-                        "$HOME/.rbenv/" \
-                        '[[ ":$PATH:" =~ ":$HOME/.rbenv/bin:" ]] || PATH="$HOME/.rbenv/bin:$PATH"'
-
-   # optional, to speed up rbenv
-   [ -d "$HOME/.rbenv" ] && cd "$HOME/.rbenv" && src/configure && make -C src && cd - >/dev/null
-
-   # add rbenv init - command to .profile
-   set_source_cmd       "$HOME/.profile" \
-                        '"eval "$(rbenv init -)"' \
-                        '[[ ":$PATH:" =~ ":$HOME/.rbenv/shims:" ]] || eval "$(rbenv init -)"'
-
-   # ruby-build
-   set_sourced_config   "$HOME/.profile" \
-                        "https://github.com/rbenv/ruby-build.git" \
-                        "$HOME/.rbenv/plugins/ruby-build/" \
-                        '[[ ":$PATH:" =~ ":$HOME/.rbenv/plugins/ruby-build/bin:" ]] || PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"'
-
-   # tell rubygems not to install docs for each package locally
-   set_source_cmd       "$HOME/.gemrc" \
-                        'gem: --no-ri --no-rdoc' \
-                        'gem: --no-ri --no-rdoc'
-
-   source "$HOME/.profile"
-
-   # check that rbenv is working
-   type rbenv
-   rbenv version
-
-   # install ruby
-   [ "$?" -eq 0 ] && rbenv install 2.2.3
-   [ "$?" -eq 0 ] && rbenv global 2.2.3
-
-   # check ruby and rubygem versions
-   ruby -v
-   gem env home
-
-   RET="$?"
-   debug
-}
-
-# install the keybase cli client
-install_keybase() {
-   if not_installed "keybase"; then
-      # change to tmp directory to download file and then back to original directory
-      cd /tmp
-      curl -O https://dist.keybase.io/linux/deb/keybase-latest-amd64.deb && sudo dpkg -i keybase-latest-amd64.deb
-      cd - >/dev/null
-   else
-      notify "keybase is already installed"
-   fi
-}
-
-# install the Sublime Text
-install_subl() {
-   if not_installed "subl"; then
-      # change to tmp directory to download file and then back to original directory
-      cd /tmp
-      echo "downloading subl..."
-      curl -O "https://download.sublimetext.com/sublime-text_build-${SUBL_V}_amd64.deb" && sudo dpkg -i "sublime-text_build-${SUBL_V}_amd64.deb" && success "successfully installed: subl"
-      cd - >/dev/null
-      # set sublime-text as default text editor
-      sudo sed -i.bak "s/gedit/sublime_text/" /etc/gnome/defaults.list
-   else
-      notify "subl is already installed"
-   fi
-}
-
-# install or update spf13-vim
-install_spf13_vim() {
-   [ -d "$HOME/.spf13-vim-3" ] && echo "updating spf13-vim..." || echo "installing spf13-vim..."
-   # change to tmp directory to download file and then back to original directory
-   cd /tmp
-   curl https://j.mp/spf13-vim3 -L > spf13-vim.sh && sh spf13-vim.sh && success "successfully configured: $HOME/.spf13-vim-3"
-   cd - >/dev/null
-}
-
-# install or update LXD for LXC containers
-install_lxd() {
-   program_must_exist lxc
-   if not_installed lxd; then
-      sudo add-apt-repository -y ppa:ubuntu-lxc/lxd-stable && sudo sed -i.bak -e "/trusty-backports/ s/^# //" /etc/apt/sources.list && sudo apt-get update && sudo apt-get -y dist-upgrade && sudo apt-get -y -t trusty-backports install lxd criu && success "successfuly installed: LXD (\"lex-dee\")" && notify2 "You must log out and log back in for lxc command to work."
-   else
-      notify "already installed LXD"
-   fi
-}
-
-# create a base alpine linux image for LXD
-create_alpine_lxd_image() {
-   local repo_url="$1"
-   local repo_name=$(trim_longest_left_pattern "$2" "/")
-   local repo_dir=$(trim_shortest_right_pattern "$2" "/")
-   local image_name="alpine-latest"
-   local image_cnt
-
-   [ -z "$repo_name" ] && repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
-
-   # update or clone alpine-lxd-image repo
-   if [ -d "$repo_dir" ]; then
-      notify "already set $repo_name"
-      cd $repo_dir && echo "checking for updates: $repo_name" && git pull && cd - >/dev/null
-   else
-      pause "Press [Enter] to configure $repo_name" true
-      git clone "$repo_url" "$repo_dir" && success "configured: $repo_name"
-   fi
-
-   not_installed lxd && install_lxd
-
-   # count number of matches for alpine-latest and add one
-   image_cnt=$(lxc image list | grep -c $image_name)
-   LXD_IMAGE="$image_name-$image_cnt"
-
-   cd "$repo_dir"
-   # remove any previous images
-   sudo rm alpine-v*.tar.gz >/dev/null 2>&1
-   # download and build the latest alpine image
-   sudo ./build-alpine
-   # set permissions
-   sudo chmod 664 alpine-v*.tar.gz
-   # add newly created image to lxc
-   [ -f alpine-v*.tar.gz ] && lxc image import alpine-v*.tar.gz --alias "$LXD_IMAGE" && success "successfully created alpine linux lxd image and imported into lxc"
-   cd - >/dev/null
-}
-
-# create new lxd container from latest image
-create_lxd_container() {
-   local image_name="alpine-latest"
-   local image_cnt=`expr $(lxc image list | grep -c $image_name) - 1`
-   local selected_image
-   local container_name
-   local host_name
-
-   # set image name if not already set
-   [ -z "$LXD_IMAGE" ] && LXD_IMAGE="$image_name-$image_cnt"
-
-   # select an image and choose a container name
-   lxc image list
-   read -ep "Select an image to use for the new container: " -i "$LXD_IMAGE" selected_image
-   read -ep "Enter a container name to use with $selected_image: " -i "alpine-wp-${image_cnt}" container_name
-   read -ep "Enter a host name to use with /etc/hosts: " -i "${container_name}.dev" host_name
-
-   # create and start container
-   lxc launch "$selected_image" "$container_name"
-
-   # add container's ip to /etc/hosts
-   pause "Press [Enter] to add $host_name to /etc/hosts"
-   local ipv4=$(lxc list | grep $container_name | cut -d "|" -f 4 | cut -d " " -f 2)
-   # remove entry if it already exists
-   if cat /etc/hosts | grep "$host_name" >/dev/null; then
-      sudo sed -i.bak "/$host_name/d" /etc/hosts
-   fi
-   # wait for ip address to get assigned to container
-   while [ -z "$ipv4" ]; do
-      notify3 "The container hasn't been assigned an IP address yet."
-      pause "Press [Enter] to try again" true
-      ipv4=$(lxc list | grep $container_name | cut -d "|" -f 4 | cut -d " " -f 2)
-   done
-   # add new hosts entry
-   [ -n "$ipv4" ] && echo -e "${ipv4}\t${host_name}" | sudo tee --append /etc/hosts && success "successfully added ${ipv4} and ${host_name} to /etc/hosts" || notify2 "Couldn't add ${host_name} to /etc/hosts, missing IP address on container."
-
-   # set global container name variable
-   LXD_CONTAINER="$container_name"
-
-   RET="$?"
-   debug
-}
-
-# configure lxd container for syncing and ssh with host
-# $1 -> repos directory
-# $2 -> is this a server?
-configure_lxd_container() {
-   local image_cnt=`expr $(lxc image list | grep -c alpine-latest) - 1`
-   local selected_container
-   local relative_source
-   local target_dir
-   local source_dir
-   local target_dir_root
-
-   # set container name if not already set
-   [ -z "$LXD_CONTAINER" ] && LXD_CONTAINER="alpine-wp-${image_cnt}"
-
-   # select a container and set syncing directory paths
-   lxc list
-   read -ep "Select a container to configure: " -i "$LXD_CONTAINER" selected_container
-   read -ep "Choose a source directory on host to sync: ~/${1}/" -i "sites/${selected_container}/site" relative_source
-   read -ep "Choose a target directory in container to sync: /" -i "srv/www/${selected_container}/current" target_dir
-   source_dir="$HOME/${1}/$relative_source"
-   target_dir="/${target_dir}"
-
-   pause "Press [Enter] to configure shared directory between host and container"
-   # make source and target directories and configure with proper permissions
-   mkdir -p "$source_dir"
-   sudo chgrp 165536 "$source_dir"
-   sudo chmod g+s "$source_dir"
-#   sudo setfacl -d -m u:lxd:rwx,u:$(logname):rwx,u:165536:rwx,g:lxd:rwx,g:$(logname):rwx,g:165536:rwx "$source_dir"
-   lxc exec "${selected_container}" -- su - root -c "mkdir -p $target_dir"
-   # check if device already exists and remove it if it does
-   if lxc config device list "${selected_container}" >/dev/null | grep "shared-dir-${image_cnt}"; then
-      lxc config device remove "${selected_container}" "shared-dir-${image_cnt}"
-   fi
-   # add new device for shared directory
-   lxc config device add "${selected_container}" "shared-dir-${image_cnt}" disk source="$source_dir" path="$target_dir" && success "Successfully configured syncing of $source_dir on host with $target_dir in container."
-
-   # if not a server
-   if [ "${2}" -eq 1 ]; then
-      # if no ssh key, generate one
-      [ -f "$HOME/.ssh/id_rsa.pub" ] || gen_ssh_key $HOME/.ssh $(logname)
-      pause "Press [Enter] to copy public your ssh key to \"authorized_keys\" in container"
-      # make .ssh directory if it doesn't exist
-      lxc exec "${selected_container}" -- su - root -c "mkdir -p .ssh"
-      # push public ssh key to container
-      lxc file push "$HOME/.ssh/id_rsa.pub" "${selected_container}/root/.ssh/authorized_keys" && success "Successfully added ssh key to ${selected_container}."
-   fi
-
-   RET="$?"
-   debug
-}
-
-# install newer version of virtualbox
-install_virtualbox() {
-   if not_installed "virtualbox-5.0"; then
-      # add virtualbox to sources list if not already there
-      if ! grep -q "virtualbox" /etc/apt/sources.list; then
-         sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup
-         echo "deb http://download.virtualbox.org/virtualbox/debian trusty contrib" | sudo tee --append /etc/apt/sources.list
-      fi
-      # add signing key
-      wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add -
-      # update sources and install the latest virtualbox
-      sudo apt-get update
-      install_apt "virtualbox-5.0"
-   fi
-
-   RET="$?"
-   debug
-}
-
-# install newer version of vagrant
-install_vagrant() {
-   if not_installed "vagrant"; then
-      # change to tmp directory to download file and then back to original directory
-      cd /tmp
-      echo "downloading vagrant..."
-      curl -O https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.deb && sudo dpkg -i vagrant_1.8.1_x86_64.deb && success "successfully installed: vagrant"
-      cd - >/dev/null
-   fi
-   # install vagrant-hostsupdater
-   [ -z "$(vagrant plugin list | grep hostsupdater)" ] && echo -e "${LIGHT_GRAY} NOTE: a vpn may be required in China for this... ${STD}" && vagrant plugin install vagrant-hostsupdater
-   # install vagrant-triggers
-   [ -z "$(vagrant plugin list | grep triggers)" ] && echo -e "${LIGHT_GRAY} NOTE: a vpn may be required in China for this... ${STD}" && vagrant plugin install vagrant-triggers
-
-   RET="$?"
-   debug
-}
-
 # --------------------------  INSTALL FROM PACKAGE MANAGERS
-
-# loop through install list and install any packages that are in the list
-# $1 -> to update sources or not
-apt_install() {
-   apt_check
-
-   if [[ "${#apt_install_list[@]}" -eq 0 ]]; then
-      notify "No packages to install"
-   else
-      # update all of the package references before installing anything
-      if [ "${1}" -eq 0 ]; then
-         pause "Press [Enter] to update Ubuntu sources" true
-         sudo apt-get -y update
-      fi
-
-      # install packages in the list
-      read -p "Press [Enter] to install apt packages..."
-      sudo apt-get -y install ${apt_install_list[@]}
-
-      # clean up apt caches
-      sudo apt-get clean
-   fi
-}
 
 # install packages from a simple list
 # $1 -> program list (space-separated)
@@ -776,23 +342,6 @@ install_apt() {
          [ -z "${repo}" ] && sudo apt-get -y install "$apt" || { sudo apt-add-repository "${repo}"; sudo apt-get update; sudo apt-get -y install "$apt"; }
       fi
    done
-}
-
-# loop through install list and install any gems that are in the list
-gem_install() {
-   gem_check
-
-   # make sure ruby is installed
-   program_must_exist "ruby"
-   program_must_exist "rubygems-integration"
-
-   if [[ "${#gem_install_list[@]}" -eq 0 ]]; then
-      notify "No gems to install"
-   else
-      # install required gems
-      pause "Press [Enter] to install gems" true
-      gem install ${gem_install_list[@]}
-   fi
 }
 
 # install gems from a simple list
@@ -812,26 +361,6 @@ install_gem() {
          gem install "$app"
       fi
    done
-}
-
-# loop through install list and install any npms that are in the list
-npm_install() {
-   npm_check
-
-   # make sure npm is installed
-   program_must_exist "npm"
-   # symlink nodejs to path
-   if [ ! -L /usr/bin/node ]; then
-      sudo ln -s "$(which nodejs)" /usr/bin/node
-   fi
-
-   if [[ "${#npm_install_list[@]}" -eq 0 ]]; then
-      notify "No npms to install"
-   else
-      # install required npms
-      pause "Press [Enter] to install npms" true
-      sudo npm install -g ${npm_install_list[@]}
-   fi
 }
 
 # install npms from a simple list
@@ -854,23 +383,6 @@ install_npm() {
          sudo npm install -g "$app"
       fi
    done
-}
-
-# loop through install list and install any pips that are in the list
-pip_install() {
-   pip_check
-
-   # make sure dependencies are installed
-   program_must_exist "python-pip"
-   program_must_exist "python-keyring"
-
-   if [[ "${#pip_install_list[@]}" -eq 0 ]]; then
-      notify "No pips to install"
-   else
-      # install required pips
-      pause "Press [Enter] to install pips" true
-      sudo -H pip install ${pip_install_list[@]}
-   fi
 }
 
 # install pips from a simpe list

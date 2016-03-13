@@ -28,9 +28,6 @@ variable_set $HOME
 confirm "Is this a server?"
 IS_SERVER="$?"
 
-# repository location
-read -ep "Directory to use for repositories: ~/" -i "Dropbox/Repos" REPOS
-
 # make sure curl and git are installed
 program_must_exist curl
 program_must_exist git
@@ -65,13 +62,16 @@ display_menu() {
       echo "        workstation        "
    fi
       echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-      echo "1. INSTALLS & UPDATES"
-      echo "2. SYSTEM CONFIG"
-      echo "3. SSH KEY"
-      echo "4. ALPINE LXD IMAGE & CONTAINER"
-      echo "5. WORDPRESS SETUP ON ALPINE CONTAINER"
-      echo "6. FIX PERMISSIONS"
-      echo "7. QUIT"
+      echo " 1. UBUNTU PACKAGES & UPDATES"
+      echo " 2. SUBLIME TEXT"
+      echo " 3. KEYBASE"
+      echo " 4. SYSTEM CONFIG"
+      echo " 5. SSH KEY"
+      echo " 6. VIRTUALBOX & VAGRANT"
+      echo " 7. LXD WITH ALPINE IMAGE & CONTAINER"
+      echo " 8. WORDPRESS SETUP ON ALPINE CONTAINER"
+      echo " 9. FIX PERMISSIONS"
+      echo "10. QUIT"
 }
 
 # --------------------------  USER SELECTION
@@ -80,16 +80,19 @@ select_options() {
    local choice
    # make sure we're always starting from the right place
    cd "$PROJECT"
-   read -rp "Enter choice [1 - 7]: " choice
+   read -rp "Enter choice [1 - 10]: " choice
    case $choice in
-      1) run_script linux_update.sh "scripts";;
-      2) run_script system_config.sh "scripts";;
-      3) run_script ssh_key.sh "scripts";;
-      4) run_script lxd.sh "scripts";;
-      5) run_script wordpress_setup.sh "scripts";;
-      6) fix_permissions;;
-      7) exit_msg && exit 0;;
-      *) alert "Error..." && sleep 1
+       1) run_script linux_update.sh "scripts";;
+       2) run_script subl.sh "scripts";;
+       3) run_script keybase.sh "scripts";;
+       4) run_script system_config.sh "scripts";;
+       5) run_script ssh_key.sh "scripts";;
+       6) run_script vm.sh "scripts";;
+       7) run_script lxd.sh "scripts";;
+       8) run_script wordpress_setup.sh "scripts";;
+       9) fix_permissions;;
+      10) exit_msg && exit 0;;
+       *) alert "Error..." && sleep 1
    esac
 
    # check for program errors
