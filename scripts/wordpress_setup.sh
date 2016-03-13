@@ -47,12 +47,14 @@ set_software_versions() {
 function get_software()
 {
    local name
+   cd /tmp
    for url in ${1}; do
       name=$(trim_longest_left_pattern $url "/")
       pause "Press enter to download and extract: $name"
       wget -nc "$url"
       tar -xzf "$name"
    done
+   cd - >/dev/null
 }
 
 # --------------------------  MAIN
