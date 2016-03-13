@@ -394,6 +394,7 @@ set_source_cmd() {
    else
       echo "$src_cmd" >> "$conf_file" && success "configured: $match in $conf_file"
    fi
+
    RET="$?"
    debug
 }
@@ -421,6 +422,7 @@ set_sourced_config() {
    else
       alert "repo_name variable is empty"
    fi
+
    RET="$?"
    debug
 }
@@ -445,6 +447,7 @@ set_copied_config() {
    else
       alert "repo_file variable is empty"
    fi
+
    RET="$?"
    debug
 }
@@ -459,6 +462,7 @@ source_rvm() {
       echo "source /usr/local/rvm/scripts/rvm" >> $HOME/.bashrc
       source /usr/local/rvm/scripts/rvm && echo "rvm sourced and added to .bashrc"
    fi
+
    RET="$?"
    debug
 }
@@ -587,7 +591,7 @@ create_alpine_lxd_image() {
 
    # count number of matches for alpine-latest and add one
    image_cnt=$(lxc image list | grep -c $image_name)
-   image_name="$image_name-$image_cnt"
+   LXD_IMAGE="$image_name-$image_cnt"
 
    cd "$repo_dir"
    # remove any previous images
@@ -597,62 +601,70 @@ create_alpine_lxd_image() {
    # set permissions
    sudo chmod 664 alpine-v*.tar.gz
    # add newly created image to lxc
-   [ -f alpine-v*.tar.gz ] && lxc image import alpine-v*.tar.gz --alias "$image_name" && success "successfully created alpine linux lxd image and imported into lxc"
+   [ -f alpine-v*.tar.gz ] && lxc image import alpine-v*.tar.gz --alias "$LXD_IMAGE" && success "successfully created alpine linux lxd image and imported into lxc"
    cd - >/dev/null
 }
 
 # create new lxd container from latest image
-# $1 -> lxd image name ending with -$image_cnt
 create_lxd_container() {
    local image_name="alpine-latest"
    local image_cnt=`expr $(lxc image list | grep -c $image_name) - 1`
-   image_name="$image_name-$image_cnt"
+   local selected_image
+   local container_name
+
+   # set image name if not already set
+   [ -z "$LXD_IMAGE" ] && LXD_IMAGE="$image_name-$image_cnt"
+
    lxc image list
-   read -ep "Select an image to use for the new container: " -i "$image_name" selected_image
+   read -ep "Select an image to use for the new container: " -i "$LXD_IMAGE" selected_image
    read -ep "Enter a container name to use with $selected_image: " -i "alpine-wp-${image_cnt}.dev" container_name
 
    # create and start container
    lxc launch "$selected_image" "$container_name"
 
    # add container's ip to /etc/hosts
-   pause "Press [Enter] to add ${container_name} to /etc/hosts"
    local ipv4=$(lxc list | grep $container_name | cut -d "|" -f 4 | cut -d " " -f 2)
+   pause "Press [Enter] to add $ipv4 and $container_name to /etc/hosts"
    [ -n "$ipv4" ] && echo -e "${ipv4}\t${container_name}" | sudo tee --append /etc/hosts && success "successfully created ${container_name} and added $ipv4 to /etc/hosts" || notify2 "Couldn't add ${container_name} to /etc/hosts, missing IP address on container."
 
-   # add directory on host to share with container
-   pause "Press [Enter] to make ~/${1}/${container_name}/site on host for syncing with /srv/www/${container_name}/current on container."
-   mkdir -p "$HOME/${1}/${container_name}/site"
-   sudo chmod g+s "$HOME/${1}/${container_name}/site"
-   sudo chgrp 165536 "$HOME/${1}/${container_name}/site"
-   sudo setfacl -d -m u:lxd:rwx,u:$(logname):rwx,u:165536:rwx,g:lxd:rwx,g:$(logname):rwx,g:165536:rwx "$HOME/${1}/${container_name}/site"
-   success "Successfully configured ~/${1}/${container_name}/site on host."
-   notify3 "Next make /srv/www/${container_name}/current from within the container."
-   notify3 "Then run from host: lxc config device add ${container_name} <device-name> disk source=$HOME/${1}/${container_name}/site path=/srv/www/${container_name}/current"
+   # set global container name variable
+   LXD_CONTAINER="$container_name"
+
+   RET="$?"
+   debug
 }
 
-# install or update the flockport installer and utility
-install_flockport() {
-   local start="$PWD"
+# configure lxd container for syncing and ssh with host
+# $1 -> repos directory
+# $2 -> container name
+# $3 -> is this a server?
+configure_lxd_container() {
+   local relative_source
+   local source_dir
+   local target_dir
+   read -ep "Choose a source directory on host to sync: ~/${1}/" -i "sites/${2}/site" relative_source
+   read -ep "Choose a target directory in container to sync: /" -i "srv/www/${2}/current" target_dir
+   source_dir="$HOME/${1}/$relative_source"
 
-   run_flockport() {
-      cd /tmp
-      wget -q https://www.flockport.com/download2/flockport-install.tar.xz -O- | tar -xpJ 
-      cd flockport-install && sudo ./flockport.run && success "successfully configured: flockport"
-      cd $start
-      RET="$?"
-      debug
-   }
+   pause "Press [Enter] to setup sync for $source_dir on host and $target_dir in container"
+   mkdir -p "$source_dir"
+   sudo chgrp 165536 "$source_dir"
+   sudo chmod g+s "$source_dir"
+#   sudo setfacl -d -m u:lxd:rwx,u:$(logname):rwx,u:1000:rwx,g:lxd:rwx,g:$(logname):rwx,g:1000:rwx "$source_dir"
+   lxc exec "${2}" -- su - root -c "mkdir -p $target_dir"
+   lxc config device add "${2}" "shared-${2}" disk source="$source_dir" path="$target_dir" && success "Successfully configured syncing of $source_dir on host with $target_dir in container."
 
-   if which flockport >/dev/null && flockport version | grep -q "Flockport Version"; then
-      confirm "flockport is already installed, attempt to update it?" true
-      if [ "$?" -eq 0 ]; then
-         echo "updating flockport..."
-         run_flockport
-      fi
-   else
-      echo "installing flockport..."
-      run_flockport
+   # if not a server
+   if [ "${3}" -eq 1 ]; then
+      # if no ssh key, generate one
+      [ -f "$HOME/.ssh/id_rsa.pub" ] || gen_ssh_key $HOME/.ssh $(logname)
+      pause "Press [Enter] to copy public your ssh key to \"authorized_keys\" in container"
+      lxc exec "${2}" -- su - root -c "mkdir -p .ssh"
+      lxc file "$HOME/.ssh/id_rsa.pub" "${2}/.ssh/authorized_keys" && success "Successfully added ssh key to ${2}."
    fi
+
+   RET="$?"
+   debug
 }
 
 # install newer version of virtualbox
@@ -669,6 +681,9 @@ install_virtualbox() {
       sudo apt-get update
       install_apt "virtualbox-5.0"
    fi
+
+   RET="$?"
+   debug
 }
 
 # install newer version of vagrant
@@ -684,6 +699,9 @@ install_vagrant() {
    [ -z "$(vagrant plugin list | grep hostsupdater)" ] && echo -e "${LIGHT_GRAY} NOTE: a vpn may be required in China for this... ${STD}" && vagrant plugin install vagrant-hostsupdater
    # install vagrant-triggers
    [ -z "$(vagrant plugin list | grep triggers)" ] && echo -e "${LIGHT_GRAY} NOTE: a vpn may be required in China for this... ${STD}" && vagrant plugin install vagrant-triggers
+
+   RET="$?"
+   debug
 }
 
 # --------------------------  INSTALL FROM PACKAGE MANAGERS
