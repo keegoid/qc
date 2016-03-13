@@ -15,19 +15,56 @@ echo "# --------------------------------------------"
 [ -z "$BACKUP" ] && BACKUP="$CONFIG/backup"
 [ -z "$SYNCED" ] && SYNCED="$HOME/Dropbox/Config"
 
+# config files
+CONF1="$HOME/.bashrc"
+CONF2="$HOME/.inputrc"
+CONF3="$HOME/.gconf/apps/gnome-terminal/profiles/Default/%gconf.xml"
+CONF4="$HOME/.local/share/gedit/styles/blackboard.xml"
+CONF5="$HOME/.local/share/gedit/styles/solarized-dark.xml"
+CONF6="$HOME/.config/sublime-text-3/Packages/User/Preferences.sublime-settings"
+CONF7="$HOME/.muttrc"
+CONF8="$HOME/.tmux.conf"
+CONF9="$HOME/.vimrc"
+CONF10="$HOME/.gitignore_global"
+
+# --------------------------  BACKUPS
+
+# backup config files
+do_backup() {
+   local name
+   local today
+
+   confirm "Backup config files before making changes?" true
+   [ "$?" -gt 0 ] && return 1
+
+   today=`date +%Y%m%d_%s`
+   mkdir -pv "$BACKUP-$today"
+
+   for i in $1; do
+echo "$i"
+      if [ -e "$i" ] && [ ! -L "$i" ]; then
+         name=$(trim_longest_left_pattern "$i" "/")
+         cp "$i" "$BACKUP-$today/$name" && success "made backup: $BACKUP-$today/$name"
+      fi
+   done
+
+   RET="$?"
+   debug
+
+   return 0
+}
+
 # --------------------------  GIT CONFIG
 
 set_git_config() {
-   local conf_file="$1"
-
-   if [ "$RET" -eq 0 ]; then
+   # check if already configured
+   if ! git config --list | grep -q "user.name"; then
       read -ep "your name for git commit logs: " -i 'Keegan Mullaney' real_name
       read -ep "your email for git commit logs: " -i 'keeganmullaney@gmail.com' email_address
       read -ep "your preferred text editor for git commits: " -i 'vi' git_editor
-      configure_git "$real_name" "$email_address" "$git_editor"
-      RET="$?"
-      success "configured: $conf_file"
+      configure_git "$real_name" "$email_address" "$git_editor" && success "configured: $1"
    fi
+
    RET="$?"
    debug
 }
@@ -90,16 +127,7 @@ set_autojump() {
 
 pause "" true
 
-do_backup            "$BACKUP" \
-                     "$HOME/.bashrc" \
-                     "$HOME/.inputrc" \
-                     "$HOME/.gconf/apps/gnome-terminal/profiles/Default/%gconf.xml" \
-                     "$HOME/.local/share/gedit/styles/blackboard.xml" \
-                     "$HOME/.local/share/gedit/styles/solarized-dark.xml" \
-                     "$HOME/.muttrc" \
-                     "$HOME/.tmux.conf" \
-                     "$HOME/.vimrc" \
-                     "$HOME/.gitignore_global"
+do_backup            "$CONF1 $CONF2 $CONF3 $CONF4 $CONF5 $CONF6 $CONF7 $CONF8 $CONF9 $CONF10"
 
 # aliases
 set_sourced_config   "$HOME/.bashrc" \
@@ -142,11 +170,17 @@ set_copied_config    "$HOME/.local/share/gedit/styles/solarized-dark.xml" \
                      "https://github.com/mattcan/solarized-gedit.git" \
                      "$CONFIG/gedit/solarized/solarized-dark.xml"
 
+# sublime text
+mkdir -p "$HOME/.config/sublime-text-3/Packages/User"
+set_copied_config    "$HOME/.config/sublime-text-3/Packages/User/Preferences.sublime-settings" \
+                     "https://gist.github.com/2ff3aa9ce91ff6e0e706.git" \
+                     "$CONFIG/subl/subl.conf"
+
 set_copied_config    "$HOME/.gitignore_global" \
                      "https://gist.github.com/efa547b362910ac7077c.git" \
                      "$CONFIG/git/gitignore_global"
 
-set_git_config       "$HOME/.gitconfig" \
+set_git_config       "$HOME/.gitconfig"
 
 set_terminal_history "$HOME/.inputrc"
 
