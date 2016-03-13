@@ -34,8 +34,9 @@ Quickly configures a fresh install of [Ubuntu 14.04 64-bit][tt] on a workstation
 - install and configure [vim-gtk][vim]
 - install and configure [Sublime Text][subl], it really is sublime for coding
 - configure [git][git] global settings
+- install the latest [VirtualBox][vb] and [Vagrant][vg]
+- install [WordPress][wp] dependencies, build [NGINX][ngx] from source and configure WordPress with [fast_cgi_cache][fcgi] purge.
 - install [LXD][lxd], create an [Alpine Linux][alpine] image and use it to create an [LXC][lxc] container
-- install the latest [VirtualBox][vb], [Vagrant][vg] and setup [VVV][vvv] and [VV][vv] for [WordPress][wp] development
 
 ## Usage
 
@@ -91,8 +92,9 @@ SEE: http://keegoid.mit-license.org
 [mutt]:     http://www.mutt.org/
 [vb]:       https://www.virtualbox.org/
 [vg]:       https://www.vagrantup.com/
-[vvv]:      https://github.com/Varying-Vagrant-Vagrants/VVV
-[vv]:       https://github.com/bradp/vv
+[wp]:       https://wordpress.org/
+[ngx]:      http://nginx.org/
+[fcgi]:     https://github.com/FRiCKLE/ngx_cache_purge
 [aj]:       https://github.com/wting/autojump
 [wp]:       https://wordpress.org/
 [ss]:       http://en.wikipedia.org/wiki/Shell_script
