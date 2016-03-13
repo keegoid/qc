@@ -80,7 +80,6 @@ SEE: http://keegoid.mit-license.org
 [gedit]:    https://wiki.gnome.org/Apps/Gedit
 [subl]:     https://www.sublimetext.com/
 [vim]:      http://www.vim.org/
-[spf13]:    http://vim.spf13.com/
 [tt]:       https://wiki.ubuntu.com/TrustyTahr/ReleaseNotes
 [gt]:       http://manpages.ubuntu.com/manpages/hardy/man1/gnome-terminal.1.html
 [ihs]:      https://help.ubuntu.com/community/UsingTheTerminal#An_extremely_handy_tool_::_Incremental_history_searching
@@ -92,17 +91,13 @@ SEE: http://keegoid.mit-license.org
 [mutt]:     http://www.mutt.org/
 [vb]:       https://www.virtualbox.org/
 [vg]:       https://www.vagrantup.com/
-[wp]:       https://wordpress.org/
 [ngx]:      http://nginx.org/
 [fcgi]:     https://github.com/FRiCKLE/ngx_cache_purge
 [aj]:       https://github.com/wting/autojump
 [wp]:       https://wordpress.org/
-[ss]:       http://en.wikipedia.org/wiki/Shell_script
 [ssh]:      http://en.wikipedia.org/wiki/Secure_Shell
 [sshkey]:   http://en.wikipedia.org/wiki/Ssh-keygen
-[gpgkey]:   http://en.wikipedia.org/wiki/GNU_Privacy_Guard
 [sa]:       http://en.wikipedia.org/wiki/Alias_%28command%29
 [gh]:       https://github.com/
 [git]:      https://git-scm.com/
 [lp]:       https://lastpass.com/f?3202156
-[twitter]:  https://twitter.com/intent/tweet?screen_name=keegoid&text=loving%20your%20CentOS%207.0%20deploy%20scripts%20for%20%40middlemanapp%20or%20%40WordPress%20with%20%40nginxorg%20https%3A%2F%2Fgithub.com%2Fkeegoid%2Flinux-deploy-scripts
