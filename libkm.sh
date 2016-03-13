@@ -543,7 +543,7 @@ install_subl() {
       curl -O "https://download.sublimetext.com/sublime-text_build-${SUBL_V}_amd64.deb" && sudo dpkg -i "sublime-text_build-${SUBL_V}_amd64.deb" && success "successfully installed: subl"
       cd - >/dev/null
       # set sublime-text as default text editor
-      sudo sed -i.bak -e "s|gedit|sublime_text|" /etc/gnome/defaults.list
+      sudo sed -i.bak "s/gedit/sublime_text/" /etc/gnome/defaults.list
    else
       notify "subl is already installed"
    fi
@@ -611,21 +611,35 @@ create_lxd_container() {
    local image_cnt=`expr $(lxc image list | grep -c $image_name) - 1`
    local selected_image
    local container_name
+   local host_name
 
    # set image name if not already set
    [ -z "$LXD_IMAGE" ] && LXD_IMAGE="$image_name-$image_cnt"
 
+   # select an image and choose a container name
    lxc image list
    read -ep "Select an image to use for the new container: " -i "$LXD_IMAGE" selected_image
-   read -ep "Enter a container name to use with $selected_image: " -i "alpine-wp-${image_cnt}.dev" container_name
+   read -ep "Enter a container name to use with $selected_image: " -i "alpine-wp-${image_cnt}" container_name
+   read -ep "Enter a host name to use with /etc/hosts: " -i "${container_name}.dev" host_name
 
    # create and start container
    lxc launch "$selected_image" "$container_name"
 
    # add container's ip to /etc/hosts
+   pause "Press [Enter] to add $host_name to /etc/hosts"
    local ipv4=$(lxc list | grep $container_name | cut -d "|" -f 4 | cut -d " " -f 2)
-   pause "Press [Enter] to add $ipv4 and $container_name to /etc/hosts"
-   [ -n "$ipv4" ] && echo -e "${ipv4}\t${container_name}" | sudo tee --append /etc/hosts && success "successfully created ${container_name} and added $ipv4 to /etc/hosts" || notify2 "Couldn't add ${container_name} to /etc/hosts, missing IP address on container."
+   # remove entry if it already exists
+   if cat /etc/hosts | grep "$host_name" >/dev/null; then
+      sudo sed -i.bak "/$host_name/d" /etc/hosts
+   fi
+   # wait for ip address to get assigned to container
+   while [ -z "$ipv4" ]; do
+      notify3 "The container hasn't been assigned an IP address yet."
+      pause "Press [Enter] to try again" true
+      ipv4=$(lxc list | grep $container_name | cut -d "|" -f 4 | cut -d " " -f 2)
+   done
+   # add new hosts entry
+   [ -n "$ipv4" ] && echo -e "${ipv4}\t${host_name}" | sudo tee --append /etc/hosts && success "successfully added ${ipv4} and ${host_name} to /etc/hosts" || notify2 "Couldn't add ${host_name} to /etc/hosts, missing IP address on container."
 
    # set global container name variable
    LXD_CONTAINER="$container_name"
@@ -636,31 +650,49 @@ create_lxd_container() {
 
 # configure lxd container for syncing and ssh with host
 # $1 -> repos directory
-# $2 -> container name
-# $3 -> is this a server?
+# $2 -> is this a server?
 configure_lxd_container() {
+   local image_cnt=`expr $(lxc image list | grep -c alpine-latest) - 1`
+   local selected_container
    local relative_source
-   local source_dir
    local target_dir
-   read -ep "Choose a source directory on host to sync: ~/${1}/" -i "sites/${2}/site" relative_source
-   read -ep "Choose a target directory in container to sync: /" -i "srv/www/${2}/current" target_dir
-   source_dir="$HOME/${1}/$relative_source"
+   local source_dir
+   local target_dir_root
 
-   pause "Press [Enter] to setup sync for $source_dir on host and $target_dir in container"
+   # set container name if not already set
+   [ -z "$LXD_CONTAINER" ] && LXD_CONTAINER="alpine-wp-${image_cnt}"
+
+   # select a container and set syncing directory paths
+   lxc list
+   read -ep "Select a container to configure: " -i "$LXD_CONTAINER" selected_container
+   read -ep "Choose a source directory on host to sync: ~/${1}/" -i "sites/${selected_container}/site" relative_source
+   read -ep "Choose a target directory in container to sync: /" -i "srv/www/${selected_container}/current" target_dir
+   source_dir="$HOME/${1}/$relative_source"
+   target_dir="/${target_dir}"
+
+   pause "Press [Enter] to configure shared directory between host and container"
+   # make source and target directories and configure with proper permissions
    mkdir -p "$source_dir"
    sudo chgrp 165536 "$source_dir"
    sudo chmod g+s "$source_dir"
-#   sudo setfacl -d -m u:lxd:rwx,u:$(logname):rwx,u:1000:rwx,g:lxd:rwx,g:$(logname):rwx,g:1000:rwx "$source_dir"
-   lxc exec "${2}" -- su - root -c "mkdir -p $target_dir"
-   lxc config device add "${2}" "shared-${2}" disk source="$source_dir" path="$target_dir" && success "Successfully configured syncing of $source_dir on host with $target_dir in container."
+#   sudo setfacl -d -m u:lxd:rwx,u:$(logname):rwx,u:165536:rwx,g:lxd:rwx,g:$(logname):rwx,g:165536:rwx "$source_dir"
+   lxc exec "${selected_container}" -- su - root -c "mkdir -p $target_dir"
+   # check if device already exists and remove it if it does
+   if lxc config device list "${selected_container}" >/dev/null | grep "shared-dir-${image_cnt}"; then
+      lxc config device remove "${selected_container}" "shared-dir-${image_cnt}"
+   fi
+   # add new device for shared directory
+   lxc config device add "${selected_container}" "shared-dir-${image_cnt}" disk source="$source_dir" path="$target_dir" && success "Successfully configured syncing of $source_dir on host with $target_dir in container."
 
    # if not a server
-   if [ "${3}" -eq 1 ]; then
+   if [ "${2}" -eq 1 ]; then
       # if no ssh key, generate one
       [ -f "$HOME/.ssh/id_rsa.pub" ] || gen_ssh_key $HOME/.ssh $(logname)
       pause "Press [Enter] to copy public your ssh key to \"authorized_keys\" in container"
-      lxc exec "${2}" -- su - root -c "mkdir -p .ssh"
-      lxc file "$HOME/.ssh/id_rsa.pub" "${2}/.ssh/authorized_keys" && success "Successfully added ssh key to ${2}."
+      # make .ssh directory if it doesn't exist
+      lxc exec "${selected_container}" -- su - root -c "mkdir -p .ssh"
+      # push public ssh key to container
+      lxc file push "$HOME/.ssh/id_rsa.pub" "${selected_container}/root/.ssh/authorized_keys" && success "Successfully added ssh key to ${selected_container}."
    fi
 
    RET="$?"
