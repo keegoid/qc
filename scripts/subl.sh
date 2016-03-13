@@ -11,8 +11,6 @@ echo "# --------------------------------------------"
 
 # --------------------------  SETUP PARAMETERS
 
-[ -z "$CONFIG" ] && CONFIG="$HOME/.quick-config"
-[ -z "$BACKUP" ] && BACKUP="$CONFIG/backup"
 SUBL_V='3103'
 SUBL_URL="https://download.sublimetext.com/sublime-text_build-${SUBL_V}_amd64.deb"
 
@@ -39,11 +37,3 @@ pause "" true
 
 confirm "Install Sublime Text?" true
 [ "$?" -eq 0 ] && install_subl
-
-do_backup            "$BACKUP" \
-                     "$HOME/.config/sublime-text-3/Packages/User/Preferences.sublime-settings"
-
-                      mkdir -p "$HOME/.config/sublime-text-3/Packages/User"
-set_copied_config    "$HOME/.config/sublime-text-3/Packages/User/Preferences.sublime-settings" \
-                     "https://gist.github.com/2ff3aa9ce91ff6e0e706.git" \
-                     "$CONFIG/subl/subl.conf"
