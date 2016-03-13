@@ -27,8 +27,8 @@ set_authorized_key() {
 
    # edit /etc/ssh/sshd_config
    sudo sed -i.bak -e "{
-      s|#Port 22|Port $ssh_port|
-      s|#ClientAliveInterval 0|ClientAliveInterval $client_alive|
+      s/#Port 22/Port $ssh_port/
+      s/#ClientAliveInterval 0/ClientAliveInterval $client_alive/
       }" /etc/ssh/sshd_config
    echo
    echo -e "SSH port set to $ssh_port\nclient alive interval set to $client_alive"
@@ -44,10 +44,10 @@ set_authorized_key() {
    # disable root user access and limit login attempts
    echo
    pause "Press [Enter] to configure sshd security settings..."
-   sudo sed -i -e "s|#PermitRootLogin yes|PermitRootLogin no|" \
-               -e "s|PasswordAuthentication yes|PasswordAuthentication no|" \
-               -e "s|#MaxStartups 10:30:60|MaxStartups 2:30:10|" \
-               -e "s|#Banner /etc/issue.net|Banner /etc/issue.net|" /etc/ssh/sshd_config
+   sudo sed -i -e "s/#PermitRootLogin yes|PermitRootLogin no/" \
+               -e "s/PasswordAuthentication yes/PasswordAuthentication no/" \
+               -e "s/#MaxStartups 10:30:60/MaxStartups 2:30:10/" \
+               -e "/Banner \/etc\/issue.net/ s/^# //" /etc/ssh/sshd_config
    if grep -q "AllowUsers $(logname)" /etc/ssh/sshd_config; then
       echo "AllowUsers is already configured"
    else

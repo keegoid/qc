@@ -84,7 +84,7 @@ set_terminal_color() {
 
    if grep -q "#force_color_prompt=yes" $conf_file >/dev/null 2>&1; then
       pause "Press [Enter] to activate color terminal prompts" true
-      sed -i.bak -e "s|#force_color_prompt=yes|force_color_prompt=yes|" $conf_file && source $conf_file && success "configured: $conf_file with color terminal prompts"
+      sed -i.bak -e "/force_color_prompt=yes/ s/^# //" $conf_file && source $conf_file && success "configured: $conf_file with color terminal prompts"
    else
       notify "already set color prompts"
    fi
