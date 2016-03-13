@@ -30,7 +30,6 @@ SV=( 1.9.9   1.0.2f    1.2.8  8.38   2.3     )
 # --------------------------  HELPER FUNCTIONS
 
 # set software versions
-# $1 -> software list (space-separated)
 set_software_versions() {
    local swl="$1"
    local version
