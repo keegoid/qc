@@ -35,8 +35,8 @@ Quickly configures a fresh install of [Ubuntu 14.04 64-bit][tt] on a workstation
 - install and configure [Sublime Text][subl], it really is sublime for coding
 - configure [git][git] global settings
 - install the latest [VirtualBox][vb] and [Vagrant][vg]
-- install [WordPress][wp] dependencies, build [NGINX][ngx] from source and configure WordPress with [fast_cgi_cache][fcgi] purge.
-- install [LXD][lxd], create an [Alpine Linux][alpine] image and use it to create an [LXC][lxc] container
+- install [LXD][lxd], create an [Alpine Linux][alpine] image and use it to create an [LXC][lxc] container for [WordPress][wp]
+- in [LXC][lxc] container, install [WordPress][wp] dependencies, build [NGINX][ngx] from source and configure [WordPress][wp] with [fast_cgi_cache][fcgi] purge.
 
 ## Usage
 
