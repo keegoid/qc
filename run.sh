@@ -28,6 +28,9 @@ variable_set $HOME
 confirm "Is this a server?"
 IS_SERVER="$?"
 
+# repository location
+read -ep "Directory to use for repositories: ~/" -i "Dropbox/Repos" REPOS
+
 # make sure curl and git are installed
 program_must_exist curl
 program_must_exist git

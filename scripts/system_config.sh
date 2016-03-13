@@ -145,7 +145,7 @@ set_sourced_config   "$HOME/.vimrc" \
                      "$CONFIG/vim/vim.conf" \
                      "\" source config file\n:so $CONFIG/vim/vim.conf"
 
-[ -d "$SYNCED/vim" ] || mkdir -pv "$SYNCED/vim" && notify3 "note: vim spellfile will be located in $SYNCED/vim, you can change this in $CONFIG/vim/vim.conf"
+[ -d "$SYNCED/vim" ] || { mkdir -pv "$SYNCED/vim"; notify3 "note: vim spellfile will be located in $SYNCED/vim, you can change this in $CONFIG/vim/vim.conf"; }
 
 # terminal profile
 set_copied_config    "$HOME/.gconf/apps/gnome-terminal/profiles/Default/%gconf.xml" \

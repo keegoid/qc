@@ -61,5 +61,5 @@ set_authorized_key() {
 
 # --------------------------  MAIN
 
-[ $IS_SERVER -eq 0 ] && set_authorized_key || gen_ssh_key $HOME/.ssh $(logname)
+[ "$IS_SERVER" -eq 0 ] && set_authorized_key || gen_ssh_key $HOME/.ssh $(logname)
 
