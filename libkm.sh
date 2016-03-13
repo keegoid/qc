@@ -609,15 +609,25 @@ create_lxd_container() {
    image_name="$image_name-$image_cnt"
    lxc image list
    read -ep "Select an image to use for the new container: " -i "$image_name" selected_image
-   read -ep "Enter a container name to use with $selected_image: " -i "alpine-wp-$image_cnt" container_name
+   read -ep "Enter a container name to use with $selected_image: " -i "alpine-wp-${image_cnt}.dev" container_name
 
    # create and start container
    lxc launch "$selected_image" "$container_name"
 
    # add container's ip to /etc/hosts
-   pause "Press [Enter] to add ${container_name}.dev to /etc/hosts"
+   pause "Press [Enter] to add ${container_name} to /etc/hosts"
    local ipv4=$(lxc list | grep $container_name | cut -d "|" -f 4 | cut -d " " -f 2)
-   [ -n "$ipv4" ] && echo -e "${ipv4}\t${container_name}.dev" | sudo tee --append /etc/hosts && success "successfully created ${container_name}.dev and added $ipv4 to /etc/hosts" || notify2 "Couldn't add ${container_name}.dev to /etc/hosts, missing IP address on container."
+   [ -n "$ipv4" ] && echo -e "${ipv4}\t${container_name}" | sudo tee --append /etc/hosts && success "successfully created ${container_name} and added $ipv4 to /etc/hosts" || notify2 "Couldn't add ${container_name} to /etc/hosts, missing IP address on container."
+
+   # add directory on host to share with container
+   pause "Press [Enter] to make ~/${1}/${container_name}/site on host for syncing with /srv/www/${container_name}/current on container."
+   mkdir -p "$HOME/${1}/${container_name}/site"
+   sudo chmod g+s "$HOME/${1}/${container_name}/site"
+   sudo chgrp 165536 "$HOME/${1}/${container_name}/site"
+   sudo setfacl -d -m u:lxd:rwx,u:$(logname):rwx,u:165536:rwx,g:lxd:rwx,g:$(logname):rwx,g:165536:rwx "$HOME/${1}/${container_name}/site"
+   success "Successfully configured ~/${1}/${container_name}/site on host."
+   notify3 "Next make /srv/www/${container_name}/current from within the container."
+   notify3 "Then run from host: lxc config device add ${container_name} <device-name> disk source=$HOME/${1}/${container_name}/site path=/srv/www/${container_name}/current"
 }
 
 # install or update the flockport installer and utility
