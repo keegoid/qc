@@ -23,7 +23,10 @@ SV=( 1.9.9   1.0.2f    1.2.8  8.38   2.3     )
 #    PCRE   http://ftp.csx.cam.ac.uk/pub/software/programming/pcre/
 # FRICKLE   https://github.com/FRiCKLE/ngx_cache_purge/
 
-[ -z "$REPOS" ] && read -ep "Directory to use for repositories: ~/" -i "Dropbox/Repos" REPOS
+[ -z "$REPOS" ]     && read -ep "Directory to use for repositories: ~/" -i "Dropbox/Repos" REPOS
+[ -z "$DATABASE" ]  && read -ep "WordPress database name to use for $WORDPRESS_DOMAIN: " DATABASE
+[ -z "$DB_USER" ]   && read -ep "WordPress database user to use for $WORDPRESS_DOMAIN: " DB_USER
+[ -z "$DB_PASSWD" ] && read -ep "WordPress database password to use for $WORDPRESS_DOMAIN: " DB_PASSWD
 
 # GPG public keys
 
@@ -55,6 +58,38 @@ function get_software()
         tar -xzf "$name"
     done
     cd - >/dev/null
+}
+
+# --------------------------  CONFIGURE
+
+# configure wp site and test page
+configure_site() {
+    pause "Press enter to create WordPress site" true
+    cp -fv wordpress/wp-config-sample.php wordpress/wp-config.php
+    sed -i.bak -e "s/database_name_here/$DATABASE/" -e "s/username_here/$DB_USER/" -e "s/password_here/$DB_PASSWD/" wordpress/wp-config.php
+    mkdir -pv /var/www/$WORDPRESS_DOMAIN/public_html
+    cp -Rf wordpress/* $_
+
+    # create a sample "testphp.php" file in WordPress document root
+    pause "Press enter to create a test php page"
+    echo "<?php phpinfo();?>" > /var/www/$WORDPRESS_DOMAIN/public_html/testphp.php
+    success "WordPress for $WORDPRESS_DOMAIN has been configured"
+
+    RET="$?"
+    debug
+}
+
+# configure wp database
+configure_db() {
+    echo
+    pause "Press enter to configure mysql..."
+    echo
+    read -ep "Enter the root mysql password: " MYSQL_PASSWD
+    mysql -u root -p$MYSQL_PASSWD -Bse "CREATE DATABASE $DATABASE;CREATE USER $DB_USER;SET PASSWORD FOR $DB_USER= PASSWORD(\"$DB_PASSWD\");GRANT ALL PRIVILEGES ON $DATABASE.* TO $DB_USER IDENTIFIED BY \"$DB_PASSWD\";FLUSH PRIVILEGES;"
+    success "mysql for $WORDPRESS_DOMAIN has been configured"
+
+    RET="$?"
+    debug
 }
 
 # --------------------------  MAIN
