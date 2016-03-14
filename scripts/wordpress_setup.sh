@@ -31,30 +31,30 @@ SV=( 1.9.9   1.0.2f    1.2.8  8.38   2.3     )
 
 # set software versions
 set_software_versions() {
-   local swl="$1"
-   local version
-   echo
-   for ((i=0; i<${#SN[@]}; i++)); do
-      if echo $swl | grep -qw "${SN[i]}"; then
-         read -ep "Enter software version for ${SN[i]}: " -i "${SV[i]}" version
-         SV[i]="$version"
-      fi
-   done
+    local swl="$1"
+    local version
+    echo
+    for ((i=0; i<${#SN[@]}; i++)); do
+        if echo $swl | grep -qw "${SN[i]}"; then
+            read -ep "Enter software version for ${SN[i]}: " -i "${SV[i]}" version
+            SV[i]="$version"
+        fi
+    done
 }
 
 # download and extract software
 # $1 -> list of URLs to software (space-separated)
 function get_software()
 {
-   local name
-   cd /tmp
-   for url in ${1}; do
-      name=$(trim_longest_left_pattern $url "/")
-      pause "Press enter to download and extract: $name"
-      wget -nc "$url"
-      tar -xzf "$name"
-   done
-   cd - >/dev/null
+    local name
+    cd /tmp
+    for url in ${1}; do
+        name=$(trim_longest_left_pattern $url "/")
+        pause "Press enter to download and extract: $name"
+        wget -nc "$url"
+        tar -xzf "$name"
+    done
+    cd - >/dev/null
 }
 
 # --------------------------  MAIN

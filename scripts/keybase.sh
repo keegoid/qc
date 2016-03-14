@@ -17,14 +17,14 @@ KEYBASE_URL='https://dist.keybase.io/linux/deb/keybase-latest-amd64.deb'
 
 # install the keybase cli client
 install_keybase() {
-   if not_installed "keybase"; then
-      # change to tmp directory to download file and then back to original directory
-      cd /tmp
-      curl -O "$KEYBASE_URL" && sudo dpkg -i keybase-latest-amd64.deb
-      cd - >/dev/null
-   else
-      notify "keybase is already installed"
-   fi
+    if not_installed "keybase"; then
+        # change to tmp directory to download file and then back to original directory
+        cd /tmp
+        curl -O "$KEYBASE_URL" && sudo dpkg -i keybase-latest-amd64.deb
+        cd - >/dev/null
+    else
+        notify "keybase is already installed"
+    fi
 }
 
 # --------------------------  MAIN

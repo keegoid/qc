@@ -18,17 +18,17 @@ SUBL_URL="https://download.sublimetext.com/sublime-text_build-${SUBL_V}_amd64.de
 
 # install Sublime Text
 install_subl() {
-   if not_installed "subl"; then
-      # change to tmp directory to download file and then back to original directory
-      cd /tmp
-      echo "downloading subl..."
-      curl -O "$SUBL_URL" && sudo dpkg -i "sublime-text_build-${SUBL_V}_amd64.deb" && success "successfully installed: subl"
-      cd - >/dev/null
-      # set sublime-text as default text editor
-      sudo sed -i.bak "s/gedit/sublime_text/" /etc/gnome/defaults.list
-   else
-      notify "subl is already installed"
-   fi
+    if not_installed "subl"; then
+        # change to tmp directory to download file and then back to original directory
+        cd /tmp
+        echo "downloading subl..."
+        curl -O "$SUBL_URL" && sudo dpkg -i "sublime-text_build-${SUBL_V}_amd64.deb" && success "successfully installed: subl"
+        cd - >/dev/null
+        # set sublime-text as default text editor
+        sudo sed -i.bak "s/gedit/sublime_text/" /etc/gnome/defaults.list
+    else
+        notify "subl is already installed"
+    fi
 }
 
 # --------------------------  MAIN

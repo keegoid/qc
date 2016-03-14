@@ -36,17 +36,17 @@ program_must_exist git
 
 # if any files in home are not owned by home user, fix that
 fix_permissions() {
-   # set ownership
-   pause "Press [Enter] to make sure all files in $HOME are owned by $(logname)" true
-   sudo chown --preserve-root -cR $(logname):$(logname) $HOME
+    # set ownership
+    pause "Press [Enter] to make sure all files in $HOME are owned by $(logname)" true
+    sudo chown --preserve-root -cR $(logname):$(logname) $HOME
 }
 
 # display message before exit
 exit_msg() {
-   echo
-   notify "Lastly: execute sudo ./sudoers.sh to increase the sudo timeout."
-   msg             "\nThanks for using $APP_NAME."
-   msg             "© `date +%Y` http://keegoid.mit-license.org"
+    echo
+    notify "Lastly: execute sudo ./sudoers.sh to increase the sudo timeout."
+    msg             "\nThanks for using $APP_NAME."
+    msg             "© `date +%Y` http://keegoid.mit-license.org"
 }
 
 # --------------------------  MENU OPTIONS
@@ -54,13 +54,13 @@ exit_msg() {
 display_menu() {
       [ "$DEBUG_MODE" -eq 1 ] || clear
       echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-   if [ "$IS_SERVER" -eq 0 ]; then
+    if [ "$IS_SERVER" -eq 0 ]; then
       echo "     M A I N - M E N U     "
       echo "          server           "
-   else
+    else
       echo "     M A I N - M E N U     "
       echo "        workstation        "
-   fi
+    fi
       echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~"
       echo " 1. UBUNTU PACKAGES & UPDATES"
       echo " 2. SUBLIME TEXT"
@@ -77,27 +77,27 @@ display_menu() {
 # --------------------------  USER SELECTION
 
 select_options() {
-   local choice
-   # make sure we're always starting from the right place
-   cd "$PROJECT"
-   read -rp "Enter choice [1 - 10]: " choice
-   case $choice in
-       1) run_script linux_update.sh "scripts";;
-       2) run_script subl.sh "scripts";;
-       3) run_script keybase.sh "scripts";;
-       4) run_script system_config.sh "scripts";;
-       5) run_script ssh_key.sh "scripts";;
-       6) run_script vm.sh "scripts";;
-       7) run_script lxd.sh "scripts";;
-       8) run_script wordpress_setup.sh "scripts";;
-       9) fix_permissions;;
-      10) exit_msg && exit 0;;
-       *) alert "Error..." && sleep 1
-   esac
+    local choice
+    # make sure we're always starting from the right place
+    cd "$PROJECT"
+    read -rp "Enter choice [1 - 10]: " choice
+    case $choice in
+        1) run_script linux_update.sh "scripts";;
+        2) run_script subl.sh "scripts";;
+        3) run_script keybase.sh "scripts";;
+        4) run_script system_config.sh "scripts";;
+        5) run_script ssh_key.sh "scripts";;
+        6) run_script vm.sh "scripts";;
+        7) run_script lxd.sh "scripts";;
+        8) run_script wordpress_setup.sh "scripts";;
+        9) fix_permissions;;
+        10) exit_msg && exit 0;;
+        *) alert "Error..." && sleep 1
+    esac
 
-   # check for program errors
-   RET="$?"
-   debug
+    # check for program errors
+    RET="$?"
+    debug
 }
 
 # trap Ctrl+Z to return to the main menu
@@ -106,13 +106,12 @@ trap "echo; menu_loop" SIGTSTP
 # --------------------------  MAIN
 
 menu_loop() {
-   # infinite loop until user exits
-   while true; do
-      display_menu
-      select_options
-      pause
-   done
+    # infinite loop until user exits
+    while true; do
+        display_menu
+        select_options
+        pause
+    done
 }
 # start program
 menu_loop
-
