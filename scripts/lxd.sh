@@ -131,7 +131,7 @@ configure_lxd_container() {
     lxc list
     read -ep "Select a container to configure: " -i "$LXD_CONTAINER" selected_container
     read -ep "Choose a source directory on host to sync: ~/${REPOS}/" -i "sites/${selected_container}/site" relative_source
-    read -ep "Choose a target directory in container to sync: /" -i "srv/www/${selected_container}/current" target_dir
+    read -ep "Choose a target directory in container to sync: /" -i "var/www/${selected_container}/current" target_dir
     source_dir="$HOME/${REPOS}/$relative_source"
     target_dir="/${target_dir}"
 
