@@ -14,7 +14,6 @@ echo "# --------------------------------------------"
 # --------------------------  SETUP PARAMETERS
 
 [ -z "$REPOS" ] && read -ep "Directory to use for repositories: ~/" -i "Dropbox/Repos" REPOS
-LXD_CONTAINER=
 
 # --------------------------  INSTALL LXD/LXC
 
@@ -41,10 +40,14 @@ copy_lxd_image() {
 # --------------------------  CREATE CONTAINER
 
 # create new lxd container from latest image
-create_lxd_container() {
+create_lxd_wordpress_container() {
     local selected_image
-    local container_name
     local host_name
+    local selected_container
+    local relative_source
+    local target_dir
+    local source_dir
+    local target_dir_root
 
     # select an image and choose a container name
     lxc image list
@@ -55,11 +58,11 @@ create_lxd_container() {
     lxc launch "$selected_image"
 
     lxc list
-    read -ep "Select a container to use for ${host_name}: " container_name
+    read -ep "Select a container to use for ${host_name}: " selected_container
 
     # add container's ip to /etc/hosts
     pause "Press [Enter] to add $host_name to /etc/hosts"
-    local ipv4=$(lxc list | grep $container_name | cut -d "|" -f 4 | cut -d " " -f 2)
+    local ipv4=$(lxc list | grep $selected_container | cut -d "|" -f 4 | cut -d " " -f 2)
     # remove entry if it already exists
     if cat /etc/hosts | grep "$host_name" >/dev/null; then
         sudo sed -i.bak "/$host_name/d" /etc/hosts
@@ -68,37 +71,14 @@ create_lxd_container() {
     while [ -z "$ipv4" ]; do
         notify3 "The container hasn't been assigned an IP address yet."
         pause "Press [Enter] to try again" true
-        ipv4=$(lxc list | grep $container_name | cut -d "|" -f 4 | cut -d " " -f 2)
+        ipv4=$(lxc list | grep $selected_container | cut -d "|" -f 4 | cut -d " " -f 2)
     done
     # add new hosts entry
     [ -n "$ipv4" ] && echo -e "${ipv4}\t${host_name}" | sudo tee --append /etc/hosts && success "successfully added ${ipv4} and ${host_name} to /etc/hosts" || notify2 "Couldn't add ${host_name} to /etc/hosts, missing IP address on container."
 
-    # set global container name variable
-    LXD_CONTAINER="$container_name"
-
-    RET="$?"
-    debug
-}
-
-# --------------------------  CONFIGURE CONTAINER
-
-# configure lxd container for syncing and ssh with host
-configure_lxd_container() {
-    local selected_container="$LXD_CONTAINER"
-    local relative_source
-    local target_dir
-    local source_dir
-    local target_dir_root
-
-    # set container name if not already set
-    if [ -z "$LXD_CONTAINER" ]; then
-        lxc list
-        read -ep "Select a container to configure: " selected_container
-    fi
-
     # set syncing directory paths
-    read -ep "Choose a source directory on host to sync: ~/${REPOS}/" -i "sites/${selected_container}/site" relative_source
-    read -ep "Choose a target directory in container to sync: /" -i "var/www/${selected_container}/current" target_dir
+    read -ep "Choose a source directory on host to sync: ~/${REPOS}/" -i "sites/${host_name}/site" relative_source
+    read -ep "Choose a target directory in container to sync: /" -i "var/www/${host_name}/current" target_dir
     source_dir="$HOME/${REPOS}/$relative_source"
     target_dir="/${target_dir}"
 
@@ -110,11 +90,11 @@ configure_lxd_container() {
     #   sudo setfacl -d -m u:lxd:rwx,u:$(logname):rwx,u:165536:rwx,g:lxd:rwx,g:$(logname):rwx,g:165536:rwx "$source_dir"
     lxc exec "${selected_container}" -- su - root -c "mkdir -p $target_dir"
     # check if device already exists and remove it if it does
-    if lxc config device list "${selected_container}" >/dev/null | grep "shared-dir-${image_cnt}"; then
-        lxc config device remove "${selected_container}" "shared-dir-${image_cnt}"
+    if lxc config device list "${selected_container}" >/dev/null | grep "shared-${host_name}"; then
+        lxc config device remove "${selected_container}" "shared-${host_name}"
     fi
     # add new device for shared directory
-    lxc config device add "${selected_container}" "shared-dir-${image_cnt}" disk source="$source_dir" path="$target_dir" && success "Successfully configured syncing of $source_dir on host with $target_dir in container."
+    lxc config device add "${selected_container}" "shared-${host_name}" disk source="$source_dir" path="$target_dir" && success "Successfully configured syncing of $source_dir on host with $target_dir in container."
 
     # if not a server
     if [ "$IS_SERVER" -eq 1 ]; then
@@ -126,6 +106,10 @@ configure_lxd_container() {
         # push public ssh key to container
         lxc file push "$HOME/.ssh/id_rsa.pub" "${selected_container}/root/.ssh/authorized_keys" && success "Successfully added ssh key to ${selected_container}."
     fi
+
+    # install and run easyengine inside ubuntu container
+    lxc exec "${selected_container}" -- su - root -c "wget -qO ee rt.cx/ee && sudo bash ee"
+    lxc exec "${selected_container}" -- su - root -c "sudo ee site create ${host_name} --wpfc"
 
     RET="$?"
     debug
@@ -143,9 +127,6 @@ confirm "Install LXD?" true
 confirm "Copy ubuntu image to LXD?" true
 [ "$?" -eq 0 ] && copy_lxd_image
 
-confirm "Create LXD container from Alpine image?" true
-[ "$?" -eq 0 ] && create_lxd_container
-
-confirm "Configure LXD container for syncing and ssh with host?" true
-[ "$?" -eq 0 ] && configure_lxd_container
+confirm "Create lxd container with wordpress from ubuntu image?" true
+[ "$?" -eq 0 ] && create_lxd_wordpress_container
 
