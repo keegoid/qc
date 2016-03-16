@@ -14,7 +14,6 @@ echo "# --------------------------------------------"
 # --------------------------  SETUP PARAMETERS
 
 [ -z "$REPOS" ] && read -ep "Directory to use for repositories: ~/" -i "Dropbox/Repos" REPOS
-LXD_IMAGE=
 LXD_CONTAINER=
 
 # --------------------------  INSTALL LXD/LXC
@@ -31,64 +30,32 @@ install_lxd() {
 
 # --------------------------  BUILD ALPINE LINUX IMAGE
 
-# create a base alpine linux image for LXD
-create_alpine_lxd_image() {
-    local repo_url="$1"
-    local repo_name=$(trim_longest_left_pattern "$2" "/")
-    local repo_dir=$(trim_shortest_right_pattern "$2" "/")
-    local image_name="alpine-latest"
-    local image_cnt
-
-    [ -z "$repo_name" ] && repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
-
-    # update or clone alpine-lxd-image repo
-    if [ -d "$repo_dir" ]; then
-        notify "already set $repo_name"
-        cd $repo_dir && echo "checking for updates: $repo_name" && git pull && cd - >/dev/null
-    else
-        pause "Press [Enter] to configure $repo_name" true
-        git clone "$repo_url" "$repo_dir" && success "configured: $repo_name"
-    fi
-
+# copy base ubuntu image for LXD
+copy_lxd_image() {
     not_installed lxd && install_lxd
 
-    # count number of matches for alpine-latest and add one
-    image_cnt=$(lxc image list | grep -c $image_name)
-    LXD_IMAGE="$image_name-$image_cnt"
-
-    cd "$repo_dir"
-    # remove any previous images
-    sudo rm alpine-v*.tar.gz >/dev/null 2>&1
-    # download and build the latest alpine image
-    sudo ./build-alpine
-    # set permissions
-    sudo chmod 664 alpine-v*.tar.gz
-    # add newly created image to lxc
-    [ -f alpine-v*.tar.gz ] && lxc image import alpine-v*.tar.gz --alias "$LXD_IMAGE" && success "successfully created alpine linux lxd image and imported into lxc"
-    cd - >/dev/null
+    # copy image from remote server to local image store
+    lxc image copy ubuntu: local: --alias ubuntu && success "successfully copied ubuntu image to lxd image store"
 }
 
 # --------------------------  CREATE CONTAINER
 
 # create new lxd container from latest image
 create_lxd_container() {
-    local image_name="alpine-latest"
-    local image_cnt=`expr $(lxc image list | grep -c $image_name) - 1`
     local selected_image
     local container_name
     local host_name
 
-    # set image name if not already set
-    [ -z "$LXD_IMAGE" ] && LXD_IMAGE="$image_name-$image_cnt"
-
     # select an image and choose a container name
     lxc image list
-    read -ep "Select an image to use for the new container: " -i "$LXD_IMAGE" selected_image
-    read -ep "Enter a container name to use with $selected_image: " -i "alpine-wp-${image_cnt}" container_name
-    read -ep "Enter a host name to use with /etc/hosts: " -i "${container_name}.dev" host_name
+    read -ep "Select an image to use for the new container: " -i 'ubuntu' selected_image
+    read -ep "Enter a host name to use with /etc/hosts: " -i 'example.dev' host_name
 
     # create and start container
-    lxc launch "$selected_image" "$container_name"
+    lxc launch "$selected_image"
+
+    lxc list
+    read -ep "Select a container to use for ${host_name}: " container_name
 
     # add container's ip to /etc/hosts
     pause "Press [Enter] to add $host_name to /etc/hosts"
@@ -117,19 +84,19 @@ create_lxd_container() {
 
 # configure lxd container for syncing and ssh with host
 configure_lxd_container() {
-    local image_cnt=`expr $(lxc image list | grep -c alpine-latest) - 1`
-    local selected_container
+    local selected_container="$LXD_CONTAINER"
     local relative_source
     local target_dir
     local source_dir
     local target_dir_root
 
     # set container name if not already set
-    [ -z "$LXD_CONTAINER" ] && LXD_CONTAINER="alpine-wp-${image_cnt}"
+    if [ -z "$LXD_CONTAINER" ]; then
+        lxc list
+        read -ep "Select a container to configure: " selected_container
+    fi
 
-    # select a container and set syncing directory paths
-    lxc list
-    read -ep "Select a container to configure: " -i "$LXD_CONTAINER" selected_container
+    # set syncing directory paths
     read -ep "Choose a source directory on host to sync: ~/${REPOS}/" -i "sites/${selected_container}/site" relative_source
     read -ep "Choose a target directory in container to sync: /" -i "var/www/${selected_container}/current" target_dir
     source_dir="$HOME/${REPOS}/$relative_source"
@@ -173,9 +140,8 @@ confirm "Install LXD?" true
 
 [ $(lxc version) ] || { notify2 "You must log out and log back in to continue."; return 1; }
 
-confirm "Create Alpine Linux image for LXD?" true
-[ "$?" -eq 0 ] && create_alpine_lxd_image  "https://github.com/saghul/lxd-alpine-builder.git" \
-                                           "$HOME/.quick-config/lxd/lxd-alpine-builder/"
+confirm "Copy ubuntu image to LXD?" true
+[ "$?" -eq 0 ] && copy_lxd_image
 
 confirm "Create LXD container from Alpine image?" true
 [ "$?" -eq 0 ] && create_lxd_container
