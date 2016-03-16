@@ -27,7 +27,21 @@ install_lxd() {
     fi
 }
 
-# --------------------------  BUILD ALPINE LINUX IMAGE
+# --------------------------  INIT LXD WITH ZFS
+
+init_lxd() {
+    not_installed lxd && install_lxd
+    not_installed zfsutils && install_apt zfsutils
+
+    # create zfs block
+    sudo lxd init
+
+    # verify zfs
+    sudo zpool list
+    sudo zpool status
+}
+
+# --------------------------  UBUNTU IMAGE
 
 # copy base ubuntu image for LXD
 copy_lxd_image() {
@@ -125,7 +139,7 @@ confirm "Install LXD?" true
 [ $(lxc version) ] || { notify2 "You must log out and log back in to continue."; return 1; }
 
 confirm "Copy ubuntu image to LXD?" true
-[ "$?" -eq 0 ] && copy_lxd_image
+[ "$?" -eq 0 ] && init_lxd && copy_lxd_image
 
 confirm "Create lxd container with wordpress from ubuntu image?" true
 [ "$?" -eq 0 ] && create_lxd_wordpress_container
