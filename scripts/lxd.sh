@@ -17,22 +17,15 @@ echo "# --------------------------------------------"
 
 # --------------------------  INSTALL LXD/LXC
 
-# install or update LXD for LXC containers
+# install LXD for LXC containers
 install_lxd() {
-    program_must_exist lxc
-    if not_installed lxd; then
-        sudo add-apt-repository -y ppa:ubuntu-lxc/lxd-stable && sudo sed -i.bak -e "/trusty-backports/ s/^# //" /etc/apt/sources.list && sudo apt-get update && sudo apt-get -y dist-upgrade && sudo apt-get -y -t trusty-backports install lxd criu && success "successfuly installed: LXD (\"lex-dee\")" && notify2 "You must log out and log back in for lxc command to work."
-    else
-        notify "already installed LXD"
-    fi
+    not_installed zfsutils-linux && install_apt zfsutils-linux
+    not_installed lxd && install_apt lxd && notify2 "You must log out and log back in to use LXD in this script."
 }
 
 # --------------------------  INIT LXD WITH ZFS
 
 init_lxd() {
-    not_installed lxd && install_lxd
-    not_installed zfsutils && install_apt zfsutils
-
     # create zfs block
     sudo lxd init
 
@@ -136,7 +129,7 @@ pause "" true
 confirm "Install LXD?" true
 [ "$?" -eq 0 ] && install_lxd
 
-[ $(lxc version) ] || { notify2 "You must log out and log back in to continue."; return 1; }
+[ "$(lxc version)" ] || { notify2 "You must log out and log back in to continue."; return 1; }
 
 confirm "Copy ubuntu image to LXD?" true
 [ "$?" -eq 0 ] && init_lxd && copy_lxd_image

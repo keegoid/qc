@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "# --------------------------------------------"
 echo "# Quickly configures a fresh install of       "
-echo "# Ubuntu 14.04 64-bit.                        "
+echo "# Ubuntu 16.04 64-bit.                        "
 echo "#                                             "
 echo "# Author : Keegan Mullaney                    "
 echo "# Website: http://keegoid.com                 "
@@ -62,16 +62,15 @@ display_menu() {
       echo "        workstation        "
     fi
       echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-      echo " 1. UBUNTU PACKAGES & UPDATES"
-      echo " 2. SUBLIME TEXT"
-      echo " 3. KEYBASE"
-      echo " 4. SYSTEM CONFIG"
-      echo " 5. SSH KEY"
-      echo " 6. VIRTUALBOX & VAGRANT"
-      echo " 7. LXD WITH ALPINE IMAGE & CONTAINER"
-      echo " 8. WORDPRESS SETUP ON ALPINE CONTAINER"
-      echo " 9. FIX PERMISSIONS"
-      echo "10. QUIT"
+      echo "1. UBUNTU PACKAGES & UPDATES"
+      echo "2. SUBLIME TEXT"
+      echo "3. KEYBASE"
+      echo "4. SYSTEM CONFIG"
+      echo "5. SSH KEY"
+      echo "6. VIRTUALBOX & VAGRANT"
+      echo "7. WORDPRESS WITH LXD, ZFS & JUJU"
+      echo "8. FIX PERMISSIONS"
+      echo "9. QUIT"
 }
 
 # --------------------------  USER SELECTION
@@ -80,7 +79,7 @@ select_options() {
     local choice
     # make sure we're always starting from the right place
     cd "$PROJECT"
-    read -rp "Enter choice [1 - 10]: " choice
+    read -rp "Enter choice [1 - 9]: " choice
     case $choice in
         1) run_script linux_update.sh "scripts";;
         2) run_script subl.sh "scripts";;
@@ -89,9 +88,8 @@ select_options() {
         5) run_script ssh_key.sh "scripts";;
         6) run_script vm.sh "scripts";;
         7) run_script lxd.sh "scripts";;
-        8) run_script wordpress_setup.sh "scripts";;
-        9) fix_permissions;;
-        10) exit_msg && exit 0;;
+        8) fix_permissions;;
+        9) exit_msg && exit 0;;
         *) alert "Error..." && sleep 1
     esac
 
