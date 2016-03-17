@@ -268,7 +268,7 @@ fi
 
 # --------------------------  DEFAULT APT PACKAGES
 
-DEFAULT_SERVER_LIST='gnupg2 lynx openssh-server xclip vim-gtk'
+DEFAULT_SERVER_LIST='ca-certificates gettext-base less man-db openssh-server python-software-properties software-properites-common vim-gtk wget'
 DEFAULT_WORKSTATION_LIST='autojump deluge gnupg2 gufw lynx nautilus-open-terminal silversearcher-ag tmux x11vnc xclip vim-gtk vlc'
 DEFAULT_DEV_LIST='build-essential cmake checkinstall cvs dconf-cli git-core lxc mercurial subversion'
 RUBY_DEPENDENCIES_LIST='libffi-dev libreadline-dev libsqlite3-dev libssl-dev libxml2-dev libxslt1-dev libyaml-dev python-software-properties zlib1g-dev'
