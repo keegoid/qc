@@ -1,7 +1,7 @@
 quick-config
 ============
 
-Quickly configures a fresh install of [Ubuntu 14.04 64-bit][tt] on a workstation or server.
+Quickly configures a fresh install of [Ubuntu 16.04 64-bit][xx] on a workstation or server.
 
 *(The server part is a work in progress...)*
 
@@ -35,8 +35,9 @@ Quickly configures a fresh install of [Ubuntu 14.04 64-bit][tt] on a workstation
 - install and configure [Sublime Text][subl], it really is sublime for coding
 - configure [git][git] global settings
 - install the latest [VirtualBox][vb] and [Vagrant][vg]
-- install [LXD][lxd], create an [Alpine Linux][alpine] image and use it to create an [LXC][lxc] container for [WordPress][wp]
-- in [LXC][lxc] container, install [WordPress][wp] dependencies, build [NGINX][ngx] from source and configure [WordPress][wp] with [fast_cgi_cache][fcgi] purge.
+- install [LXD][lxd], use it to download an [Ubuntu][xx] cloud image and create an [LXC][lxc] container
+- install [ZFS][zfs] for use with [LXD][lxd]
+- install [Juju][juju] and use it to configure the [WordPress][wp] Juju [Charm][charms]
 
 ## Usage
 
@@ -74,13 +75,15 @@ SEE: http://keegoid.mit-license.org
 
 
 [ubuntu]:   http://www.ubuntu.com/global
+[xx]:       https://wiki.ubuntu.com/XenialXerus/ReleaseNotes
 [lxd]:      https://linuxcontainers.org/lxd/introduction/
 [lxc]:      https://linuxcontainers.org/lxc/introduction/
-[alpine]:   http://alpinelinux.org/
+[zfs]:      https://wiki.ubuntu.com/ZFS
+[juju]:     http://www.ubuntu.com/cloud/juju
+[charms]:   https://jujucharms.com/
 [gedit]:    https://wiki.gnome.org/Apps/Gedit
 [subl]:     https://www.sublimetext.com/
 [vim]:      http://www.vim.org/
-[tt]:       https://wiki.ubuntu.com/TrustyTahr/ReleaseNotes
 [gt]:       http://manpages.ubuntu.com/manpages/hardy/man1/gnome-terminal.1.html
 [ihs]:      https://help.ubuntu.com/community/UsingTheTerminal#An_extremely_handy_tool_::_Incremental_history_searching
 [tsolar]:   https://github.com/Anthony25/gnome-terminal-colors-solarized
@@ -91,8 +94,6 @@ SEE: http://keegoid.mit-license.org
 [mutt]:     http://www.mutt.org/
 [vb]:       https://www.virtualbox.org/
 [vg]:       https://www.vagrantup.com/
-[ngx]:      http://nginx.org/
-[fcgi]:     https://github.com/FRiCKLE/ngx_cache_purge
 [aj]:       https://github.com/wting/autojump
 [wp]:       https://wordpress.org/
 [ssh]:      http://en.wikipedia.org/wiki/Secure_Shell
