@@ -18,14 +18,11 @@ echo "# --------------------------------------------"
 # config files
 CONF1="$HOME/.bashrc"
 CONF2="$HOME/.inputrc"
-CONF3="$HOME/.gconf/apps/gnome-terminal/profiles/Default/%gconf.xml"
-CONF4="$HOME/.local/share/gedit/styles/blackboard.xml"
-CONF5="$HOME/.local/share/gedit/styles/solarized-dark.xml"
-CONF6="$HOME/.config/sublime-text-3/Packages/User/Preferences.sublime-settings"
-CONF7="$HOME/.muttrc"
-CONF8="$HOME/.tmux.conf"
-CONF9="$HOME/.vimrc"
-CONF10="$HOME/.gitignore_global"
+CONF3="$HOME/.config/sublime-text-3/Packages/User/Preferences.sublime-settings"
+CONF4="$HOME/.muttrc"
+CONF5="$HOME/.tmux.conf"
+CONF6="$HOME/.vimrc"
+CONF7="$HOME/.gitignore_global"
 
 # --------------------------  BACKUPS
 
@@ -130,13 +127,13 @@ set_autojump() {
 
 pause "" true
 
-do_backup               "$CONF1 $CONF2 $CONF3 $CONF4 $CONF5 $CONF6 $CONF7 $CONF8 $CONF9 $CONF10"
+do_backup               "$CONF1 $CONF2 $CONF3 $CONF4 $CONF5 $CONF6 $CONF7"
 
-# aliases
-set_sourced_config      "$HOME/.bashrc" \
-                        "https://gist.github.com/9d74e08779c1db6cb7b7" \
-                        "$CONFIG/bash/aliases/bash_aliases" \
-                        "\n# source alias file\nif [ -f $CONFIG/bash/aliases/bash_aliases ]; then\n   . $CONFIG/bash/aliases/bash_aliases\nfi"
+# aliases (to practice terminal commands for Linux certification exams, I'm not using aliases at the moment)
+#set_sourced_config      "$HOME/.bashrc" \
+#                        "https://gist.github.com/9d74e08779c1db6cb7b7" \
+#                        "$CONFIG/bash/aliases/bash_aliases" \
+#                        "\n# source alias file\nif [ -f $CONFIG/bash/aliases/bash_aliases ]; then\n   . $CONFIG/bash/aliases/bash_aliases\nfi"
 
 # mutt color scheme
 set_sourced_config      "$HOME/.muttrc" \
@@ -158,20 +155,10 @@ set_sourced_config      "$HOME/.vimrc" \
 
 [ -d "$SYNCED/vim" ] || { mkdir -pv "$SYNCED/vim"; notify3 "note: vim spellfile will be located in $SYNCED/vim, you can change this in $CONFIG/vim/vim.conf"; }
 
-# terminal profile
-set_copied_config       "$HOME/.gconf/apps/gnome-terminal/profiles/Default/%gconf.xml" \
-                        "https://gist.github.com/dad1663d2463db32c6e8.git" \
-                        "$CONFIG/terminal/profile/gconf.xml"
-
-# gedit color scheme
-set_copied_config       "$HOME/.local/share/gedit/styles/blackboard.xml" \
-                        "https://github.com/afair/dot-gedit.git" \
-                        "$CONFIG/gedit/blackboard/blackboard.xml"
-
-# gedit color scheme
-set_copied_config       "$HOME/.local/share/gedit/styles/solarized-dark.xml" \
-                        "https://github.com/mattcan/solarized-gedit.git" \
-                        "$CONFIG/gedit/solarized/solarized-dark.xml"
+# terminal profile (can't find profile file in new Ubuntu 16.04)
+#set_copied_config       "$HOME/.gconf/apps/gnome-terminal/profiles/Default/%gconf.xml" \
+#                        "https://gist.github.com/dad1663d2463db32c6e8.git" \
+#                        "$CONFIG/terminal/profile/gconf.xml"
 
 # sublime text
 mkdir -p "$HOME/.config/sublime-text-3/Packages/User"
@@ -187,7 +174,8 @@ set_git_config          "$HOME/.gitconfig"
 
 set_terminal_history    "$HOME/.inputrc"
 
-set_terminal_color      "$HOME/.bashrc"
+# already done in Ubuntu 16.04
+#set_terminal_color      "$HOME/.bashrc"
 
 set_autojump            "$HOME/.bashrc" \
                         "\n# source autojump file\nif [ -f /usr/share/autojump/autojump.sh ]; then\n   . /usr/share/autojump/autojump.sh\nfi"
