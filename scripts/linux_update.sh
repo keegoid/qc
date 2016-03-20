@@ -289,7 +289,7 @@ fi
 # --------------------------  DEFAULT APT PACKAGES
 
 DEFAULT_SERVER_LIST='ca-certificates gettext-base less man-db openssh-server python-software-properties software-properites-common vim-gtk wget'
-DEFAULT_WORKSTATION_LIST='autojump deluge gnupg2 gufw lynx nautilus-open-terminal pinta silversearcher-ag tmux x11vnc xclip vim-gtk vlc'
+DEFAULT_WORKSTATION_LIST='autojump deluge gnupg2 lynx pinta silversearcher-ag tmux x11vnc xclip vim-gtk vlc'
 DEFAULT_DEV_LIST='autoconf automake build-essential checkinstall dconf-cli'
 RUBY_DEPENDENCIES_LIST='libffi-dev libreadline-dev libsqlite3-dev libssl-dev libxml2-dev libxslt1-dev libyaml-dev python-software-properties zlib1g-dev'
 
@@ -332,7 +332,8 @@ pip_check_list+=($PIPS)
 
 # --------------------------  INSTALL PROGRAMS
 
-apt_install "$UPDATE"
 gem_install
 npm_install
 pip_install
+apt_install "$UPDATE"
+
