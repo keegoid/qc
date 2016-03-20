@@ -494,7 +494,7 @@ get_public_key() {
     echo -n "changing directory back to " && cd -
 }
 
-# --------------------------  GIT SHIT
+# --------------------------  GIT FUNCTIONS
 
 #   $1 -> code author's name
 #   $2 -> code author's email
