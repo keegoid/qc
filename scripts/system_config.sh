@@ -164,11 +164,15 @@ set_sourced_config      "$HOME/.vimrc" \
 mkdir -p "$HOME/.config/sublime-text-3/Packages/User"
 set_copied_config       "$HOME/.config/sublime-text-3/Packages/User/Preferences.sublime-settings" \
                         "https://gist.github.com/2ff3aa9ce91ff6e0e706.git" \
-                        "$CONFIG/subl/subl.conf"
+                        "$CONFIG/subl/config/subl.conf"
 
 set_copied_config       "$HOME/.config/sublime-text-3/Packages/User/Monokai - Spacegray.tmTheme" \
                         "https://github.com/keegoid/monokai-spacegray.git" \
-                        "$CONFIG/subl/monokai-spacegray/Monokai - Spacegray.tmTheme"
+                        "$CONFIG/subl/color_schemes/monokai-spacegray/Monokai - Spacegray.tmTheme"
+
+set_copied_config       "$HOME/.config/sublime-text-3/Packages/User/Monokai-Spacegray.sublimeTheme" \
+                        "https://gist.github.com/1c5164d1f9e71d570eda.git" \
+                        "$CONFIG/subl/themes/1c5164d1f9e71d570eda/Monokai-Spacegray.sublimeTheme"
 
 set_copied_config       "$HOME/.gitignore_global" \
                         "https://gist.github.com/efa547b362910ac7077c.git" \
