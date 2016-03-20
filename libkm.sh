@@ -187,7 +187,7 @@ program_must_exist() {
 
     # throw error on non-zero return value
     if [ "$?" -eq 0 ]; then
-        notify2 "You must have $1 installed to continue."
+        notify2 "$1 must be installed to continue."
         pause "Press [Enter] to install it now" true
         sudo apt-get -y install "$1"
     fi
@@ -240,7 +240,7 @@ set_source_cmd() {
     local match="$2"
     local src_cmd="$3"
 
-    if grep -q "$match" "$conf_file" >/dev/null 2>&1; then
+    if [ -n "$(grep $match $conf_file)" ]; then
         notify "already set $match in $conf_file"
     else
         echo "$src_cmd" >> "$conf_file" && success "configured: $match in $conf_file"
