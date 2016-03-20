@@ -27,6 +27,68 @@ gem_check_list=()
 npm_check_list=()
 pip_check_list=()
 
+# --------------------------  CUSTOM INSTALL SCRIPTS
+
+# install ruby with rbenv and ruby-build
+install_rbenv_ruby() {
+    # rbenv
+    set_sourced_config  "$HOME/.profile" \
+                        "https://github.com/rbenv/rbenv.git" \
+                        "$HOME/.rbenv/" \
+                        '[[ ":$PATH:" =~ ":$HOME/.rbenv/bin:" ]] || PATH="$HOME/.rbenv/bin:$PATH"'
+
+    # optional, to speed up rbenv
+    [ -d "$HOME/.rbenv" ] && cd "$HOME/.rbenv" && src/configure && make -C src && cd - >/dev/null
+
+    # add rbenv init - command to .profile
+    set_source_cmd      "$HOME/.profile" \
+                        '"eval "$(rbenv init -)"' \
+                        '[[ ":$PATH:" =~ ":$HOME/.rbenv/shims:" ]] || eval "$(rbenv init -)"'
+
+    # ruby-build
+    set_sourced_config  "$HOME/.profile" \
+                        "https://github.com/rbenv/ruby-build.git" \
+                        "$HOME/.rbenv/plugins/ruby-build/" \
+                        '[[ ":$PATH:" =~ ":$HOME/.rbenv/plugins/ruby-build/bin:" ]] || PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"'
+
+    # tell rubygems not to install docs for each package locally
+    set_source_cmd      "$HOME/.gemrc" \
+                        'gem: --no-ri --no-rdoc' \
+                        'gem: --no-ri --no-rdoc'
+
+    source "$HOME/.profile"
+
+    # check that rbenv is working
+    type rbenv
+    rbenv version
+
+    # install ruby
+    [ "$?" -eq 0 ] && rbenv install "$RUBY_V"
+    [ "$?" -eq 0 ] && rbenv global "$RUBY_V"
+
+    # check ruby and rubygem versions
+    ruby -v
+    gem env home
+
+    RET="$?"
+    debug
+}
+
+# install the long terms support version of Node.js
+install_npm_lts() {
+    curl https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
+    curl -L https://deb.nodesource.com/setup_4.x | sudo -E bash -
+    sudo apt-get -y install nodejs
+
+    # check node version
+    node -v
+
+    RET="$?"
+    debug
+}
+
+# --------------------------  CHECK FOR MISSING PROGRAMS
+
 # loop through check list and add missing packages to install list
 apt_check() {
     local pkg
@@ -121,7 +183,7 @@ pip_check() {
     debug
 }
 
-# --------------------------  INSTALL FROM PACKAGE MANAGERS
+# --------------------------  INSTALL MISSING PROGRAMS
 
 # loop through install list and install any packages that are in the list
 # $1 -> to update sources or not
@@ -154,7 +216,8 @@ gem_install() {
     gem_check
 
     # make sure ruby is installed
-    program_must_exist "ruby"
+    confirm "Install the latest version of ruby with rbenv and ruby-build?" true
+    [ "$?" -eq 0 ] && install_rbenv_ruby || program_must_exist ruby
     program_must_exist "rubygems-integration"
 
     if [[ "${#gem_install_list[@]}" -eq 0 ]]; then
@@ -174,7 +237,9 @@ npm_install() {
     npm_check
 
     # make sure npm is installed
-    program_must_exist "npm"
+    confirm "Install the long term support version of Node.js?" true
+    [ "$?" -eq 0 ] && install_npm_lts || program_must_exist npm
+
     # symlink nodejs to path
     if [ ! -L /usr/bin/node ]; then
         sudo ln -s "$(which nodejs)" /usr/bin/node
@@ -212,52 +277,6 @@ pip_install() {
     debug
 }
 
-# --------------------------  RBENV FOR LATEST RUBY
-
-install_rbenv_ruby() {
-    # rbenv
-    set_sourced_config  "$HOME/.profile" \
-                        "https://github.com/rbenv/rbenv.git" \
-                        "$HOME/.rbenv/" \
-                        '[[ ":$PATH:" =~ ":$HOME/.rbenv/bin:" ]] || PATH="$HOME/.rbenv/bin:$PATH"'
-
-    # optional, to speed up rbenv
-    [ -d "$HOME/.rbenv" ] && cd "$HOME/.rbenv" && src/configure && make -C src && cd - >/dev/null
-
-    # add rbenv init - command to .profile
-    set_source_cmd      "$HOME/.profile" \
-                        '"eval "$(rbenv init -)"' \
-                        '[[ ":$PATH:" =~ ":$HOME/.rbenv/shims:" ]] || eval "$(rbenv init -)"'
-
-    # ruby-build
-    set_sourced_config  "$HOME/.profile" \
-                        "https://github.com/rbenv/ruby-build.git" \
-                        "$HOME/.rbenv/plugins/ruby-build/" \
-                        '[[ ":$PATH:" =~ ":$HOME/.rbenv/plugins/ruby-build/bin:" ]] || PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"'
-
-    # tell rubygems not to install docs for each package locally
-    set_source_cmd      "$HOME/.gemrc" \
-                        'gem: --no-ri --no-rdoc' \
-                        'gem: --no-ri --no-rdoc'
-
-    source "$HOME/.profile"
-
-    # check that rbenv is working
-    type rbenv
-    rbenv version
-
-    # install ruby
-    [ "$?" -eq 0 ] && rbenv install "$RUBY_V"
-    [ "$?" -eq 0 ] && rbenv global "$RUBY_V"
-
-    # check ruby and rubygem versions
-    ruby -v
-    gem env home
-
-    RET="$?"
-    debug
-}
-
 # --------------------------  64-BIT ARCHITECTURE
 
 UPDATE=0
@@ -270,7 +289,7 @@ fi
 
 DEFAULT_SERVER_LIST='ca-certificates gettext-base less man-db openssh-server python-software-properties software-properites-common vim-gtk wget'
 DEFAULT_WORKSTATION_LIST='autojump deluge gnupg2 gufw lynx nautilus-open-terminal pinta silversearcher-ag tmux x11vnc xclip vim-gtk vlc'
-DEFAULT_DEV_LIST='build-essential cmake checkinstall cvs dconf-cli git-core lxc mercurial subversion'
+DEFAULT_DEV_LIST='autoconf automake build-essential checkinstall dconf-cli'
 RUBY_DEPENDENCIES_LIST='libffi-dev libreadline-dev libsqlite3-dev libssl-dev libxml2-dev libxslt1-dev libyaml-dev python-software-properties zlib1g-dev'
 
 # --------------------------  PROMPT FOR PROGRAMS
@@ -293,7 +312,7 @@ else
     notify "Ruby dependencies to install"
     read -ep "   : " -i "$RUBY_DEPENDENCIES_LIST"   APTS3
     notify "Packages to install with gem"
-    read -ep "   : " -i 'bundler gist'              GEMS
+    read -ep "   : " -i 'bundler gist jekyll'       GEMS
     notify "Packages to install with npm"
     read -ep "   : " -i 'doctoc'                    NPMS
     notify "Packages to install with pip"
@@ -313,8 +332,6 @@ pip_check_list+=($PIPS)
 # --------------------------  INSTALL PROGRAMS
 
 apt_install "$UPDATE"
-confirm "Install ruby with rbenv and ruby-build?" true
-[ "$?" -eq 0 ] && install_rbenv_ruby
 gem_install
 npm_install
 pip_install
