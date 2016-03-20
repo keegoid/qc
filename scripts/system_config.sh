@@ -166,6 +166,10 @@ set_copied_config       "$HOME/.config/sublime-text-3/Packages/User/Preferences.
                         "https://gist.github.com/2ff3aa9ce91ff6e0e706.git" \
                         "$CONFIG/subl/subl.conf"
 
+set_copied_config       "$HOME/.config/sublime-text-3/Packages/User/Monokai - Spacegray.tmTheme" \
+                        "https://github.com/keegoid/monokai-spacegray.git" \
+                        "$CONFIG/subl/monokai-spacegray/Monokai - Spacegray.tmTheme"
+
 set_copied_config       "$HOME/.gitignore_global" \
                         "https://gist.github.com/efa547b362910ac7077c.git" \
                         "$CONFIG/git/gitignore_global"
