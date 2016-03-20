@@ -281,6 +281,7 @@ pip_install() {
 
 UPDATE=0
 if [ "$(dpkg --print-foreign-architectures)" = "i386" ]; then
+    dpkg --get-selections | grep i386 || notify "no i386 packages installed"
     pause "Press [Enter] to purge all i386 packages and remove the i386 architecture" true
     sudo apt-get purge ".*:i386" && sudo dpkg --remove-architecture i386 && sudo apt-get update && success "Success, goodbye i386!" && UPDATE=1
 fi
