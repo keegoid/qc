@@ -112,7 +112,7 @@ set_shared_directory() {
     mkdir -p "$source_dir"
     sudo chgrp 165536 "$source_dir"
     sudo chmod g+s "$source_dir"
-    #   sudo setfacl -d -m u:lxd:rwx,u:$(logname):rwx,u:165536:rwx,g:lxd:rwx,g:$(logname):rwx,g:165536:rwx "$source_dir"
+    #   sudo setfacl -d -m u:lxd:rwx,u:$(whoami):rwx,u:165536:rwx,g:lxd:rwx,g:$(whoami):rwx,g:165536:rwx "$source_dir"
     lxc exec "${SELECTED_CONTAINER}" -- su - root -c "mkdir -p $target_dir"
     # check if device already exists and remove it if it does
     if lxc config device list "${SELECTED_CONTAINER}" >/dev/null | grep "shared-${1}"; then
@@ -130,7 +130,7 @@ set_shared_directory() {
 # add ssh key to authorized keys in container
 set_authorized_key() {
     # if no ssh key, generate one
-    [ -f "$HOME/.ssh/id_rsa.pub" ] || gen_ssh_key $HOME/.ssh $(logname)
+    [ -f "$HOME/.ssh/id_rsa.pub" ] || gen_ssh_key $HOME/.ssh $(whoami)
     pause "Press [Enter] to copy public your ssh key to \"authorized_keys\" in container"
     # make .ssh directory if it doesn't exist
     lxc exec "${SELECTED_CONTAINER}" -- su - root -c "mkdir -p .ssh"

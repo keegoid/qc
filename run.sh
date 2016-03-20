@@ -37,8 +37,8 @@ program_must_exist git
 # if any files in home are not owned by home user, fix that
 fix_permissions() {
     # set ownership
-    pause "Press [Enter] to make sure all files in $HOME are owned by $(logname)" true
-    sudo chown --preserve-root -cR $(logname):$(logname) $HOME
+    pause "Press [Enter] to make sure all files in $HOME are owned by $(whoami)" true
+    sudo chown --preserve-root -cR $(whoami):$(whoami) $HOME
 }
 
 # display message before exit
