@@ -240,7 +240,7 @@ set_source_cmd() {
     local match="$2"
     local src_cmd="$3"
 
-    if [ -n "$(grep $match $conf_file)" ]; then
+    if [ -n "$(grep ${match} ${conf_file})" ]; then
         notify "already set $match in $conf_file"
     else
         echo "$src_cmd" >> "$conf_file" && success "configured: $match in $conf_file"
@@ -262,12 +262,12 @@ set_sourced_config() {
     [ -z "$repo_name" ] && repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
 
     if [ -n "$repo_name" ]; then
-        if [ -d "$repo_dir" ] && [ -n "$(grep $repo_name $conf_file)" ]; then
+        if [ -d "$repo_dir" ] && [ -n "$(grep ${repo_name} ${conf_file})" ]; then
             notify "already set $repo_name in $conf_file"
-            cd $repo_dir && echo "checking for updates: $repo_name" && git pull && cd - >/dev/null
+            cd "$repo_dir" && echo "checking for updates: $repo_name" && git pull && cd - >/dev/null
         else
             pause "Press [Enter] to configure $repo_name in $conf_file" true
-            [ -d "$repo_dir" ] && notify2 "$repo_dir already exists. Will save a copy, delete and clone again." && cp -r $repo_dir $repo_dir-$today && rm -rf $repo_dir
+            [ -d "$repo_dir" ] && notify2 "$repo_dir already exists. Will save a copy, delete and clone again." && cp -r "$repo_dir" "$repo_dir-$today" && rm -rf "$repo_dir"
             git clone "$repo_url" "$repo_dir" && echo -e "$src_cmd" >> "$conf_file" && success "configured: $repo_name in $conf_file"
         fi
     else
@@ -287,13 +287,13 @@ set_copied_config() {
     local today=`date +%Y%m%d_%s`
 
     if [ -n "$repo_file" ]; then
-        if [ -f $repo_file ]; then
+        if [ -f "$repo_file" ]; then
             notify "already set $repo_file in $conf_file"
-            cd $repo_dir && echo "checking for updates: $repo_file" && git pull && cp $repo_file $conf_file && success "updated: $conf_file" && cd - >/dev/null
+            cd "$repo_dir" && echo "checking for updates: $repo_file" && git pull && cp "$repo_file" "$conf_file" && cd - >/dev/null
         else
             pause "Press [Enter] to configure $conf_file" true
-            [ -d "$repo_dir" ] && notify2 "$repo_dir already exists. Will save a copy, delete and clone again." && cp -r $repo_dir $repo_dir-$today && rm -rf $repo_dir
-            git clone "$repo_url" "$repo_dir" && cp $repo_file $conf_file && success "configured: $conf_file"
+            [ -d "$repo_dir" ] && notify2 "$repo_dir already exists. Will save a copy, delete and clone again." && cp -r "$repo_dir" "$repo_dir-$today" && rm -rf "$repo_dir"
+            git clone "$repo_url" "$repo_dir" && cp "$repo_file" "$conf_file" && success "configured: $conf_file"
         fi
     else
         alert "repo_file variable is empty"
