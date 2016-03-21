@@ -20,36 +20,55 @@ SELECTED_CONTAINER=
 
 # install Juju, ZFS and LXD
 install_juju_zfs_lxd() {
-    if not_installed juju-local; then
+    if not_installed juju2; then
         sudo apt-add-repository -y ppa:juju/devel
         sudo apt-get update
-        [ "$IS_SERVER" -eq 0 ] && install_apt juju || install_apt juju-local
+        install_apt juju2
+#        [ "$IS_SERVER" -eq 0 ] && install_apt juju || install_apt juju-local
+    else
+        notify "Juju2 is already installed"
     fi
-    program_must_exist zfsutils-linux
-    program_must_exist lxd && return 1
+    install_apt "zfsutils-linux lxd criu"
 
     RET="$?"
     debug
-    return 0
 }
 
 # --------------------------  INIT JUJU AND LXD WITH ZFS
 
 init_juju_lxd() {
-    notify3 "At this point you could exit this script and set up your ZFS pool manually on some physical hard drives per instructions at http://goo.gl/z6Xg5Z and https://goo.gl/1e3a5e"
+    notify3 "At this point you could exit this script and set up your ZFS pool manually on some physical hard drives per instructions at:"
+    notify3 "http://goo.gl/z6Xg5Z and https://goo.gl/1e3a5e"
     confirm "Create a sparse, loopback file for the ZFS pool instead?" true
     # create zfs block
     [ "$?" -eq 0 ] && sudo lxd init
 
-    # verify zfs
+    # set compression and turn off dedup
+    read -ep "Enter the name you used for your zpool: " zpool_name
+    sudo zfs set compression=on "$zpool_name"
+    sudo zfs set compression=lz4 "$zpool_name"
+    sudo zfs set dedup=off "$zpool_name"
+    success "set compression to lz4 and disabled dedup on $zpool_name"
+
+    # add cron job to scrub zpool weekly
+    echo -e "#!/bin/sh\n/sbin/zpool scrub $zpool_name" | sudo tee /etc/cron.weekly/zfsscrub
+    sudo chmod +x /etc/cron.weekly/zfsscrub
+
+    # limit memory usage by zpool
+    echo -e "# Limit arc to 1GB\noptions zfs zfs_arc_max=1073741824" | sudo tee /etc/modprobe.d/zfs.conf
+
+     # verify zfs
     sudo zpool list
     sudo zpool status
 
     # set Juju to work with LXD
-    juju init
-    juju generate-config --show
-    juju switch lxd
-    juju bootstrap --upload-tools
+#    pause "Press [Enter] to init Juju"
+#    juju init
+#    mv -n ~/.juju/environments.yaml ~/.juju/environments-old.yaml
+#    echo -e "default: local\n\nenvironments:\n\n\tlxd:\n\ttype: lxd" | tee ~/.juju/environments.yaml
+#    juju init --show
+#    juju switch lxd
+#    juju bootstrap --upload-tools
 
     RET="$?"
     debug
@@ -207,12 +226,8 @@ add_memcached() {
 
 # --------------------------  MAIN
 
-pause "" true
-
 confirm "Install Juju, ZFS and LXD?" true
-[ "$?" -eq 0 ] && install_juju_zfs_lxd
-
-[ "$?" -eq 0 ] || { notify2 "You must log out and log back in to continue."; pause ""; return 1; }
+[ "$?" -eq 0 ] && install_juju_zfs_lxd && { notify2 "You must log out and log back in to continue."; return 1; }
 
 confirm "Create ZFS pool and init Juju?" true
 [ "$?" -eq 0 ] && init_juju_lxd
@@ -225,12 +240,14 @@ if [ "$IS_SERVER" -eq 1 ]; then
     confirm "Create lxd container from ubuntu image?" true
     [ "$?" -eq 0 ] && create_lxd_container
 
-    confirm "Deploy WordPress to container using Juju" true
-    [ "$?" -eq 0 ] && deploy_wordpress
+# Juju2 isn't ready yet
 
-    notify2 "Use your browser to create a WordPress user before proceeding."
+#    confirm "Deploy WordPress to container using Juju" true
+#    [ "$?" -eq 0 ] && deploy_wordpress
 
-    confirm "Add memcached relation to WordPress?" true
-    [ "$?" -eq 0 ] && add_memcached
+#    notify2 "Use your browser to create a WordPress user before proceeding."
+
+#    confirm "Add memcached relation to WordPress?" true
+#    [ "$?" -eq 0 ] && add_memcached
 fi
 
