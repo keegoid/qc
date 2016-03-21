@@ -19,10 +19,12 @@ echo "# --------------------------------------------"
 CONF1="$HOME/.bashrc"
 CONF2="$HOME/.inputrc"
 CONF3="$HOME/.config/sublime-text-3/Packages/User/Preferences.sublime-settings"
-CONF4="$HOME/.muttrc"
-CONF5="$HOME/.tmux.conf"
-CONF6="$HOME/.vimrc"
-CONF7="$HOME/.gitignore_global"
+CONF4="$HOME/.config/sublime-text-3/Packages/User/Monokai - Spacegray.tmTheme"
+CONF5="$HOME/.config/sublime-text-3/Packages/User/Monokai-Spacegray.sublime-theme"
+CONF6="$HOME/.muttrc"
+CONF7="$HOME/.tmux.conf"
+CONF8="$HOME/.vimrc"
+CONF9="$HOME/.gitignore_global"
 
 # --------------------------  BACKUPS
 
@@ -127,7 +129,7 @@ set_autojump() {
 
 pause "" true
 
-do_backup               "$CONF1 $CONF2 $CONF3 $CONF4 $CONF5 $CONF6 $CONF7"
+do_backup               "$CONF1 $CONF2 $CONF3 $CONF4 $CONF5 $CONF6 $CONF7 $CONF8 $CONF9"
 
 # aliases (to practice terminal commands for Linux certification exams, I'm not using aliases at the moment)
 #set_sourced_config      "$HOME/.bashrc" \
@@ -170,9 +172,9 @@ set_copied_config       "$HOME/.config/sublime-text-3/Packages/User/Monokai - Sp
                         "https://github.com/keegoid/monokai-spacegray.git" \
                         "$CONFIG/subl/color_schemes/monokai-spacegray/Monokai - Spacegray.tmTheme"
 
-set_copied_config       "$HOME/.config/sublime-text-3/Packages/User/Monokai-Spacegray.sublimeTheme" \
+set_copied_config       "$HOME/.config/sublime-text-3/Packages/User/Monokai-Spacegray.sublime-theme" \
                         "https://gist.github.com/1c5164d1f9e71d570eda.git" \
-                        "$CONFIG/subl/themes/1c5164d1f9e71d570eda/Monokai-Spacegray.sublimeTheme"
+                        "$CONFIG/subl/themes/1c5164d1f9e71d570eda/Monokai-Spacegray.sublime-theme"
 
 set_copied_config       "$HOME/.gitignore_global" \
                         "https://gist.github.com/efa547b362910ac7077c.git" \
