@@ -30,25 +30,8 @@ pip_check_list=()
 
 # --------------------------  CUSTOM INSTALL SCRIPTS
 
-# check that rbenv and ruby are working and install ruby
-install_ruby() {
-    type rbenv
-    rbenv version
-
-    # install ruby
-    [ "$?" -eq 0 ] && rbenv install "$RUBY_V"
-    [ "$?" -eq 0 ] && rbenv global "$RUBY_V"
-
-    # check ruby and rubygem versions
-    ruby -v
-    gem env home
-
-    RET="$?"
-    debug
-}
-
-# install rbenv and ruby-build
-install_rbenv() {
+# install ruby with rbenv and ruby-build
+install_rbenv_ruby() {
     program_must_exist 'libssl-dev'
     program_must_exist 'libreadline-dev'
     program_must_exist 'zlib1g-dev'
@@ -78,6 +61,17 @@ install_rbenv() {
                         'no-rdoc' \
                         'gem: --no-ri --no-rdoc'
 
+    type ~/.rbenv/bin/rbenv
+    ~/.rbenv/bin/rbenv version
+
+    # install ruby
+    [ "$?" -eq 0 ] && ~/.rbenv/bin/rbenv install "$RUBY_V"
+    [ "$?" -eq 0 ] && ~/.rbenv/bin/rbenv global "$RUBY_V"
+
+    # check ruby and rubygem versions
+    ~/.rbenv/shims/ruby -v
+    ~/.rbenv/shims/gem env home
+
     RET="$?"
     debug
 }
@@ -104,8 +98,8 @@ gem_check() {
     local pkg_version
 
     for pkg in "${gem_check_list[@]}"; do
-        if gem list $pkg -i >/dev/null; then
-            pkg_version=$(gem list $pkg$ | grep "$pkg" | cut -d " " -f 2 | cut -d "(" -f 2 | cut -d ")" -f 1)
+        if ~/.rbenv/shims/gem list $pkg -i >/dev/null; then
+            pkg_version=$(~/.rbenv/shims/gem list $pkg$ | grep "$pkg" | cut -d " " -f 2 | cut -d "(" -f 2 | cut -d ")" -f 1)
             space_count="$(expr 20 - "${#pkg}")"
             pack_space_count="$(expr 20 - "${#pkg_version}")"
             real_space="$(expr ${space_count} + ${pack_space_count} + ${#pkg_version})"
@@ -196,6 +190,11 @@ apt_check() {
 
 # loop through install list and install any gems that are in the list
 gem_install() {
+    # make sure ruby is installed
+    confirm "Install the latest version of ruby with rbenv and ruby-build?" true
+    [ "$?" -eq 0 ] && install_rbenv_ruby || { ruby -v | grep "not installed" && program_must_exist ruby; }
+    #program_must_exist "rubygems-integration"
+
     gem_check
 
     if [[ "${#gem_install_list[@]}" -eq 0 ]]; then
@@ -203,7 +202,7 @@ gem_install() {
     else
         # install required gems
         pause "Press [Enter] to install gems" true
-        gem install ${gem_install_list[@]}
+        ~/.rbenv/shims/gem install ${gem_install_list[@]}
     fi
 
     RET="$?"
@@ -332,18 +331,7 @@ apt_check_list+=($APTS2)
 
 # --------------------------  INSTALL PROGRAMS
 
-# make sure ruby is installed
-confirm "Install the latest version of ruby with rbenv and ruby-build?" true
-[ "$?" -eq 0 ] && install_rbenv || { ruby -v | grep "not installed" && program_must_exist ruby; }
-#program_must_exist "rubygems-integration"
-
-[ -d ~/.rbenv ] && source ~/.rbenv/bin/rbenv
-[ -d ~/.rbenv ] && source ~/.rbenv/shims/gem
-
-install_ruby
-
 gem_install
 npm_install
 pip_install
 apt_install "$UPDATE"
-
