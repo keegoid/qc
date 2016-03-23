@@ -11,11 +11,8 @@ echo "# --------------------------------------------"
 
 # --------------------------  SETUP PARAMETERS
 
-[ -z "$RUBY_V" ] && RUBY_V='2.2.3'
-[ -z "$RUBY_URL" ] && RUBY_URL='https://get.rvm.io'
-[ -z "$RUBY_KEY" ] && RUBY_KEY='409B6B1796C275462A1703113804BB82D39DC0E3'
-# www.ruby-lang.org
-# rvm.io
+[ -z "$RVM_URL" ] && RUBY_URL='https://get.rvm.io'
+[ -z "$RVM_KEY" ] && RUBY_KEY='409B6B1796C275462A1703113804BB82D39DC0E3'
 
 # --------------------------  MISSING PROGRAM CHECKS
 
@@ -33,35 +30,24 @@ pip_check_list=()
 
 # --------------------------  CUSTOM INSTALL SCRIPTS
 
-# source rvm after installing non-package management version of ruby
-source_rvm() {
-    read -p "Press [Enter] to start using rvm"
-    if grep -q "rvm/scripts/rvm" ~/.bashrc; then
-#        source /usr/local/rvm/scripts/rvm && echo "sourced rvm"
-        source ~/.rvm/scripts/rvm && echo "sourced rvm"
-    else
-        echo "source ~/.rvm/scripts/rvm" >> ~/.bashrc
-#        source /usr/local/rvm/scripts/rvm && echo "rvm sourced and added to .bashrc"
-        source ~/.rvm/scripts/rvm && echo "rvm sourced and added to .bashrc"
-    fi
-}
-
 # install ruby using rvm
 install_rvm_ruby() {
     # make sure the default ruby is installed first
     program_must_exist ruby
-    program_must_exist gpg2
+    program_must_exist gpgv2
     #program_must_exist "rubygems-integration"
 
-    pause "Press [Enter] to install ruby via rvm" true
-    if ! ruby -v | grep -q "ruby ${RUBY_V}"; then
-        gpg2 --keyserver hkp://keys.gnupg.net --recv-keys "$RUBY_KEY"
-        curl -sSL "$RUBY_URL" | bash -s stable --ruby
-    fi
-    source_rvm
+    # get rvm
+    gpg2 --keyserver hkp://keys.gnupg.net --recv-keys "$RVM_KEY"
+    curl -sSL "$RVM_URL" | bash -s stable
+
+    # tell rubygems not to install docs for each package locally
+    set_source_cmd      "$HOME/.gemrc" \
+                        'no-rdoc' \
+                        'gem: --no-ri --no-rdoc'
 
     # check that rvm and ruby work
-    type rvm | head -n 1
+    type ~/.rvm/scripts/rvm | head -n 1
     ruby -v
     which ruby
 
