@@ -78,10 +78,13 @@ init_juju_lxd() {
 
 # import base ubuntu image for LXD
 import_lxd_image() {
-    not_installed lxd && install_lxd
+    not_installed lxd && install_juju_zfs_lxd
 
     # copy image from remote server to local image store
-    lxd-images import ubuntu trusty amd64 --sync --alias ubuntu-trusty && success "successfully imported ubuntu image to lxd image store"
+# old way
+    # lxd-images import ubuntu trusty amd64 --sync --alias ubuntu-trusty
+# new way
+    lxc image copy ubuntu:trusty/amd64 local: --alias ubuntu-trusty --auto-update && success "successfully imported ubuntu image to lxc image store"
 
     RET="$?"
     debug
