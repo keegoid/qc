@@ -337,9 +337,8 @@ confirm "Install the latest version of ruby with rbenv and ruby-build?" true
 [ "$?" -eq 0 ] && install_rbenv || { ruby -v | grep "not installed" && program_must_exist ruby; }
 #program_must_exist "rubygems-integration"
 
-[ -d ~/.rbenv ] && source ~/.rbenv/bin
-[ -d ~/.rbenv ] && source ~/.rbenv/shims
-[ -d ~/.rbenv ] && source ~/.rbenv/plugins/ruby-build/bin
+[ -d ~/.rbenv ] && source ~/.rbenv/bin/rbenv
+[ -d ~/.rbenv ] && source ~/.rbenv/shims/gem
 
 install_ruby
 
