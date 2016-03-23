@@ -11,8 +11,9 @@ echo "# --------------------------------------------"
 
 # --------------------------  SETUP PARAMETERS
 
-[ -z "$RVM_URL" ] && RUBY_URL='https://get.rvm.io'
-[ -z "$RVM_KEY" ] && RUBY_KEY='409B6B1796C275462A1703113804BB82D39DC0E3'
+[ -z "$RUBY_V" ] && RUBY_V='2.3.0'
+[ -z "$RVM_URL" ] && RVM_URL='https://get.rvm.io'
+[ -z "$RVM_KEY" ] && RVM_KEY='D39DC0E3'
 
 # --------------------------  MISSING PROGRAM CHECKS
 
@@ -30,26 +31,60 @@ pip_check_list=()
 
 # --------------------------  CUSTOM INSTALL SCRIPTS
 
-# install ruby using rvm
-install_rvm_ruby() {
-    # make sure the default ruby is installed first
-    program_must_exist ruby
+# install ruby with rbenv and ruby-build
+install_rbenv_ruby() {
+    # ruby dependencies
     program_must_exist gpgv2
-    #program_must_exist "rubygems-integration"
+    program_must_exist git-core
+    program_must_exist curl
+    program_must_exist zlib1g-dev
+    program_must_exist build-essential
+    program_must_exist libssl-dev
+    program_must_exist libreadline-dev
+    program_must_exist libyaml-dev
+    program_must_exist libsqlite3-dev
+    program_must_exist sqlite3
+    program_must_exist libxml2-dev
+    program_must_exist libxslt1-dev
+    program_must_exist libcurl4-openssl-dev
+    program_must_exist python-software-properties
+    program_must_exist libffi-dev
 
-    # get rvm
-    gpg2 --keyserver hkp://keys.gnupg.net --recv-keys "$RVM_KEY"
-    curl -sSL "$RVM_URL" | bash -s stable
+    # rbenv
+    set_sourced_config  "$HOME/.bashrc" \
+                        "https://github.com/rbenv/rbenv.git" \
+                        "$HOME/.rbenv/" \
+                        '[[ ":$PATH:" =~ ":$HOME/.rbenv/bin:" ]] || PATH="$HOME/.rbenv/bin:$PATH"'
+
+    # optional, to speed up rbenv
+    [ -d "$HOME/.rbenv" ] && cd "$HOME/.rbenv" && src/configure && make -C src && cd - >/dev/null
+
+    # add rbenv init - command to .profile
+    set_source_cmd      "$HOME/.bashrc" \
+                        'rbenv/shims:' \
+                        '[[ ":$PATH:" =~ ":$HOME/.rbenv/shims:" ]] || eval "$(rbenv init -)"'
+
+    # ruby-build
+    set_sourced_config  "$HOME/.bashrc" \
+                        "https://github.com/rbenv/ruby-build.git" \
+                        "$HOME/.rbenv/plugins/ruby-build/" \
+                        '[[ ":$PATH:" =~ ":$HOME/.rbenv/plugins/ruby-build/bin:" ]] || PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"'
 
     # tell rubygems not to install docs for each package locally
     set_source_cmd      "$HOME/.gemrc" \
                         'no-rdoc' \
                         'gem: --no-ri --no-rdoc'
 
-    # check that rvm and ruby work
-    type ~/.rvm/scripts/rvm | head -n 1
-    ruby -v
-    which ruby
+    type ~/.rbenv/bin/rbenv
+    ~/.rbenv/bin/rbenv version
+
+    # install ruby
+    [ "$?" -eq 0 ] && ~/.rbenv/bin/rbenv install $RUBY_V
+    [ "$?" -eq 0 ] && ~/.rbenv/bin/rbenv global $RUBY_V
+
+    # check ruby and rubygem versions
+    ~/.rbenv/shims/ruby -v
+    ~/.rbenv/shims/gem env home
 
     RET="$?"
     debug
@@ -77,7 +112,7 @@ gem_check() {
     local pkg_version
 
     for pkg in "${gem_check_list[@]}"; do
-        if gem list $pkg -i >/dev/null; then
+        if ~/.rbenv/shims/gem list $pkg -i >/dev/null; then
             pkg_version=$(~/.rbenv/shims/gem list $pkg$ | grep "$pkg" | cut -d " " -f 2 | cut -d "(" -f 2 | cut -d ")" -f 1)
             space_count="$(expr 20 - "${#pkg}")"
             pack_space_count="$(expr 20 - "${#pkg_version}")"
@@ -169,9 +204,9 @@ apt_check() {
 
 # loop through install list and install any gems that are in the list
 gem_install() {
-    # make sure ruby is installed
-    confirm "Install the latest version of ruby with rvm?" true
-    [ "$?" -eq 0 ] && install_rvm_ruby
+    # install ruby with rbenv
+    confirm "Install the latest version of ruby with rbenv?" true
+    [ "$?" -eq 0 ] && install_rbenv_ruby
 
     gem_check
 
@@ -180,7 +215,7 @@ gem_install() {
     else
         # install required gems
         pause "Press [Enter] to install gems" true
-        gem install ${gem_install_list[@]}
+        ~/.rbenv/shims/gem install ${gem_install_list[@]}
     fi
 
     RET="$?"
@@ -271,7 +306,7 @@ fi
 # --------------------------  DEFAULT APT PACKAGES
 
 DEFAULT_SERVER_LIST='ca-certificates gettext-base less man-db openssh-server python-software-properties software-properites-common vim-gtk wget'
-DEFAULT_WORKSTATION_LIST='autojump lynx mutt pinta silversearcher-ag tmux x11vnc xclip vim-gtk vlc'
+DEFAULT_WORKSTATION_LIST='autojump gpgv2 lynx mutt pinta silversearcher-ag tmux x11vnc xclip vim-gtk vlc'
 DEFAULT_DEV_LIST='autoconf automake build-essential checkinstall dconf-cli'
 
 # --------------------------  PROMPT FOR PROGRAMS
