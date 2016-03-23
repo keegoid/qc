@@ -12,7 +12,10 @@ echo "# --------------------------------------------"
 # --------------------------  SETUP PARAMETERS
 
 [ -z "$RUBY_V" ] && RUBY_V='2.2.3'
-# https://www.ruby-lang.org/en/
+[ -z "$RUBY_URL" ] && RUBY_URL='https://get.rvm.io'
+[ -z "$RUBY_KEY" ] && RUBY_KEY='409B6B1796C275462A1703113804BB82D39DC0E3'
+# www.ruby-lang.org
+# rvm.io
 
 # --------------------------  MISSING PROGRAM CHECKS
 
@@ -30,47 +33,37 @@ pip_check_list=()
 
 # --------------------------  CUSTOM INSTALL SCRIPTS
 
-# install ruby with rbenv and ruby-build
-install_rbenv_ruby() {
-    program_must_exist 'libssl-dev'
-    program_must_exist 'libreadline-dev'
-    program_must_exist 'zlib1g-dev'
+# source rvm after installing non-package management version of ruby
+source_rvm() {
+    read -p "Press [Enter] to start using rvm"
+    if grep -q "rvm/scripts/rvm" ~/.bashrc; then
+#        source /usr/local/rvm/scripts/rvm && echo "sourced rvm"
+        source ~/.rvm/scripts/rvm && echo "sourced rvm"
+    else
+        echo "source ~/.rvm/scripts/rvm" >> ~/.bashrc
+#        source /usr/local/rvm/scripts/rvm && echo "rvm sourced and added to .bashrc"
+        source ~/.rvm/scripts/rvm && echo "rvm sourced and added to .bashrc"
+    fi
+}
 
-    # rbenv
-    set_sourced_config  "$HOME/.bashrc" \
-                        "https://github.com/rbenv/rbenv.git" \
-                        "$HOME/.rbenv/" \
-                        '[[ ":$PATH:" =~ ":$HOME/.rbenv/bin:" ]] || PATH="$HOME/.rbenv/bin:$PATH"'
+# install ruby using rvm
+install_rvm_ruby() {
+    # make sure the default ruby is installed first
+    program_must_exist ruby
+    program_must_exist gpg2
+    #program_must_exist "rubygems-integration"
 
-    # optional, to speed up rbenv
-    [ -d "$HOME/.rbenv" ] && cd "$HOME/.rbenv" && src/configure && make -C src && cd - >/dev/null
+    pause "Press [Enter] to install ruby via rvm" true
+    if ! ruby -v | grep -q "ruby ${RUBY_V}"; then
+        gpg2 --keyserver hkp://keys.gnupg.net --recv-keys "$RUBY_KEY"
+        curl -sSL "$RUBY_URL" | bash -s stable --ruby
+    fi
+    source_rvm
 
-    # add rbenv init - command to .profile
-    set_source_cmd      "$HOME/.bashrc" \
-                        'rbenv/shims:' \
-                        '[[ ":$PATH:" =~ ":$HOME/.rbenv/shims:" ]] || eval "$(rbenv init -)"'
-
-    # ruby-build
-    set_sourced_config  "$HOME/.bashrc" \
-                        "https://github.com/rbenv/ruby-build.git" \
-                        "$HOME/.rbenv/plugins/ruby-build/" \
-                        '[[ ":$PATH:" =~ ":$HOME/.rbenv/plugins/ruby-build/bin:" ]] || PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"'
-
-    # tell rubygems not to install docs for each package locally
-    set_source_cmd      "$HOME/.gemrc" \
-                        'no-rdoc' \
-                        'gem: --no-ri --no-rdoc'
-
-    type ~/.rbenv/bin/rbenv
-    ~/.rbenv/bin/rbenv version
-
-    # install ruby
-    [ "$?" -eq 0 ] && ~/.rbenv/bin/rbenv install "$RUBY_V"
-    [ "$?" -eq 0 ] && ~/.rbenv/bin/rbenv global "$RUBY_V"
-
-    # check ruby and rubygem versions
-    ~/.rbenv/shims/ruby -v
-    ~/.rbenv/shims/gem env home
+    # check that rvm and ruby work
+    type rvm | head -n 1
+    ruby -v
+    which ruby
 
     RET="$?"
     debug
@@ -98,7 +91,7 @@ gem_check() {
     local pkg_version
 
     for pkg in "${gem_check_list[@]}"; do
-        if ~/.rbenv/shims/gem list $pkg -i >/dev/null; then
+        if gem list $pkg -i >/dev/null; then
             pkg_version=$(~/.rbenv/shims/gem list $pkg$ | grep "$pkg" | cut -d " " -f 2 | cut -d "(" -f 2 | cut -d ")" -f 1)
             space_count="$(expr 20 - "${#pkg}")"
             pack_space_count="$(expr 20 - "${#pkg_version}")"
@@ -191,9 +184,8 @@ apt_check() {
 # loop through install list and install any gems that are in the list
 gem_install() {
     # make sure ruby is installed
-    confirm "Install the latest version of ruby with rbenv and ruby-build?" true
-    [ "$?" -eq 0 ] && install_rbenv_ruby || { ruby -v | grep "not installed" && program_must_exist ruby; }
-    #program_must_exist "rubygems-integration"
+    confirm "Install the latest version of ruby with rvm?" true
+    [ "$?" -eq 0 ] && install_rvm_ruby
 
     gem_check
 
@@ -202,7 +194,7 @@ gem_install() {
     else
         # install required gems
         pause "Press [Enter] to install gems" true
-        ~/.rbenv/shims/gem install ${gem_install_list[@]}
+        gem install ${gem_install_list[@]}
     fi
 
     RET="$?"
