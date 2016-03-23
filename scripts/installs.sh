@@ -30,8 +30,29 @@ pip_check_list=()
 
 # --------------------------  CUSTOM INSTALL SCRIPTS
 
-# install ruby with rbenv and ruby-build
-install_rbenv_ruby() {
+# check that rbenv and ruby are working and install ruby
+install_ruby() {
+    type rbenv
+    rbenv version
+
+    # install ruby
+    [ "$?" -eq 0 ] && rbenv install "$RUBY_V"
+    [ "$?" -eq 0 ] && rbenv global "$RUBY_V"
+
+    # check ruby and rubygem versions
+    ruby -v
+    gem env home
+
+    RET="$?"
+    debug
+}
+
+# install rbenv and ruby-build
+install_rbenv() {
+    program_must_exist 'libssl-dev'
+    program_must_exist 'libreadline-dev'
+    program_must_exist 'zlib1g-dev'
+
     # rbenv
     set_sourced_config  "$HOME/.bashrc" \
                         "https://github.com/rbenv/rbenv.git" \
@@ -56,20 +77,6 @@ install_rbenv_ruby() {
     set_source_cmd      "$HOME/.gemrc" \
                         'no-rdoc' \
                         'gem: --no-ri --no-rdoc'
-
-    source "$HOME/.bashrc"
-
-    # check that rbenv is working
-    type rbenv
-    rbenv version
-
-    # install ruby
-    [ "$?" -eq 0 ] && rbenv install "$RUBY_V"
-    [ "$?" -eq 0 ] && rbenv global "$RUBY_V"
-
-    # check ruby and rubygem versions
-    ruby -v
-    gem env home
 
     RET="$?"
     debug
@@ -189,15 +196,6 @@ apt_check() {
 
 # loop through install list and install any gems that are in the list
 gem_install() {
-    program_must_exist 'libssl-dev'
-    program_must_exist 'libreadline-dev'
-    program_must_exist 'zlib1g-dev'
-
-    # make sure ruby is installed
-    confirm "Install the latest version of ruby with rbenv and ruby-build?" true
-    [ "$?" -eq 0 ] && install_rbenv_ruby || { ruby -v | grep "not installed" && program_must_exist ruby; }
-#    program_must_exist "rubygems-integration"
-
     gem_check
 
     if [[ "${#gem_install_list[@]}" -eq 0 ]]; then
@@ -333,6 +331,17 @@ apt_check_list+=($APTS1)
 apt_check_list+=($APTS2)
 
 # --------------------------  INSTALL PROGRAMS
+
+# make sure ruby is installed
+confirm "Install the latest version of ruby with rbenv and ruby-build?" true
+[ "$?" -eq 0 ] && install_rbenv || { ruby -v | grep "not installed" && program_must_exist ruby; }
+#program_must_exist "rubygems-integration"
+
+[ -d ~/.rbenv ] && source ~/.rbenv/bin
+[ -d ~/.rbenv ] && source ~/.rbenv/shims
+[ -d ~/.rbenv ] && source ~/.rbenv/plugins/ruby-build/bin
+
+install_ruby
 
 gem_install
 npm_install
