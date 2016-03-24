@@ -57,11 +57,11 @@ declare -r NONE_WHITE="${COLOR};0;${FG}${WHITE}m"
 
 # --------------------------  COLORED SYMBOLS
 
-declare -r GREEN_CHK="${NONE_GREEN}[✔]${NONE_WHITE}"
-declare -r YELLOW_CHK="${NONE_YELLOW}[✔]${NONE_WHITE}"
-declare -r BLUE_CHK="${NONE_BLUE}[✔]${NONE_WHITE}"
-declare -r BLACK_CHK="${NONE_BLACK}[✔]${NONE_WHITE}"
-declare -r RED_X="${NONE_RED}[✘]${NONE_WHITE}"
+declare -r GREEN_CHK="${NONE_GREEN}✔${NONE_WHITE}"
+declare -r YELLOW_CHK="${NONE_YELLOW}✔${NONE_WHITE}"
+declare -r BLUE_CHK="${NONE_BLUE}✔${NONE_WHITE}"
+declare -r BLACK_CHK="${NONE_BLACK}✔${NONE_WHITE}"
+declare -r RED_X="${NONE_RED}✘${NONE_WHITE}"
 
 # --------------------------  TESTING
 
