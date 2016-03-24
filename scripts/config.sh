@@ -173,7 +173,7 @@ set_copied_config       "$HOME/.config/sublime-text-3/Packages/User/Monokai - Sp
 
 set_copied_config       "$HOME/.config/sublime-text-3/Packages/User/Monokai-Spacegray.sublime-theme" \
                         "https://gist.github.com/1c5164d1f9e71d570eda.git" \
-                        "$CONFIG/subl/themes/1c5164d1f9e71d570eda/Monokai-Spacegray.sublime-theme"
+                        "$CONFIG/subl/themes/Monokai-Spacegray.sublime-theme"
 
 set_copied_config       "$HOME/.gitignore_global" \
                         "https://gist.github.com/efa547b362910ac7077c.git" \
