@@ -79,11 +79,10 @@ set_terminal_history() {
     else
         pause "Press [Enter] to configure .inputrc" true
 cat << 'EOF' >> $conf_file 
-# terminal history lookup
-'\e[A': history-search-backward
-'\e[B': history-search-forward
-'\e[C': forward-char
-'\e[D': backward-char
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+"\e[C": forward-char
+"\e[D": backward-char
 EOF
         success "configured: $conf_file"
     fi
