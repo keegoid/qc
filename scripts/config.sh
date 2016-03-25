@@ -27,6 +27,7 @@ CONF8="$HOME/.vimrc"
 CONF9="$HOME/.gitignore_global"
 
 # config files copied from repositories
+REPO1="/usr/share/autojump/autojump.sh"
 REPO3="$CONFIG/subl/monokai-spacegray/subl.conf"
 REPO4="$CONFIG/subl/monokai-spacegray/Monokai - Spacegray.tmTheme"
 REPO5="$CONFIG/subl/monokai-spacegray/Monokai - Spacegray.sublime-theme"
@@ -70,14 +71,19 @@ set_subl_config() {
     local conf_files=( "$CONF3" "$CONF4" "$CONF5" )
     local repo_files=( "$REPO3" "$REPO4" "$REPO5" )
     local repo_dir=$(trim_shortest_right_pattern "$REPO3" "/")
+    local repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
+    local cloned=1
 
     # update or clone repository
-    [ -d $repo_dir ] && { cd $repo_dir; git pull; cd - >/dev/null; } || git clone "$repo_url" "$repo_dir"
+    [ -d $repo_dir ] && { cd $repo_dir; echo "checking for updates: $repo_name"; git pull; cd - >/dev/null; } || { git clone "$repo_url" "$repo_dir" && cloned=0; }
 
     # copy config files to proper locations
     for (( i=0; i<${#repo_files[@]}; i++ ))
     do
-        cp "${repo_files[$i]}" "${conf_files[$i]}" && success "configured: ${conf_files[$i]}"
+        cp "${repo_files[$i]}" "${conf_files[$i]}"
+        if [ "$?" -eq 0 ] && [ "$cloned" -eq 0 ]; then
+            success "configured: ${conf_files[$i]}"
+        fi
     done
 
     RET="$?"
@@ -86,13 +92,30 @@ set_subl_config() {
 
 # --------------------------  GIT CONFIG
 
+# clone or pull git repo and copy repo file onto conf file
 set_git_config() {
-    # check if already configured
+    local repo_url="$1"
+    local conf_file="$CONF9"
+    local repo_file="$REPO9"
+    local repo_dir=$(trim_shortest_right_pattern "$REPO9" "/")
+    local repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
+    local cloned=1
+
+    # update or clone repository
+    [ -d $repo_dir ] && { cd $repo_dir; echo "checking for updates: $repo_name"; git pull; cd - >/dev/null; } || { git clone "$repo_url" "$repo_dir" && cloned=0; }
+
+    # copy config file to proper location
+    cp "$repo_file" "$conf_file"
+    if [ "$?" -eq 0 ] && [ "$cloned" -eq 0 ]; then
+        success "configured: $conf_file"
+    fi
+
+    # check if git is already configured
     if ! git config --list | grep -q "user.name"; then
         read -ep "your name for git commit logs: " -i 'Keegan Mullaney' real_name
         read -ep "your email for git commit logs: " -i 'keeganmullaney@gmail.com' email_address
         read -ep "your preferred text editor for git commits: " -i 'vi' git_editor
-        configure_git "$real_name" "$email_address" "$git_editor" && success "configured: $1"
+        configure_git "$real_name" "$email_address" "$git_editor" && success "configured: $CONF9"
     fi
 
     RET="$?"
@@ -106,7 +129,7 @@ set_terminal_history() {
 
     [ -f $conf_file ] || touch $conf_file
     if grep -q "backward-char" $conf_file >/dev/null 2>&1; then
-        notify "already added terminal history lookup"
+        echo "already added terminal history lookup"
     else
         pause "Press [Enter] to configure .inputrc" true
 cat << 'EOF' >> $conf_file 
@@ -131,7 +154,7 @@ set_terminal_color() {
         pause "Press [Enter] to activate color terminal prompts" true
         sed -i.bak -e "/force_color_prompt=yes/ s/^# //" $conf_file && source $conf_file && success "configured: $conf_file with color terminal prompts"
     else
-        notify "already set color prompts"
+        echo "already set color prompts"
     fi
 
     RET="$?"
@@ -145,7 +168,7 @@ set_autojump() {
     local src_cmd="$2"
 
     if grep -q "autojump/autojump.sh" $conf_file >/dev/null 2>&1; then
-        notify "already added autojump (usage: j directory)"
+        echo "already added autojump (usage: j directory)"
     else
         pause "Press [Enter] to configure autojump for gnome-terminal" true
         echo -e "$src_cmd" >> $conf_file && source $conf_file && success "configured: $conf_file with autojump"
@@ -185,7 +208,7 @@ set_sourced_config      "https://gist.github.com/00a60c7355c27c692262.git" \
                         "$REPO8" \
                         "\" source config file\n:so $REPO8"
 
-[ -d "$SYNCED/vim" ] || { mkdir -pv "$SYNCED/vim"; notify3 "note: vim spellfile will be located in $SYNCED/vim, you can change this in $CONFIG/vim/vim.conf"; }
+[ -d "$SYNCED/vim" ] || { mkdir -pv "$SYNCED/vim"; notify3 "note: vim spellfile will be located in $SYNCED/vim, you can change this in $REPO8"; }
 
 # terminal profile (can't find profile file in new Ubuntu 16.04)
 #set_copied_config       "https://gist.github.com/dad1663d2463db32c6e8.git" \
@@ -196,19 +219,12 @@ set_sourced_config      "https://gist.github.com/00a60c7355c27c692262.git" \
 mkdir -p "$HOME/.config/sublime-text-3/Packages/User"
 set_subl_config         "https://github.com/keegoid/monokai-spacegray.git"
 
-set_copied_config       "https://gist.github.com/efa547b362910ac7077c.git" \
-                        "$CONF9" \
-                        "$REPO9"
+set_git_config          "https://gist.github.com/efa547b362910ac7077c.git"
 
-set_git_config          "$HOME/.gitconfig"
-
-set_terminal_history    "$HOME/.inputrc"
+set_terminal_history    "$CONF2"
 
 # already done in Ubuntu 16.04
-#set_terminal_color      "$HOME/.bashrc"
+#set_terminal_color      "$CONF1"
 
-set_autojump            "$HOME/.bashrc" \
-                        "\n# source autojump file\nif [ -f /usr/share/autojump/autojump.sh ]; then\n   . /usr/share/autojump/autojump.sh\nfi"
-
-[ "$?" -eq 0 ] && source "$HOME/.bashrc"
-
+set_autojump            "$CONF1" \
+                        "\n# source autojump file\nif [ -f $REPO1 ]; then\n   . $REPO1\nfi"

@@ -278,31 +278,6 @@ set_sourced_config() {
     debug
 }
 
-# clone or pull git repo and copy repo file onto conf file
-set_copied_config() {
-    local repo_url="$1"
-    local conf_file="$2"
-    local repo_file="$3"
-    local repo_dir=$(trim_shortest_right_pattern "$3" "/")
-    local today=`date +%Y%m%d_%s`
-
-    if [ -n "$repo_file" ]; then
-        if [ -f "$repo_file" ]; then
-#            notify "already set $repo_file in $conf_file"
-            cd "$repo_dir" && echo "checking for updates: $repo_file" && git pull && cp "$repo_file" "$conf_file" && cd - >/dev/null
-        else
-            pause "Press [Enter] to configure $conf_file" true
-            [ -d "$repo_dir" ] && notify2 "$repo_dir already exists. Will save a copy, delete and clone again." && cp -r "$repo_dir" "$repo_dir-$today" && rm -rf "$repo_dir"
-            git clone "$repo_url" "$repo_dir" && cp "$repo_file" "$conf_file" && success "configured: $conf_file"
-        fi
-    else
-        alert "repo_file variable is empty"
-    fi
-
-    RET="$?"
-    debug
-}
-
 # --------------------------  INSTALL FROM PACKAGE MANAGERS
 
 # install packages from a simple list
