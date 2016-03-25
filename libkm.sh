@@ -252,8 +252,8 @@ set_source_cmd() {
 
 # clone or pull git repo and source repo name in conf file
 set_sourced_config() {
-    local conf_file="$1"
-    local repo_url="$2"
+    local repo_url="$1"
+    local conf_file="$2"
     local repo_name=$(trim_longest_left_pattern "$3" "/")
     local repo_dir=$(trim_shortest_right_pattern "$3" "/")
     local src_cmd="$4"
@@ -263,7 +263,7 @@ set_sourced_config() {
 
     if [ -n "$repo_name" ]; then
         if [ -d "$repo_dir" ] && [ -n "$(grep ${repo_name} ${conf_file})" ]; then
-            notify "already set $repo_name in $conf_file"
+#            notify "already set $repo_name in $conf_file"
             cd "$repo_dir" && echo "checking for updates: $repo_name" && git pull && cd - >/dev/null
         else
             pause "Press [Enter] to configure $repo_name in $conf_file" true
@@ -280,15 +280,15 @@ set_sourced_config() {
 
 # clone or pull git repo and copy repo file onto conf file
 set_copied_config() {
-    local conf_file="$1"
-    local repo_url="$2"
+    local repo_url="$1"
+    local conf_file="$2"
     local repo_file="$3"
     local repo_dir=$(trim_shortest_right_pattern "$3" "/")
     local today=`date +%Y%m%d_%s`
 
     if [ -n "$repo_file" ]; then
         if [ -f "$repo_file" ]; then
-            notify "already set $repo_file in $conf_file"
+#            notify "already set $repo_file in $conf_file"
             cd "$repo_dir" && echo "checking for updates: $repo_file" && git pull && cp "$repo_file" "$conf_file" && cd - >/dev/null
         else
             pause "Press [Enter] to configure $conf_file" true
@@ -329,7 +329,7 @@ install_gem() {
 
     # make sure ruby is installed
     program_must_exist "ruby"
-    program_must_exist "rubygems-integration"
+#    program_must_exist "rubygems-integration"
 
     # install gems in the list
     for app in $names; do
