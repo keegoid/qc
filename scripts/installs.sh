@@ -51,8 +51,8 @@ install_rbenv_ruby() {
     program_must_exist libffi-dev
 
     # rbenv
-    set_sourced_config  "$HOME/.bashrc" \
-                        "https://github.com/rbenv/rbenv.git" \
+    set_sourced_config  "https://github.com/rbenv/rbenv.git" \
+                        "$HOME/.bashrc" \
                         "$HOME/.rbenv/" \
                         '[[ ":$PATH:" =~ ":$HOME/.rbenv/bin:" ]] || PATH="$HOME/.rbenv/bin:$PATH"'
 
@@ -65,8 +65,8 @@ install_rbenv_ruby() {
                         '[[ ":$PATH:" =~ ":$HOME/.rbenv/shims:" ]] || eval "$(rbenv init -)"'
 
     # ruby-build
-    set_sourced_config  "$HOME/.bashrc" \
-                        "https://github.com/rbenv/ruby-build.git" \
+    set_sourced_config  "https://github.com/rbenv/ruby-build.git" \
+                        "$HOME/.bashrc" \
                         "$HOME/.rbenv/plugins/ruby-build/" \
                         '[[ ":$PATH:" =~ ":$HOME/.rbenv/plugins/ruby-build/bin:" ]] || PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"'
 
