@@ -313,7 +313,7 @@ DEFAULT_DEV_LIST='autoconf automake build-essential checkinstall dconf-cli'
 
 if [ "$IS_SERVER" -eq 0 ]; then
     notify "Server packages to install (none to skip)"
-    read -ep "   : " -i "$SERVER_APTS_LIST"         APTS1
+    read -ep "   : " -i "$SERVER_APTS_LIST" APTS1
 else
     notify3 "The following default packages can be modified prior to installation."
     echo
@@ -322,15 +322,15 @@ else
     echo "DEVELOPER"
     echo
     notify "Packages to install with gem"
-    read -ep "   : " -i 'bundler gist jekyll'       GEMS
+    read -ep "   : " -i 'bundler gist jekyll' GEMS
     notify "Packages to install with npm"
-    read -ep "   : " -i 'doctoc'                    NPMS
+    read -ep "   : " -i 'bower browser-sync doctoc gulp' NPMS
     notify "Packages to install with pip"
-    read -ep "   : " -i 'jrnl[encrypted]'           PIPS
+    read -ep "   : " -i 'jrnl[encrypted]' PIPS
     notify "Workstation packages to install (delete all to skip)"
     read -ep "   : " -i "$DEFAULT_WORKSTATION_LIST" APTS1
     notify "Developer packages to install"
-    read -ep "   : " -i "$DEFAULT_DEV_LIST"         APTS2
+    read -ep "   : " -i "$DEFAULT_DEV_LIST" APTS2
 fi
 
 # --------------------------  ARRAY ASSIGNMENTS
