@@ -216,6 +216,7 @@ gem_install() {
         # install required gems
         pause "Press [Enter] to install gems" true
         ~/.rbenv/shims/gem install ${gem_install_list[@]}
+        ~/.rbenv/bin/rbenv rehash
     fi
 
     RET="$?"
