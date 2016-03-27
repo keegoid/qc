@@ -13,7 +13,7 @@ echo "# --------------------------------------------"
 
 [ -z "$CONFIG" ] && CONFIG="$HOME/.quick-config"
 [ -z "$BACKUP" ] && BACKUP="$CONFIG/backup"
-[ -z "$SYNCED" ] && SYNCED="$HOME/Dropbox/Config"
+[ -z "$SYNCED" ] && SYNCED="$HOME/Dropbox/config"
 
 # system and program config files
 CONF1="$HOME/.bashrc"
