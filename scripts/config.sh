@@ -50,7 +50,6 @@ do_backup() {
     mkdir -pv "$BACKUP-$today"
 
     for i in $1; do
-        echo "$i"
         if [ -e "$i" ] && [ ! -L "$i" ]; then
             name=$(trim_longest_left_pattern "$i" "/")
             cp "$i" "$BACKUP-$today/$name" && success "made backup: $BACKUP-$today/$name"
@@ -190,11 +189,11 @@ do_backup               "$CONF1 $CONF2 $CONF3 $CONF4 $CONF5 $CONF6 $CONF7 $CONF8
 #                        "$CONFIG/bash/aliases/bash_aliases" \
 #                        "\n# source alias file\nif [ -f $CONFIG/bash/aliases/bash_aliases ]; then\n   . $CONFIG/bash/aliases/bash_aliases\nfi"
 
-# mutt color scheme
+# mutt config
 set_sourced_config      "https://github.com/altercation/mutt-colors-solarized.git" \
                         "$CONF6" \
                         "$REPO6" \
-                        "# source colorscheme file\nsource $REPO6"
+                        "# source colorscheme file\nsource $REPO6\n\n# signature and alias files\nset signature=$SYNCED/mutt/sig\nset alias_file=$SYNCED/mutt/aliases\n\n# aliases are stored in their own file\nsource \"\$alias_file\""
 
 # tmux config
 set_sourced_config      "https://gist.github.com/3247d5a1c172167e593c.git" \
@@ -206,7 +205,7 @@ set_sourced_config      "https://gist.github.com/3247d5a1c172167e593c.git" \
 set_sourced_config      "https://gist.github.com/00a60c7355c27c692262.git" \
                         "$CONF8" \
                         "$REPO8" \
-                        "\" source config file\n:so $REPO8"
+                        "\" source config file\n:so $REPO8\n\nset spellfile=$SYNCED/vim/vim.utf-8.add\t\" spell check file to sync with other computers"
 
 [ -d "$SYNCED/vim" ] || { mkdir -pv "$SYNCED/vim"; notify3 "note: vim spellfile will be located in $SYNCED/vim, you can change this in $REPO8"; }
 
