@@ -20,14 +20,14 @@ SELECTED_CONTAINER=
 
 # install Juju, ZFS and LXD
 install_juju_zfs_lxd() {
-    if not_installed juju2; then
-        sudo apt-add-repository -y ppa:juju/devel
-        sudo apt-get update
-        install_apt juju2
+    # if not_installed juju2; then
+    #     sudo apt-add-repository -y ppa:juju/devel
+    #     sudo apt-get update
+    #     install_apt juju2
 #        [ "$IS_SERVER" -eq 0 ] && install_apt juju || install_apt juju-local
-    else
-        notify "Juju2 is already installed"
-    fi
+    # else
+    #     notify "Juju2 is already installed"
+    # fi
     install_apt "zfsutils-linux lxd criu"
 
     RET="$?"
@@ -184,7 +184,7 @@ create_lxd_container() {
 
     set_hosts "$host_name"
 
-    set_shared_directory "$host_name"
+    # set_shared_directory "$host_name"
 
     set_authorized_key
 
