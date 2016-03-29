@@ -207,7 +207,7 @@ set_sourced_config      "https://gist.github.com/00a60c7355c27c692262.git" \
                         "$REPO8" \
                         "\" source config file\n:so $REPO8\n\nset spellfile=$SYNCED/vim/vim.utf-8.add\t\" spell check file to sync with other computers"
 
-[ -d "$SYNCED/vim" ] || { mkdir -pv "$SYNCED/vim"; notify3 "note: vim spellfile will be located in $SYNCED/vim, you can change this in $REPO8"; }
+[ -d "$SYNCED/vim" ] || { mkdir -pv "$SYNCED/vim"; notify3 "note: vim spellfile will be located in $SYNCED/vim, you can change this in $CONF8"; }
 
 # terminal profile (can't find profile file in new Ubuntu 16.04)
 #set_copied_config       "https://gist.github.com/dad1663d2463db32c6e8.git" \
