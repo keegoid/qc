@@ -12,8 +12,6 @@ echo "# --------------------------------------------"
 # --------------------------  SETUP PARAMETERS
 
 [ -z "$RUBY_V" ] && RUBY_V='2.3.0'
-[ -z "$RVM_URL" ] && RVM_URL='https://get.rvm.io'
-[ -z "$RVM_KEY" ] && RVM_KEY='D39DC0E3'
 
 # --------------------------  MISSING PROGRAM CHECKS
 
@@ -34,21 +32,7 @@ pip_check_list=()
 # install ruby with rbenv and ruby-build
 install_rbenv_ruby() {
     # ruby dependencies
-    program_must_exist gpgv2
-    program_must_exist git-core
-    program_must_exist curl
-    program_must_exist zlib1g-dev
-    program_must_exist build-essential
-    program_must_exist libssl-dev
-    program_must_exist libreadline-dev
-    program_must_exist libyaml-dev
-    program_must_exist libsqlite3-dev
-    program_must_exist sqlite3
-    program_must_exist libxml2-dev
-    program_must_exist libxslt1-dev
-    program_must_exist libcurl4-openssl-dev
-    program_must_exist python-software-properties
-    program_must_exist libffi-dev
+    install_apt "gpgv2 git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties libffi-dev"
 
     # rbenv
     set_sourced_config  "https://github.com/rbenv/rbenv.git" \
