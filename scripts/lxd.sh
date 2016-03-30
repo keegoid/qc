@@ -124,7 +124,7 @@ set_hosts() {
 # $1 -> host name
 set_shared_directory() {
     # set syncing directory paths
-    read -ep "Choose a source directory on host to sync: ~/${REPOS}/" -i "sites/${1}/site" relative_source
+    read -ep "Choose a source directory on host to sync: ~/${REPOS}/" -i "${1}/site" relative_source
     read -ep "Choose a target directory in container to sync: /" -i "var/www/${1}/public_html" target_dir
     source_dir="$HOME/${REPOS}/$relative_source"
     target_dir="/${target_dir}"
@@ -184,7 +184,7 @@ create_lxd_container() {
 
     set_hosts "$host_name"
 
-    # set_shared_directory "$host_name"
+    set_shared_directory "$host_name"
 
     set_authorized_key
 
