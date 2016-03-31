@@ -13,7 +13,7 @@ echo "# --------------------------------------------"
 
 # --------------------------  SETUP PARAMETERS
 
-[ -z "$REPOS" ] && read -ep "Directory to use for repositories: ~/" -i "Dropbox/coding/repos" REPOS
+[ -z "$REPOS" ] && read -ep "Directory to use for repositories: ~/" -i "MEGA/coding/repos" REPOS
 SELECTED_CONTAINER=
 
 # --------------------------  INSTALL LXD/LXC
