@@ -9,10 +9,6 @@ echo "#                                             "
 echo "# http://keegoid.mit-license.org              "
 echo "# --------------------------------------------"
 
-# --------------------------  SETUP PARAMETERS
-
-[ -z "$RUBY_V" ] && RUBY_V='2.3.0'
-
 # --------------------------  MISSING PROGRAM CHECKS
 
 # install lists (perform install)
@@ -62,9 +58,16 @@ install_rbenv_ruby() {
     type ~/.rbenv/bin/rbenv
     ~/.rbenv/bin/rbenv version
 
+    # ruby-build-github
+    rm -rf ~/.rbenv/plugins/ruby-build-github
+    git clone git://github.com/parkr/ruby-build-github.git ~/.rbenv/plugins/ruby-build-github
+
+    # list ruby versions compatible with github pages
+    local ruby_v=$(~/.rbenv/bin/rbenv install --list | grep github$ | tail -1)
+
     # install ruby
-    [ "$?" -eq 0 ] && ~/.rbenv/bin/rbenv install $RUBY_V
-    [ "$?" -eq 0 ] && ~/.rbenv/bin/rbenv global $RUBY_V
+    [ "$?" -eq 0 ] && ~/.rbenv/bin/rbenv install $ruby_v
+    [ "$?" -eq 0 ] && ~/.rbenv/bin/rbenv global $ruby_v
 
     # check ruby and rubygem versions
     ~/.rbenv/shims/ruby -v
