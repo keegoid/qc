@@ -63,7 +63,7 @@ install_rbenv_ruby() {
     git clone git://github.com/parkr/ruby-build-github.git ~/.rbenv/plugins/ruby-build-github
 
     # list ruby versions compatible with github pages
-    local ruby_v=$(~/.rbenv/bin/rbenv install --list | grep github$ | tail -1)
+    local ruby_v=$(~/.rbenv/bin/rbenv install --list | grep github | tail -1)
 
     # install ruby
     [ "$?" -eq 0 ] && ~/.rbenv/bin/rbenv install $ruby_v
