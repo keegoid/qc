@@ -19,22 +19,18 @@ echo "# --------------------------------------------"
 CONF1="$HOME/.bashrc"
 CONF2="$HOME/.inputrc"
 CONF3="$HOME/.config/sublime-text-3/Packages/User/Preferences.sublime-settings"
-CONF4="$HOME/.config/sublime-text-3/Packages/User/KMS.tmTheme"
-CONF5="$HOME/.config/sublime-text-3/Packages/User/KMS.sublime-theme"
-CONF6="$HOME/.muttrc"
-CONF7="$HOME/.tmux.conf"
-CONF8="$HOME/.vimrc"
-CONF9="$HOME/.gitignore_global"
+CONF4="$HOME/.muttrc"
+CONF5="$HOME/.tmux.conf"
+CONF6="$HOME/.vimrc"
+CONF7="$HOME/.gitignore_global"
 
 # config files copied from repositories
 REPO1="/usr/share/autojump/autojump.sh"
-REPO3="$CONFIG/subl/kms-theme/subl.conf"
-REPO4="$CONFIG/subl/kms-theme/KMS.tmTheme"
-REPO5="$CONFIG/subl/kms-theme/KMS.sublime-theme"
-REPO6="$CONFIG/mutt/colors/mutt-colors-solarized-dark-16.muttrc"
-REPO7="$CONFIG/tmux/tmux.conf"
-REPO8="$CONFIG/vim/vim.conf"
-REPO9="$CONFIG/git/gitignore_global"
+REPO3="$HOME/.config/sublime-text-3/Packages/kms-theme/subl.conf"
+REPO4="$CONFIG/mutt/colors/mutt-colors-solarized-dark-16.muttrc"
+REPO5="$CONFIG/tmux/tmux.conf"
+REPO6="$CONFIG/vim/vim.conf"
+REPO7="$CONFIG/git/gitignore_global"
 
 # --------------------------  BACKUPS
 
@@ -67,8 +63,8 @@ do_backup() {
 # clone or pull git repo and copy repo files into proper places
 set_subl_config() {
     local repo_url="$1"
-    local conf_files=( "$CONF3" "$CONF4" "$CONF5" )
-    local repo_files=( "$REPO3" "$REPO4" "$REPO5" )
+    local conf_file="$CONF3"
+    local repo_file="$REPO3"
     local repo_dir=$(trim_shortest_right_pattern "$REPO3" "/")
     local repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
     local cloned=1
@@ -76,14 +72,11 @@ set_subl_config() {
     # update or clone repository
     [ -d $repo_dir ] && { cd $repo_dir; echo "checking for updates: $repo_name"; git pull; cd - >/dev/null; } || { git clone "$repo_url" "$repo_dir" && cloned=0; }
 
-    # copy config files to proper locations
-    for (( i=0; i<${#repo_files[@]}; i++ ))
-    do
-        cp "${repo_files[$i]}" "${conf_files[$i]}"
-        if [ "$?" -eq 0 ] && [ "$cloned" -eq 0 ]; then
-            success "configured: ${conf_files[$i]}"
-        fi
-    done
+    # copy config file to proper location
+    cp "$repo_file" "$conf_file"
+    if [ "$?" -eq 0 ] && [ "$cloned" -eq 0 ]; then
+        success "configured: $conf_file"
+    fi
 
     RET="$?"
     debug
@@ -94,9 +87,9 @@ set_subl_config() {
 # clone or pull git repo and copy repo file onto conf file
 set_git_config() {
     local repo_url="$1"
-    local conf_file="$CONF9"
-    local repo_file="$REPO9"
-    local repo_dir=$(trim_shortest_right_pattern "$REPO9" "/")
+    local conf_file="$CONF7"
+    local repo_file="$REPO7"
+    local repo_dir=$(trim_shortest_right_pattern "$REPO7" "/")
     local repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
     local cloned=1
 
@@ -181,7 +174,7 @@ set_autojump() {
 
 pause "" true
 
-do_backup               "$CONF1 $CONF2 $CONF3 $CONF4 $CONF5 $CONF6 $CONF7 $CONF8 $CONF9"
+do_backup               "$CONF1 $CONF2 $CONF3 $CONF4 $CONF5 $CONF6 $CONF7"
 
 # aliases (to practice terminal commands for Linux certification exams, I'm not using aliases at the moment)
 #set_sourced_config      "https://gist.github.com/9d74e08779c1db6cb7b7" \
@@ -191,23 +184,23 @@ do_backup               "$CONF1 $CONF2 $CONF3 $CONF4 $CONF5 $CONF6 $CONF7 $CONF8
 
 # mutt config
 set_sourced_config      "https://github.com/altercation/mutt-colors-solarized.git" \
-                        "$CONF6" \
-                        "$REPO6" \
-                        "# source colorscheme file\nsource $REPO6\n\n# signature and alias files\nset signature=$SYNCED/mutt/sig\nset alias_file=$SYNCED/mutt/aliases\n\n# aliases are stored in their own file\nsource \"\$alias_file\""
+                        "$CONF4" \
+                        "$REPO4" \
+                        "# source colorscheme file\nsource $REPO4\n\n# signature and alias files\nset signature=$SYNCED/mutt/sig\nset alias_file=$SYNCED/mutt/aliases\n\n# aliases are stored in their own file\nsource \"\$alias_file\""
 
 # tmux config
 set_sourced_config      "https://gist.github.com/3247d5a1c172167e593c.git" \
-                        "$CONF7" \
-                        "$REPO7" \
-                        "source-file $REPO7"
+                        "$CONF5" \
+                        "$REPO5" \
+                        "source-file $REPO5"
 
 # vim config
 set_sourced_config      "https://gist.github.com/00a60c7355c27c692262.git" \
-                        "$CONF8" \
-                        "$REPO8" \
-                        "\" source config file\n:so $REPO8\n\nset spellfile=$SYNCED/vim/vim.utf-8.add\t\" spell check file to sync with other computers"
+                        "$CONF6" \
+                        "$REPO6" \
+                        "\" source config file\n:so $REPO6\n\nset spellfile=$SYNCED/vim/vim.utf-8.add\t\" spell check file to sync with other computers"
 
-[ -d "$SYNCED/vim" ] || { mkdir -pv "$SYNCED/vim"; notify3 "note: vim spellfile will be located in $SYNCED/vim, you can change this in $CONF8"; }
+[ -d "$SYNCED/vim" ] || { mkdir -pv "$SYNCED/vim"; notify3 "note: vim spellfile will be located in $SYNCED/vim, you can change this in $CONF6"; }
 
 # terminal profile (can't find profile file in new Ubuntu 16.04)
 #set_copied_config       "https://gist.github.com/dad1663d2463db32c6e8.git" \
