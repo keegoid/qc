@@ -328,7 +328,7 @@ else
     notify "Packages to install with gem"
     read -ep "   : " -i 'bundler gist jekyll' GEMS
     notify "Packages to install with npm"
-    read -ep "   : " -i 'bower browser-sync doctoc gulp' NPMS
+    read -ep "   : " -i 'bower browser-sync coffee-script csslint doctoc gulp' NPMS
     notify "Packages to install with pip"
     read -ep "   : " -i 'jrnl[encrypted]' PIPS
     notify "Workstation packages to install (delete all to skip)"
