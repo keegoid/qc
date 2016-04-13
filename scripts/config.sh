@@ -19,8 +19,8 @@ echo "# --------------------------------------------"
 CONF1="$HOME/.bashrc"
 CONF2="$HOME/.inputrc"
 CONF3="$HOME/.config/sublime-text-3/Packages/User/Preferences.sublime-settings"
-CONF4="$HOME/.config/sublime-text-3/Packages/User/Monokai Soda Spacegray.tmTheme"
-CONF5="$HOME/.config/sublime-text-3/Packages/User/Soda Spacegray Dark 3.sublime-theme"
+CONF4="$HOME/.config/sublime-text-3/Packages/User/KMS.tmTheme"
+CONF5="$HOME/.config/sublime-text-3/Packages/User/KMS.sublime-theme"
 CONF6="$HOME/.muttrc"
 CONF7="$HOME/.tmux.conf"
 CONF8="$HOME/.vimrc"
@@ -28,9 +28,9 @@ CONF9="$HOME/.gitignore_global"
 
 # config files copied from repositories
 REPO1="/usr/share/autojump/autojump.sh"
-REPO3="$CONFIG/subl/soda-spacegray-theme/subl.conf"
-REPO4="$CONFIG/subl/soda-spacegray-theme/Monokai Soda Spacegray.tmTheme"
-REPO5="$CONFIG/subl/soda-spacegray-theme/Soda Spacegray Dark 3.sublime-theme"
+REPO3="$CONFIG/subl/kms-theme/subl.conf"
+REPO4="$CONFIG/subl/kms-theme/KMS.tmTheme"
+REPO5="$CONFIG/subl/kms-theme/KMS.sublime-theme"
 REPO6="$CONFIG/mutt/colors/mutt-colors-solarized-dark-16.muttrc"
 REPO7="$CONFIG/tmux/tmux.conf"
 REPO8="$CONFIG/vim/vim.conf"
@@ -216,7 +216,7 @@ set_sourced_config      "https://gist.github.com/00a60c7355c27c692262.git" \
 
 # sublime text
 mkdir -p "$HOME/.config/sublime-text-3/Packages/User"
-set_subl_config         "https://github.com/keegoid/soda-spacegray-theme.git"
+set_subl_config         "https://github.com/keegoid/kms-theme.git"
 
 set_git_config          "https://gist.github.com/efa547b362910ac7077c.git"
 
