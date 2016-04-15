@@ -182,10 +182,34 @@ confirm() {
     fi
 }
 
+gem_must_exist() {
+    if ! ~/.rbenv/shims/gem list ^$1$ -i >/dev/null; then
+        notify2 "$1 must be installed to continue."
+        pause "Press [Enter] to install it now" true
+        ~/.rbenv/shims/gem install "$1"
+        ~/.rbenv/bin/rbenv rehash
+    fi
+}
+
+npm_must_exist() {
+    if ! npm ls -gs | grep -q "${1}@"; then
+        notify2 "$1 must be installed to continue."
+        pause "Press [Enter] to install it now" true
+        sudo npm install -g "$1"
+    fi
+}
+
+pip_must_exist() {
+    if ! pip list | grep -w "$1" >/dev/null 2>&1; then
+        notify2 "$1 must be installed to continue."
+        pause "Press [Enter] to install it now" true
+        sudo -H pip install "$1"
+    fi
+}
+
 program_must_exist() {
     not_installed $1
 
-    # throw error on non-zero return value
     if [ "$?" -eq 0 ]; then
         notify2 "$1 must be installed to continue."
         pause "Press [Enter] to install it now" true
