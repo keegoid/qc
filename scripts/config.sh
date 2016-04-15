@@ -64,8 +64,8 @@ do_backup() {
 # clone or pull git repo and copy repo files into proper places
 set_subl_config() {
     local repo_url="$1"
-    local conf_files=( "$CONF3" )
-    local repo_files=( "$REPO3" )
+    local conf_file="$CONF3"
+    local repo_file="$REPO3"
     local repo_dir=$(trim_shortest_right_pattern "$REPO3" "/")
     local repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
     local cloned=1
@@ -73,14 +73,11 @@ set_subl_config() {
     # update or clone repository
     [ -d $repo_dir ] && { cd $repo_dir; echo "checking for updates: $repo_name"; git pull; cd - >/dev/null; } || { git clone "$repo_url" "$repo_dir" && cloned=0; }
 
-    # copy config files to proper locations
-    for (( i=0; i<${#repo_files[@]}; i++ ))
-    do
-        cp "${repo_files[$i]}" "${conf_files[$i]}"
-        if [ "$?" -eq 0 ] && [ "$cloned" -eq 0 ]; then
-            success "configured: ${conf_files[$i]}"
-        fi
-    done
+    # copy config file to proper location
+    cp "$repo_file" "$conf_file"
+    if [ "$?" -eq 0 ] && [ "$cloned" -eq 0 ]; then
+        success "configured: $conf_file"
+    fi
 
     RET="$?"
     debug
