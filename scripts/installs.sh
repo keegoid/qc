@@ -100,8 +100,7 @@ gem_check() {
 
     for pkg in "${gem_check_list[@]}"
     do
-        if ~/.rbenv/shims/gem list ^$pkg$ -i >/dev/null
-        then
+        if ~/.rbenv/shims/gem list ^$pkg$ -i >/dev/null; then
             pkg_version=$(~/.rbenv/shims/gem list ^$pkg$ | grep "${pkg}" | cut -d " " -f 2 | cut -d "(" -f 2 | cut -d ")" -f 1)
             space_count="$(expr 20 - "${#pkg}")"
             pack_space_count="$(expr 20 - "${#pkg_version}")"
@@ -125,8 +124,7 @@ npm_check() {
 
     for pkg in "${npm_check_list[@]}"
     do
-        if npm ls -gs | grep -q $pkg@
-        then
+        if npm ls -gs | grep -q $pkg@; then
             pkg_version=$(npm ls -gs | grep $pkg@ | cut -d "@" -f 2)
             space_count="$(expr 20 - "${#pkg}")"
             pack_space_count="$(expr 20 - "${#pkg_version}")"
@@ -152,8 +150,7 @@ pip_check() {
     for pkg in "${pip_check_list[@]}"
     do
         pkg_trim=$(trim_longest_right_pattern "$pkg" "[")
-        if pip list | grep -w "$pkg_trim" >/dev/null 2>&1
-        then
+        if pip list | grep -w "$pkg_trim" >/dev/null 2>&1; then
             pkg_version=$(pip list | grep -w "${pkg_trim}" | cut -d " " -f 2 | tr -d "(" | tr -d ")")
             space_count="$(expr 20 - "${#pkg}")"
             pack_space_count="$(expr 20 - "${#pkg_version}")"
@@ -177,8 +174,7 @@ apt_check() {
 
     for pkg in "${apt_check_list[@]}"
     do
-        if not_installed $pkg
-        then
+        if not_installed $pkg; then
             echo -e " ${YELLOW_BLACK} * $pkg [not installed] ${NONE_WHITE}"
             apt_install_list+=($pkg)
         else
@@ -205,8 +201,7 @@ gem_install() {
 
     gem_check
 
-    if [[ "${#gem_install_list[@]}" -eq 0 ]]
-    then
+    if [[ "${#gem_install_list[@]}" -eq 0 ]]; then
         notify "No gems to install"
     else
         # install required gems
@@ -228,13 +223,11 @@ npm_install() {
     npm_check
 
     # symlink nodejs to path
-    if [ ! -L /usr/bin/node ]
-    then
+    if [ ! -L /usr/bin/node ]; then
         sudo ln -s "$(which nodejs)" /usr/bin/node
     fi
 
-    if [[ "${#npm_install_list[@]}" -eq 0 ]]
-    then
+    if [[ "${#npm_install_list[@]}" -eq 0 ]]; then
         notify "No npms to install"
     else
         # install required npms
@@ -255,8 +248,7 @@ pip_install() {
 
     pip_check
 
-    if [[ "${#pip_install_list[@]}" -eq 0 ]]
-    then
+    if [[ "${#pip_install_list[@]}" -eq 0 ]]; then
         notify "No pips to install"
     else
         # install required pips
@@ -273,13 +265,11 @@ pip_install() {
 apt_install() {
     apt_check
 
-    if [[ "${#apt_install_list[@]}" -eq 0 ]]
-    then
+    if [[ "${#apt_install_list[@]}" -eq 0 ]]; then
         notify "No packages to install"
     else
         # update all of the package references before installing anything
-        if [ "${1}" -eq 0 ]
-        then
+        if [ "${1}" -eq 0 ]; then
             pause "Press [Enter] to update Ubuntu sources" true
             sudo apt-get -y update
         fi
@@ -299,8 +289,7 @@ apt_install() {
 # --------------------------  64-BIT ARCHITECTURE
 
 UPDATE=0
-if [ "$(dpkg --print-foreign-architectures)" = "i386" ]
-then
+if [ "$(dpkg --print-foreign-architectures)" = "i386" ]; then
     dpkg --get-selections | grep i386 || notify "no i386 packages installed"
     pause "Press [Enter] to purge all i386 packages and remove the i386 architecture" true
     sudo apt-get purge ".*:i386" && sudo dpkg --remove-architecture i386 && sudo apt-get update && success "Success, goodbye i386!" && UPDATE=1
@@ -309,13 +298,12 @@ fi
 # --------------------------  DEFAULT APT PACKAGES
 
 DEFAULT_SERVER_LIST='ca-certificates gettext-base less man-db openssh-server python-software-properties software-properites-common vim-gtk wget'
-DEFAULT_WORKSTATION_LIST='autojump gpgv2 lynx mutt pinta silversearcher-ag tmux x11vnc xclip vim-gtk vlc'
+DEFAULT_WORKSTATION_LIST='autojump gpgv2 lynx mutt pinta silversearcher-ag tmux x11vnc xclip xdotool vim-gtk vlc'
 DEFAULT_DEV_LIST='autoconf automake build-essential checkinstall dconf-cli'
 
 # --------------------------  PROMPT FOR PROGRAMS
 
-if [ "$IS_SERVER" -eq 0 ]
-then
+if [ "$IS_SERVER" -eq 0 ]; then
     notify "Server packages to install (none to skip)"
     read -ep "   : " -i "$SERVER_APTS_LIST" APTS1
 else
