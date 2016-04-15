@@ -28,7 +28,7 @@ pip_check_list=()
 # install ruby with rbenv and ruby-build
 install_rbenv_ruby() {
     # ruby dependencies
-    install_apt "gpgv2 git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties libffi-dev"
+    install_apt "gpgv2 git-core curl zlib1g-dev build-essential libssl-dev libssl1.0.0 libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties libffi-dev"
 
     # rbenv
     set_sourced_config  "https://github.com/rbenv/rbenv.git" \
@@ -66,6 +66,7 @@ install_rbenv_ruby() {
     local ruby_v=$(~/.rbenv/bin/rbenv install --list | grep github$ | tail -1)
 
     # install ruby
+    # export MAKE=make (uncomment if build fails)
     [ "$?" -eq 0 ] && ~/.rbenv/bin/rbenv install $ruby_v
     [ "$?" -eq 0 ] && ~/.rbenv/bin/rbenv global $ruby_v
 
