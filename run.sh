@@ -22,7 +22,7 @@ PROJECT="$PWD"
 DEBUG_MODE=0
 
 # make sure $HOME variable is set
-variable_set $HOME
+variable_set "$HOME"
 
 # config for server
 confirm "Is this a server?"
@@ -38,7 +38,7 @@ program_must_exist git
 fix_permissions() {
     # set ownership
     pause "Press [Enter] to make sure all files in $HOME are owned by $(whoami)" true
-    sudo chown --preserve-root -cR $(whoami):$(whoami) $HOME
+    sudo chown --preserve-root -cR "$(whoami)":"$(whoami)" "$HOME"
 }
 
 # display message before exit
@@ -46,7 +46,7 @@ exit_msg() {
     echo
     notify "Lastly: execute sudo ./sudoers.sh to increase the sudo timeout."
     msg             "\nThanks for using $APP_NAME."
-    msg             "© `date +%Y` http://keegoid.mit-license.org"
+    msg             "(c) $(date +%Y) http://keegoid.mit-license.org"
 }
 
 # --------------------------  MENU OPTIONS
@@ -94,6 +94,7 @@ select_options() {
     esac
 
     # check for program errors
+    # shellcheck disable=SC2034
     RET="$?"
     debug
 }

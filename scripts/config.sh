@@ -3,7 +3,7 @@ echo "# --------------------------------------------"
 echo "# Configure some terminal settings.           "
 echo "#                                             "
 echo "# Author : Keegan Mullaney                    "
-echo "# Website: http://keegoid.com                 "
+echo "# Website: keegoid.com                        "
 echo "# Email  : keeganmullaney@gmail.com           "
 echo "#                                             "
 echo "# http://keegoid.mit-license.org              "
@@ -42,7 +42,7 @@ do_backup() {
     confirm "Backup config files before making changes?" true
     [ "$?" -gt 0 ] && return 1
 
-    today=`date +%Y%m%d_%s`
+    today=$(date +%Y%m%d_%s)
     mkdir -pv "$BACKUP-$today"
 
     for i in $1
@@ -66,12 +66,23 @@ set_subl_config() {
     local repo_url="$1"
     local conf_file="$CONF3"
     local repo_file="$REPO3"
-    local repo_dir=$(trim_shortest_right_pattern "$REPO3" "/")
-    local repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
+    local repo_dir
+    local repo_name
     local cloned=1
 
+    repo_dir=$(trim_shortest_right_pattern "$REPO3" "/")
+    repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
+
     # update or clone repository
-    [ -d "$repo_dir" ] && { cd "$repo_dir"; echo "checking for updates: $repo_name"; git pull; cd - >/dev/null; } || { git clone "$repo_url" "$repo_dir" && cloned=0; }
+    if [ -d "$repo_dir" ]; then
+        (
+            cd "$repo_dir" || exit
+            echo "checking for updates: $repo_name"
+            git pull
+        )
+    else
+        git clone "$repo_url" "$repo_dir" && cloned=0
+    fi
 
     # copy config file to proper location
     cp "$repo_file" "$conf_file"
@@ -90,12 +101,23 @@ set_git_config() {
     local repo_url="$1"
     local conf_file="$CONF8"
     local repo_file="$REPO8"
-    local repo_dir=$(trim_shortest_right_pattern "$REPO8" "/")
-    local repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
+    local repo_dir
+    local repo_name
     local cloned=1
 
+    repo_dir=$(trim_shortest_right_pattern "$REPO8" "/")
+    repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
+
     # update or clone repository
-    [ -d "$repo_dir" ] && { cd "$repo_dir"; echo "checking for updates: $repo_name"; git pull; cd - >/dev/null; } || { git clone "$repo_url" "$repo_dir" && cloned=0; }
+    if [ -d "$repo_dir" ]; then
+        (
+            cd "$repo_dir" || exit
+            echo "checking for updates: $repo_name"
+            git pull
+        )
+    else
+        git clone "$repo_url" "$repo_dir" && cloned=0
+    fi
 
     # copy config file to proper location
     cp "$repo_file" "$conf_file"
@@ -107,8 +129,8 @@ set_git_config() {
     if ! git config --list | grep -q "user.name"; then
         read -ep "your name for git commit logs: " -i 'Keegan Mullaney' real_name
         read -ep "your email for git commit logs: " -i 'keeganmullaney@gmail.com' email_address
-        read -ep "your preferred text editor for git commits: " -i 'vi' git_editor
-        configure_git "$real_name" "$email_address" "$git_editor" && success "configured: $CONF9"
+        read -ep "your preferred text editor for git commits: " -i '\vi' git_editor
+        configure_git "$real_name" "$email_address" "$git_editor" && success "configured: $CONF8"
     fi
 
     RET="$?"
@@ -167,6 +189,7 @@ set_autojump() {
         echo -e "$src_cmd" >> "$conf_file" && source "$conf_file" && success "configured: $conf_file with autojump (usage: j directory)"
     fi
 
+    # shellcheck disable=SC2034
     RET="$?"
     debug
 }
