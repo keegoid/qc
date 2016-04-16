@@ -24,10 +24,11 @@ source colors.sh
 # converts a string to lower case
 # $1 -> string to convert to lower case
 to_lower() {
-    local str="$@"
-    local output     
+    local str=$*
+    local output
+    echo "${str}"
     output=$(tr '[A-Z]' '[a-z]'<<<"${str}")
-    echo $output
+    echo "$output"
 }
 
 # trim first character if match is found
@@ -116,12 +117,14 @@ script_name() {
 
 is_root() {
     #   [ "$(id -u)" -eq 0 ] && return 0 || error "must be root"
-    [ "$EUID" -eq 0 ] && return 0 || error "must be root"
+    { [ "$EUID" -eq 0 ] && return 0; } || error "must be root"
 }
 
 not_installed() {
-    if [ "$(dpkg -s ${1} 2>&1 | grep 'Version:')" ]; then
-        [ -n "$(apt-cache policy ${1} | grep 'Installed: (none)')" ] && return 0 || return 1
+    dpkg -s "$1" 2>&1 | grep -q 'Version:'
+    if [ "$?" -eq 0 ]; then
+        apt-cache policy "$1" | grep 'Installed: (none)'
+        [ "$?" -eq 0 ] && return 0 || return 1
     else
         return 0
     fi
@@ -137,7 +140,7 @@ user_exists() {
 }
 
 variable_set() {
-    [ -z "$1" ] && error "You must have your HOME environmental variable set to continue."
+    [ -z "$1" ] && error "${FUNCNAME[1]}(${BASH_LINENO[0]}): Variable not set."
 }
 
 # --------------------------  PROMPTS
@@ -148,7 +151,7 @@ pause() {
     # default message
     [ -z "${prompt}" ] && prompt="Press [Enter] key to continue"
     # how to go back, with either default or user message
-    [ "$back" = true ] && prompt="${prompt}, [Ctrl+Z] to go back" 
+    [ "$back" = true ] && prompt="${prompt}, [Ctrl+Z] to go back"
     read -p "$prompt..."
 }
 
@@ -169,21 +172,21 @@ confirm() {
                 ;;
         esac
     else
-    # prompt user with preference for No
-    read -rp "${text} [y/N] " response
-    case $response in
-        [yY][eE][sS]|[yY]) 
-            return 0
-            ;;
-        *) 
-            return 1
-            ;;
+        # prompt user with preference for No
+        read -rp "${text} [y/N] " response
+        case $response in
+            [yY][eE][sS]|[yY])
+                return 0
+                ;;
+            *)
+                return 1
+                ;;
         esac
     fi
 }
 
 gem_must_exist() {
-    if ! ~/.rbenv/shims/gem list ^$1$ -i >/dev/null; then
+    if ! ~/.rbenv/shims/gem list ^"$1"$ -i >/dev/null; then
         notify2 "$1 must be installed to continue."
         pause "Press [Enter] to install it now" true
         ~/.rbenv/shims/gem install "$1"
@@ -208,7 +211,7 @@ pip_must_exist() {
 }
 
 program_must_exist() {
-    not_installed $1
+    not_installed "$1"
 
     if [ "$?" -eq 0 ]; then
         notify2 "$1 must be installed to continue."
@@ -240,22 +243,23 @@ run_script() {
     program_must_exist "dos2unix"
 
     # change to scripts directory to run scripts
-    [ -n "$scripts" ] && cd $scripts
+    if [ -n "$scripts" ]; then
+        (
+            cd "$scripts" || exit
 
-    # get script ready to run
-    dos2unix -k -q "${name}"
-    chmod +x "${name}"
+            # get script ready to run
+            dos2unix -k -q "${name}"
+            chmod +x "${name}"
 
-    # clear the screen and run the script
-    [ "$DEBUG_MODE" -eq 1 ] || clear
-    . ./"${name}"
-    result=$?
-    notify3 "script: ${name} has finished"
-
-    # change back to original directory
-    [ -n "$scripts" ] && cd - >/dev/null
-
-    return $result
+            # clear the screen and run the script
+            [ "$DEBUG_MODE" -eq 1 ] || clear
+            . ./"${name}"
+            result="$?"
+            notify3 "script: ${name} has finished"
+            return "$result"
+        )
+    fi
+    return 1
 }
 
 # append source cmd to conf file if not set already
@@ -264,7 +268,7 @@ set_source_cmd() {
     local match="$2"
     local src_cmd="$3"
 
-    if [ -n "$(grep ${match} ${conf_file})" ]; then
+    if grep -q "$match" "$conf_file" >/dev/null 2>&1; then
         notify "already set $match in $conf_file"
     else
         echo "$src_cmd" >> "$conf_file" && success "configured: $match in $conf_file"
@@ -278,15 +282,19 @@ set_source_cmd() {
 set_sourced_config() {
     local repo_url="$1"
     local conf_file="$2"
-    local repo_name=$(trim_longest_left_pattern "$3" "/")
-    local repo_dir=$(trim_shortest_right_pattern "$3" "/")
     local src_cmd="$4"
-    local today=`date +%Y%m%d_%s`
+    local repo_name
+    local repo_dir
+    local today
+
+    repo_name=$(trim_longest_left_pattern "$3" "/")
+    repo_dir=$(trim_shortest_right_pattern "$3" "/")
+    today=$(date +%Y%m%d_%s)
 
     [ -z "$repo_name" ] && repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
 
     if [ -n "$repo_name" ]; then
-        if [ -d "$repo_dir" ] && [ -n "$(grep ${repo_name} ${conf_file})" ]; then
+        if [ -d "$repo_dir" ] && grep -q "$repo_name" "$conf_file" >/dev/null 2>&1; then
 #            notify "already set $repo_name in $conf_file"
             cd "$repo_dir" && echo "checking for updates: $repo_name" && git pull && cd - >/dev/null
         else
@@ -313,10 +321,16 @@ install_apt() {
 
     # install applications in the list
     for apt in $names; do
-        if not_installed $apt; then
+        if not_installed "$apt"; then
             echo
             read -p "Press [Enter] to install $apt..."
-            [ -z "${repo}" ] && sudo apt-get -y install "$apt" || { sudo apt-add-repository "${repo}"; sudo apt-get update; sudo apt-get -y install "$apt"; }
+            if [ -z "${repo}" ]; then
+                sudo apt-get -y install "$apt"
+            else
+                sudo apt-add-repository "${repo}"
+                sudo apt-get update
+                sudo apt-get -y install "$apt"
+            fi
         fi
     done
 }
@@ -332,7 +346,7 @@ install_gem() {
 
     # install gems in the list
     for app in $names; do
-        if ! $(gem list "$app" -i); then
+        if ! gem list "$app" -i >/dev/null 2>&1; then
             echo
             read -p "Press [Enter] to install $app..."
             gem install "$app"
@@ -481,9 +495,11 @@ get_public_key() {
     #   echo "changing directory to $_"
     # download keyfile
     wget -nc "$url"
-    local key_file=$(trim_longest_left_pattern "${url}" /)
+    local key_file
+    key_file=$(trim_longest_left_pattern "${url}" /)
     # get key id
-    local key_id=$(echo $(gpg --throw-keyids < "$key_file") | cut --characters=11-18 | tr [A-Z] [a-z])
+    local key_id
+    key_id=$(echo $(gpg --throw-keyids < "$key_file") | cut --characters=11-18 | tr [A-Z] [a-z])
     # import key if it doesn't exist
     if ! apt-key list | grep "$key_id" > /dev/null 2>&1; then
         echo "Installing GPG public key with ID $key_id from $key_file..."
