@@ -306,7 +306,7 @@ DEFAULT_DEV_LIST='autoconf automake build-essential checkinstall dconf-cli'
 
 if [ "$IS_SERVER" -eq 0 ]; then
     notify "Server packages to install (none to skip)"
-    read -ep "   : " -i "$SERVER_APTS_LIST" APTS1
+    read -ep "   : " -i "$DEFAULT_SERVER_LIST" APTS1
 else
     notify3 "The following default packages can be modified prior to installation."
     echo
