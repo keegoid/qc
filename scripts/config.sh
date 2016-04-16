@@ -71,7 +71,7 @@ set_subl_config() {
     local cloned=1
 
     # update or clone repository
-    [ -d $repo_dir ] && { cd $repo_dir; echo "checking for updates: $repo_name"; git pull; cd - >/dev/null; } || { git clone "$repo_url" "$repo_dir" && cloned=0; }
+    [ -d "$repo_dir" ] && { cd "$repo_dir"; echo "checking for updates: $repo_name"; git pull; cd - >/dev/null; } || { git clone "$repo_url" "$repo_dir" && cloned=0; }
 
     # copy config file to proper location
     cp "$repo_file" "$conf_file"
@@ -95,7 +95,7 @@ set_git_config() {
     local cloned=1
 
     # update or clone repository
-    [ -d $repo_dir ] && { cd $repo_dir; echo "checking for updates: $repo_name"; git pull; cd - >/dev/null; } || { git clone "$repo_url" "$repo_dir" && cloned=0; }
+    [ -d "$repo_dir" ] && { cd "$repo_dir"; echo "checking for updates: $repo_name"; git pull; cd - >/dev/null; } || { git clone "$repo_url" "$repo_dir" && cloned=0; }
 
     # copy config file to proper location
     cp "$repo_file" "$conf_file"
@@ -120,18 +120,18 @@ set_git_config() {
 set_terminal_history() {
     local conf_file="$1"
 
-    [ -f $conf_file ] || touch $conf_file
-    if grep -q "backward-char" $conf_file >/dev/null 2>&1; then
-        echo "already added terminal history lookup"
+    [ -f "$conf_file" ] || touch "$conf_file"
+    if grep -q "backward-char" "$conf_file" >/dev/null 2>&1; then
+        echo "already added terminal history lookup (usage: start of command + up arrow)"
     else
         pause "Press [Enter] to configure .inputrc" true
-cat << 'EOF' >> $conf_file
+cat << 'EOF' >> "$conf_file"
 "\e[A": history-search-backward
 "\e[B": history-search-forward
 "\e[C": forward-char
 "\e[D": backward-char
 EOF
-        success "configured: $conf_file"
+        success "configured: $conf_file (usage: start of command + up arrow)"
     fi
 
     RET="$?"
@@ -143,9 +143,9 @@ EOF
 set_terminal_color() {
     local conf_file="$1"
 
-    if grep -q "#force_color_prompt=yes" $conf_file >/dev/null 2>&1; then
+    if grep -q "#force_color_prompt=yes" "$conf_file" >/dev/null 2>&1; then
         pause "Press [Enter] to activate color terminal prompts" true
-        sed -i.bak -e "/force_color_prompt=yes/ s/^# //" $conf_file && source $conf_file && success "configured: $conf_file with color terminal prompts"
+        sed -i.bak -e "/force_color_prompt=yes/ s/^# //" "$conf_file" && source "$conf_file" && success "configured: $conf_file with color terminal prompts"
     else
         echo "already set color prompts"
     fi
@@ -160,11 +160,11 @@ set_autojump() {
     local conf_file="$1"
     local src_cmd="$2"
 
-    if grep -q "autojump/autojump.sh" $conf_file >/dev/null 2>&1; then
+    if grep -q "autojump/autojump.sh" "$conf_file" >/dev/null 2>&1; then
         echo "already added autojump (usage: j directory)"
     else
         pause "Press [Enter] to configure autojump for gnome-terminal" true
-        echo -e "$src_cmd" >> $conf_file && source $conf_file && success "configured: $conf_file with autojump"
+        echo -e "$src_cmd" >> "$conf_file" && source "$conf_file" && success "configured: $conf_file with autojump (usage: j directory)"
     fi
 
     RET="$?"
