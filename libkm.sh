@@ -3,7 +3,7 @@
 # A library of useful shell functions
 #
 # Author : Keegan Mullaney
-# Website: http://keegoid.com
+# Website: keegoid.com
 # Email  : keeganmullaney@gmail.com
 #
 # http://keegoid.mit-license.org
@@ -27,15 +27,15 @@ to_lower() {
     local str=$*
     local output
     echo "${str}"
-    output=$(tr '[A-Z]' '[a-z]'<<<"${str}")
+    output=$(tr '[:upper:]' '[:lower:]' <<< "${str}")
     echo "$output"
 }
 
 # trim first character if match is found
 # $1 -> string
-# $2 -> match
+# $2 -> pattern
 trim_first_character_match() {
-    echo -n "$(echo ${1:0:1} | tr -d ${2})${1:1}"
+    echo -n "$(tr -d "$2" <<< ${1:0:1})${1:1}"
 }
 
 # trim shortest pattern from the left
@@ -111,6 +111,23 @@ notify3() {
 script_name() {
     #   echo "$(basename "$(test -L "$0" && readlink "$0" || echo "$0")")"
     echo -n "$1" && trim_longest_left_pattern "$0" "/" && echo "$2"
+}
+
+# print package name and version
+# $1 -> package name
+# $2 -> package version
+print_pkg_info() {
+    local pkg="$1"
+    local pkg_version="$2"
+    local space_count
+    local pack_space_count
+    local real_space
+
+    space_count="$(( 20 - ${#pkg} ))"
+    pack_space_count="$(( 20 - ${#pkg_version} ))"
+    real_space="$(( space_count + pack_space_count + ${#pkg_version} ))"
+    echo -en " ${GREEN_CHK}"
+    printf " $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
 }
 
 # --------------------------  CHECKS
@@ -486,27 +503,29 @@ authorized_ssh_key() {
 # return: false if URL is empty, else true
 get_public_key() {
     local url="$1"
-    local apt_keys="$HOME/apt_keys"
+    local apt_keys="$HOME/.apt_keys"
+    local key_file
+    local key_id
+
+    key_file=$(trim_longest_left_pattern "${url}" /)
 
     [ -z "${url}" ] && alert "missing URL to public key" && return 1
     pause "Press [Enter] to download and import the GPG Key"
     mkdir -pv "$apt_keys"
-    cd "$apt_keys"
-    #   echo "changing directory to $_"
-    # download keyfile
-    wget -nc "$url"
-    local key_file
-    key_file=$(trim_longest_left_pattern "${url}" /)
-    # get key id
-    local key_id
-    key_id=$(echo $(gpg --throw-keyids < "$key_file") | cut --characters=11-18 | tr [A-Z] [a-z])
-    # import key if it doesn't exist
-    if ! apt-key list | grep "$key_id" > /dev/null 2>&1; then
-        echo "Installing GPG public key with ID $key_id from $key_file..."
-        sudo apt-key add "$key_file"
-    fi
-    # change directory back to previous one
-    echo -n "changing directory back to " && cd -
+    (
+        cd "$apt_keys" || exit
+        #   echo "changing directory to $_"
+        # download key
+        wget -nc "$url"
+        # get key id
+        key_id=$(gpg2 --throw-keyids "$key_file" | cut -c 12-19 | tr -d '\n' | tr -d ' ')
+        echo "found key: $key_id"
+        # import key if it doesn't exist
+        if ! apt-key list | grep -w "$key_id"; then
+            echo "Installing GPG public key with ID $key_id from $key_file..."
+            sudo apt-key add "$key_file"
+        fi
+    )
 }
 
 # --------------------------  GIT FUNCTIONS

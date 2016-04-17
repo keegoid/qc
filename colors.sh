@@ -4,7 +4,7 @@
 # foreground colors
 #
 # Author : Keegan Mullaney
-# Website: http://keegoid.com
+# Website: keegoid.com
 # Email  : keeganmullaney@gmail.com
 #
 # http://keegoid.mit-license.org
