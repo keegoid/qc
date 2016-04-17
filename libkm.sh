@@ -503,29 +503,11 @@ authorized_ssh_key() {
 # return: false if URL is empty, else true
 get_public_key() {
     local url="$1"
-    local apt_keys="$HOME/.apt_keys"
-    local key_file
-    local key_id
-
-    key_file=$(trim_longest_left_pattern "${url}" /)
 
     [ -z "${url}" ] && alert "missing URL to public key" && return 1
     pause "Press [Enter] to download and import the GPG Key"
-    mkdir -pv "$apt_keys"
-    (
-        cd "$apt_keys" || exit
-        #   echo "changing directory to $_"
-        # download key
-        wget -nc "$url"
-        # get key id
-        key_id=$(gpg2 --throw-keyids "$key_file" | cut -c 12-19 | tr -d '\n' | tr -d ' ')
-        echo "found key: $key_id"
-        # import key if it doesn't exist
-        if ! apt-key list | grep -w "$key_id"; then
-            echo "Installing GPG public key with ID $key_id from $key_file..."
-            sudo apt-key add "$key_file"
-        fi
-    )
+    msg "Applying signing key..."
+    wget --quiet "$url" -O- | sudo apt-key add -
 }
 
 # --------------------------  GIT FUNCTIONS
