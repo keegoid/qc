@@ -46,7 +46,7 @@ exit_msg() {
     echo
     notify "Lastly: execute sudo ./sudoers.sh to increase the sudo timeout."
     msg             "\nThanks for using $APP_NAME."
-    msg             "(c) $(date +%Y) http://keegoid.mit-license.org"
+    msg             "(c) $(date +%Y) keegoid.mit-license.org"
 }
 
 # --------------------------  MENU OPTIONS
