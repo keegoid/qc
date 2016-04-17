@@ -5,7 +5,7 @@ echo "# and container, configure container with     "
 echo "# shared directory and ssh access.            "
 echo "#                                             "
 echo "# Author : Keegan Mullaney                    "
-echo "# Website: http://keegoid.com                 "
+echo "# Website: keegoid.com                        "
 echo "# Email  : keeganmullaney@gmail.com           "
 echo "#                                             "
 echo "# http://keegoid.mit-license.org              "
@@ -100,19 +100,25 @@ set_hosts() {
 
     # add container's ip to /etc/hosts
     pause "Press [Enter] to add $1 to /etc/hosts"
-    local ipv4=$(lxc list | grep "$SELECTED_CONTAINER" | cut -d "|" -f 4 | cut -d " " -f 2)
+    local ipv4
+    ipv4=$(lxc list | grep "$SELECTED_CONTAINER" | cut -d "|" -f 4 | cut -d " " -f 2)
     # remove entry if it already exists
-    if cat /etc/hosts | grep "$1" >/dev/null; then
+    if grep "$1" /etc/hosts >/dev/null; then
         sudo sed -i.bak "/$1/d" /etc/hosts
     fi
     # wait for ip address to get assigned to container
     while [ -z "$ipv4" ]; do
         notify3 "The container hasn't been assigned an IP address yet."
         pause "Press [Enter] to try again" true
-        ipv4=$(lxc list | grep $SELECTED_CONTAINER | cut -d "|" -f 4 | cut -d " " -f 2)
+        ipv4=$(lxc list | grep "$SELECTED_CONTAINER" | cut -d "|" -f 4 | cut -d " " -f 2)
     done
     # add new hosts entry
-    [ -n "$ipv4" ] && echo -e "${ipv4}\t${1}" | sudo tee --append /etc/hosts && success "successfully added ${ipv4} and ${1} to /etc/hosts" || notify2 "Couldn't add ${1} to /etc/hosts, missing IP address on container."
+    if [ -n "$ipv4" ]; then
+        echo -e "${ipv4}\t${1}" | sudo tee --append /etc/hosts
+        success "successfully added ${ipv4} and ${1} to /etc/hosts"
+    else
+        notify2 "Couldn't add ${1} to /etc/hosts, missing IP address on container."
+    fi
 
     RET="$?"
     debug
@@ -152,7 +158,7 @@ set_shared_directory() {
 # add ssh key to authorized keys in container
 set_authorized_key() {
     # if no ssh key, generate one
-    [ -f "$HOME/.ssh/id_rsa.pub" ] || gen_ssh_key $HOME/.ssh $(whoami)
+    [ -f "$HOME/.ssh/id_rsa.pub" ] || gen_ssh_key "$HOME/.ssh" "$(whoami)"
     pause "Press [Enter] to copy public your ssh key to \"authorized_keys\" in container"
     # make .ssh directory if it doesn't exist
     lxc exec "${SELECTED_CONTAINER}" -- su - root -c "mkdir -p .ssh"
@@ -172,7 +178,6 @@ create_lxd_container() {
     local relative_source
     local target_dir
     local source_dir
-    local target_dir_root
 
     # select an image and choose a container name
     lxc image list
@@ -223,6 +228,7 @@ add_memcached() {
     # configure WordPress and add first user, then we can add memcached relation
     juju add-relation memcached wordpress
 
+    # shellcheck disable=SC2034
     RET="$?"
     debug
 }

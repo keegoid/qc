@@ -3,7 +3,7 @@ echo "# --------------------------------------------"
 echo "# Install and update programs.                "
 echo "#                                             "
 echo "# Author : Keegan Mullaney                    "
-echo "# Website: http://keegoid.com                 "
+echo "# Website: keegoid.com                        "
 echo "# Email  : keeganmullaney@gmail.com           "
 echo "#                                             "
 echo "# http://keegoid.mit-license.org              "
@@ -31,6 +31,7 @@ install_rbenv_ruby() {
     install_apt "gpgv2 git-core curl zlib1g-dev build-essential libssl-dev libssl1.0.0 libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties libffi-dev"
 
     # rbenv
+    # shellcheck disable=SC2016
     set_sourced_config  "https://github.com/rbenv/rbenv.git" \
                         "$HOME/.bashrc" \
                         "$HOME/.rbenv/" \
@@ -40,11 +41,13 @@ install_rbenv_ruby() {
     [ -d "$HOME/.rbenv" ] && cd "$HOME/.rbenv" && src/configure && make -C src && cd - >/dev/null
 
     # add rbenv init - command to .profile
+    # shellcheck disable=SC2016
     set_source_cmd      "$HOME/.bashrc" \
                         'rbenv/shims:' \
                         '[[ ":$PATH:" =~ ":$HOME/.rbenv/shims:" ]] || eval "$(rbenv init -)"'
 
     # ruby-build
+    # shellcheck disable=SC2016
     set_sourced_config  "https://github.com/rbenv/ruby-build.git" \
                         "$HOME/.bashrc" \
                         "$HOME/.rbenv/plugins/ruby-build/" \
@@ -63,12 +66,13 @@ install_rbenv_ruby() {
     git clone https://github.com/parkr/ruby-build-github.git ~/.rbenv/plugins/ruby-build-github
 
     # list ruby versions compatible with github pages
-    local ruby_v=$(~/.rbenv/bin/rbenv install --list | grep github$ | tail -1)
+    local ruby_v
+    ruby_v=$(~/.rbenv/bin/rbenv install --list | grep github$ | tail -1)
 
     # install ruby
     # export MAKE=make (uncomment if build fails)
-    [ "$?" -eq 0 ] && ~/.rbenv/bin/rbenv install $ruby_v
-    [ "$?" -eq 0 ] && ~/.rbenv/bin/rbenv global $ruby_v
+    [ "$?" -eq 0 ] && ~/.rbenv/bin/rbenv install "$ruby_v"
+    [ "$?" -eq 0 ] && ~/.rbenv/bin/rbenv global "$ruby_v"
 
     # check ruby and rubygem versions
     ~/.rbenv/shims/ruby -v
@@ -82,8 +86,8 @@ install_rbenv_ruby() {
 install_npm_lts() {
     curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -
     echo "deb https://deb.nodesource.com/node_4.x trusty main" | sudo tee /etc/apt/sources.list.d/nodesource.list
-    sudo apt-get update
-    sudo apt-get -y install nodejs
+    sudo apt update
+    sudo apt -y install nodejs
 
     # check node version
     node -v
@@ -101,13 +105,9 @@ gem_check() {
 
     for pkg in "${gem_check_list[@]}"
     do
-        if ~/.rbenv/shims/gem list ^$pkg$ -i >/dev/null; then
-            pkg_version=$(~/.rbenv/shims/gem list ^$pkg$ | grep "${pkg}" | cut -d " " -f 2 | cut -d "(" -f 2 | cut -d ")" -f 1)
-            space_count="$(expr 20 - "${#pkg}")"
-            pack_space_count="$(expr 20 - "${#pkg_version}")"
-            real_space="$(expr ${space_count} + ${pack_space_count} + ${#pkg_version})"
-            echo -en " ${GREEN_CHK}"
-            printf " $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
+        if ~/.rbenv/shims/gem list ^"$pkg"$ -i >/dev/null 2>&1; then
+            pkg_version=$(~/.rbenv/shims/gem list ^"$pkg"$ | grep "${pkg}" | cut -d " " -f 2 | cut -d "(" -f 2 | cut -d ")" -f 1)
+            print_pkg_info "$pkg" "$pkg_version"
         else
             echo -e " ${YELLOW_BLACK} * $pkg [not installed] ${NONE_WHITE}"
             gem_install_list+=($pkg)
@@ -125,13 +125,9 @@ npm_check() {
 
     for pkg in "${npm_check_list[@]}"
     do
-        if npm ls -gs | grep -q $pkg@; then
-            pkg_version=$(npm ls -gs | grep $pkg@ | cut -d "@" -f 2)
-            space_count="$(expr 20 - "${#pkg}")"
-            pack_space_count="$(expr 20 - "${#pkg_version}")"
-            real_space="$(expr ${space_count} + ${pack_space_count} + ${#pkg_version})"
-            echo -en " ${GREEN_CHK}"
-            printf " $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
+        if npm ls -gs | grep -q "${pkg}@"; then
+            pkg_version=$(npm ls -gs | grep "${pkg}@" | cut -d "@" -f 2)
+            print_pkg_info "$pkg" "$pkg_version"
         else
             echo -e " ${YELLOW_BLACK} * $pkg [not installed] ${NONE_WHITE}"
             npm_install_list+=($pkg)
@@ -153,11 +149,7 @@ pip_check() {
         pkg_trim=$(trim_longest_right_pattern "$pkg" "[")
         if pip list | grep -w "$pkg_trim" >/dev/null 2>&1; then
             pkg_version=$(pip list | grep -w "${pkg_trim}" | cut -d " " -f 2 | tr -d "(" | tr -d ")")
-            space_count="$(expr 20 - "${#pkg}")"
-            pack_space_count="$(expr 20 - "${#pkg_version}")"
-            real_space="$(expr ${space_count} + ${pack_space_count} + ${#pkg_version})"
-            echo -en " ${GREEN_CHK}"
-            printf " $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
+            print_pkg_info "$pkg" "$pkg_version"
         else
             echo -e " ${YELLOW_BLACK} * $pkg_trim [not installed] ${NONE_WHITE}"
             pip_install_list+=($pkg)
@@ -175,16 +167,12 @@ apt_check() {
 
     for pkg in "${apt_check_list[@]}"
     do
-        if not_installed $pkg; then
+        if not_installed "$pkg"; then
             echo -e " ${YELLOW_BLACK} * $pkg [not installed] ${NONE_WHITE}"
             apt_install_list+=($pkg)
         else
             pkg_version=$(dpkg -s "${pkg}" 2>&1 | grep 'Version:' | cut -d " " -f 2)
-            space_count="$(expr 20 - "${#pkg}")"
-            pack_space_count="$(expr 20 - "${#pkg_version}")"
-            real_space="$(expr ${space_count} + ${pack_space_count} + ${#pkg_version})"
-            echo -en " ${GREEN_CHK}"
-            printf " $pkg %${real_space}.${#pkg_version}s ${pkg_version}\n"
+            print_pkg_info "$pkg" "$pkg_version"
         fi
     done
 
@@ -207,6 +195,7 @@ gem_install() {
     else
         # install required gems
         pause "Press [Enter] to install gems" true
+        # shellcheck disable=SC2068
         ~/.rbenv/shims/gem install ${gem_install_list[@]}
         ~/.rbenv/bin/rbenv rehash
     fi
@@ -219,7 +208,11 @@ gem_install() {
 npm_install() {
     # make sure npm is installed
     confirm "Install the long term support version of Node.js?" true
-    [ "$?" -eq 0 ] && install_npm_lts || { node -v | grep "not installed" && program_must_exist npm; }
+    if [ "$?" -eq 0 ]; then
+        install_npm_lts
+    else
+        node -v | grep "not installed" && program_must_exist npm
+    fi
 
     npm_check
 
@@ -233,6 +226,7 @@ npm_install() {
     else
         # install required npms
         pause "Press [Enter] to install npms" true
+        # shellcheck disable=SC2068
         sudo npm install -g ${npm_install_list[@]}
     fi
 
@@ -254,6 +248,7 @@ pip_install() {
     else
         # install required pips
         pause "Press [Enter] to install pips" true
+        # shellcheck disable=SC2068
         sudo -H pip install ${pip_install_list[@]}
     fi
 
@@ -277,12 +272,14 @@ apt_install() {
 
         # install packages in the list
         read -p "Press [Enter] to install apt packages..."
+        # shellcheck disable=SC2068
         sudo apt-get -y install ${apt_install_list[@]}
 
         # clean up apt caches
         sudo apt-get clean
     fi
 
+    # shellcheck disable=SC2034
     RET="$?"
     debug
 }

@@ -3,7 +3,7 @@ echo "# --------------------------------------------"
 echo "# Install and configure Sublime Text.         "
 echo "#                                             "
 echo "# Author : Keegan Mullaney                    "
-echo "# Website: http://keegoid.com                 "
+echo "# Website: keegoid.com                        "
 echo "# Email  : keeganmullaney@gmail.com           "
 echo "#                                             "
 echo "# http://keegoid.mit-license.org              "
@@ -19,11 +19,12 @@ SUBL_URL="https://download.sublimetext.com/sublime-text_build-${SUBL_V}_amd64.de
 # install Sublime Text
 install_subl() {
     if not_installed "subl"; then
-        # change to tmp directory to download file and then back to original directory
-        cd /tmp
-        echo "downloading subl..."
-        curl -O "$SUBL_URL" && sudo dpkg -i "sublime-text_build-${SUBL_V}_amd64.deb" && success "successfully installed: subl"
-        cd - >/dev/null
+        (
+            # change to tmp directory to download file within subshell
+            cd /tmp || exit
+            echo "downloading subl..."
+            curl -O "$SUBL_URL" && sudo dpkg -i "sublime-text_build-${SUBL_V}_amd64.deb" && success "successfully installed: subl"
+        )
         # set sublime-text as default text editor
         sudo sed -i.bak "s/gedit/sublime_text/" /etc/gnome/defaults.list
     else

@@ -3,7 +3,7 @@ echo "# --------------------------------------------"
 echo "# Generate an SSH key pair.                   "
 echo "#                                             "
 echo "# Author : Keegan Mullaney                    "
-echo "# Website: http://keegoid.com                 "
+echo "# Website: keegoid.com                        "
 echo "# Email  : keeganmullaney@gmail.com           "
 echo "#                                             "
 echo "# http://keegoid.mit-license.org              "
@@ -33,7 +33,7 @@ set_authorized_key() {
     echo -e "SSH port set to $ssh_port\nclient alive interval set to $client_alive"
 
     # add authorized key for ssh user
-    authorized_ssh_key $HOME/.ssh $(whoami)
+    authorized_ssh_key "$HOME/.ssh" "$(whoami)"
 
     # use ufw to limit login attempts too
     echo
@@ -50,7 +50,7 @@ set_authorized_key() {
     if grep -q "AllowUsers $(whoami)" /etc/ssh/sshd_config; then
         echo "AllowUsers is already configured"
     else
-        sudo printf "\nAllowUsers $(whoami)" >> /etc/ssh/sshd_config && echo -e "\nroot login disallowed"
+        sudo printf "\nAllowUsers $(whoami)" | tee --append /etc/ssh/sshd_config && echo -e "\nroot login disallowed"
     fi
 
     echo
@@ -60,5 +60,8 @@ set_authorized_key() {
 
 # --------------------------  MAIN
 
-[ "$IS_SERVER" -eq 0 ] && set_authorized_key || gen_ssh_key $HOME/.ssh $(whoami)
-
+if [ "$IS_SERVER" -eq 0 ]; then
+    set_authorized_key
+else
+    gen_ssh_key "$HOME/.ssh" "$(whoami)"
+fi
