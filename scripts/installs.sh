@@ -312,11 +312,11 @@ else
     echo "DEVELOPER"
     echo
     notify "Packages to install with gem"
-    read -ep "   : " -i 'bundler gist jekyll' GEMS
+    read -ep "   : " -i 'bundler gist travis' GEMS
     notify "Packages to install with npm"
     read -ep "   : " -i 'bower browser-sync coffee-script csslint doctoc gulp' NPMS
     notify "Packages to install with pip"
-    read -ep "   : " -i 'jrnl[encrypted]' PIPS
+    read -ep "   : " -i 'jrnl[encrypted] python-slugify' PIPS
     notify "Workstation packages to install (delete all to skip)"
     read -ep "   : " -i "$DEFAULT_WORKSTATION_LIST" APTS1
     notify "Developer packages to install"
