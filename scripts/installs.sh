@@ -86,8 +86,8 @@ install_rbenv_ruby() {
 install_npm_lts() {
     curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -
     echo "deb https://deb.nodesource.com/node_4.x trusty main" | sudo tee /etc/apt/sources.list.d/nodesource.list
-    sudo apt update
-    sudo apt -y install nodejs
+    sudo apt-get update
+    sudo apt-get -y install nodejs
 
     # check node version
     node -v

@@ -337,16 +337,16 @@ install_apt() {
     local repo="$2"
 
     # install applications in the list
-    for apt in $names; do
-        if not_installed "$apt"; then
+    for pkg in $names; do
+        if not_installed "$pkg"; then
             echo
-            read -p "Press [Enter] to install $apt..."
+            read -p "Press [Enter] to install $pkg..."
             if [ -z "${repo}" ]; then
-                sudo apt-get -y install "$apt"
+                sudo apt-get -y install "$pkg"
             else
                 sudo apt-add-repository "${repo}"
                 sudo apt-get update
-                sudo apt-get -y install "$apt"
+                sudo apt-get -y install "$pkg"
             fi
         fi
     done
@@ -362,11 +362,11 @@ install_gem() {
 #    program_must_exist "rubygems-integration"
 
     # install gems in the list
-    for app in $names; do
-        if ! gem list "$app" -i >/dev/null 2>&1; then
+    for pkg in $names; do
+        if ! gem list "$pkg" -i >/dev/null 2>&1; then
             echo
-            read -p "Press [Enter] to install $app..."
-            gem install "$app"
+            read -p "Press [Enter] to install $pkg..."
+            gem install "$pkg"
         fi
     done
 }
@@ -384,11 +384,11 @@ install_npm() {
     fi
 
     # install npm packages in the list
-    for app in $names; do
-        if ! npm ls -gs | grep -qw "$app"; then
+    for pkg in $names; do
+        if ! npm ls -gs | grep -qw "$pkg"; then
             echo
-            read -p "Press [Enter] to install $app..."
-            sudo npm install -g "$app"
+            read -p "Press [Enter] to install $pkg..."
+            sudo npm install -g "$pkg"
         fi
     done
 }
@@ -403,12 +403,12 @@ install_pip() {
     program_must_exist "python-keyring"
 
     # install pips in the list
-    for app in $names; do
-        app=$(trim_longest_right_pattern "$app" "[")
-        if ! pip list | grep "$app" >/dev/null 2>&1; then
+    for pkg in $names; do
+        pkg=$(trim_longest_right_pattern "$pkg" "[")
+        if ! pip list | grep "$pkg" >/dev/null 2>&1; then
             echo
-            read -p "Press [Enter] to install $app..."
-            sudo pip install "$app"
+            read -p "Press [Enter] to install $pkg..."
+            sudo -H pip install "$pkg"
         fi
     done
 }
@@ -503,11 +503,29 @@ authorized_ssh_key() {
 # return: false if URL is empty, else true
 get_public_key() {
     local url="$1"
+    local apt_keys="$HOME/.apt_keys"
+    local key_file
+    local key_id
+
+    key_file=$(trim_longest_left_pattern "${url}" /)
 
     [ -z "${url}" ] && alert "missing URL to public key" && return 1
     pause "Press [Enter] to download and import the GPG Key"
-    msg "Applying signing key..."
-    wget --quiet "$url" -O- | sudo apt-key add -
+    mkdir -pv "$apt_keys"
+    (
+        cd "$apt_keys" || exit
+        #   echo "changing directory to $_"
+        # download key
+        wget -nc "$url"
+        # get key id
+        key_id=$(gpg2 --throw-keyids "$key_file" | cut -c 12-19 | tr -d '\n' | tr -d ' ')
+        echo "found key: $key_id"
+        # import key if it doesn't exist
+        if ! apt-key list | grep -w "$key_id"; then
+            echo "Installing GPG public key with ID $key_id from $key_file..."
+            sudo apt-key add "$key_file"
+        fi
+    )
 }
 
 # --------------------------  GIT FUNCTIONS
