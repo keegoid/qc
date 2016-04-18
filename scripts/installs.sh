@@ -16,12 +16,14 @@ apt_install_list=()
 gem_install_list=()
 npm_install_list=()
 pip_install_list=()
+pip3_install_list=()
 
 # check lists (check if installed)
 apt_check_list=()
 gem_check_list=()
 npm_check_list=()
 pip_check_list=()
+pip3_check_list=()
 
 # --------------------------  CUSTOM INSTALL SCRIPTS
 
@@ -160,6 +162,28 @@ pip_check() {
     debug
 }
 
+# loop through check list and add missing pip3s to install list
+pip3_check() {
+    local pkg
+    local pkg_trim
+    local pkg_version
+
+    for pkg in "${pip3_check_list[@]}"
+    do
+        pkg_trim=$(trim_longest_right_pattern "$pkg" "[")
+        if pip list | grep -w "$pkg_trim" >/dev/null 2>&1; then
+            pkg_version=$(pip3 list | grep -w "${pkg_trim}" | cut -d " " -f 2 | tr -d "(" | tr -d ")")
+            print_pkg_info "$pkg" "$pkg_version"
+        else
+            echo -e " ${YELLOW_BLACK} * $pkg_trim [not installed] ${NONE_WHITE}"
+            pip3_install_list+=($pkg)
+        fi
+    done
+
+    RET="$?"
+    debug
+}
+
 # loop through check list and add missing packages to install list
 apt_check() {
     local pkg
@@ -238,6 +262,7 @@ npm_install() {
 pip_install() {
     # make sure dependencies are installed
     program_must_exist "python-pip"
+    program_must_exist "python3-pip"
     program_must_exist "python-keyring"
     program_must_exist "python-setuptools"
 
@@ -250,6 +275,26 @@ pip_install() {
         pause "Press [Enter] to install pips" true
         # shellcheck disable=SC2068
         sudo -H pip install ${pip_install_list[@]}
+    fi
+
+    RET="$?"
+    debug
+}
+
+# loop through install list and install any pips that are in the list
+pip3_install() {
+    # make sure dependencies are installed
+    program_must_exist "python3-pip"
+
+    pip3_check
+
+    if [[ "${#pip3_install_list[@]}" -eq 0 ]]; then
+        notify "No pip3s to install"
+    else
+        # install required pips
+        pause "Press [Enter] to install pip3s" true
+        # shellcheck disable=SC2068
+        sudo -H pip3 install ${pip3_install_list[@]}
     fi
 
     RET="$?"
@@ -296,8 +341,8 @@ fi
 # --------------------------  DEFAULT APT PACKAGES
 
 DEFAULT_SERVER_LIST='ca-certificates gettext-base less man-db openssh-server python-software-properties software-properites-common vim-gtk wget'
-DEFAULT_WORKSTATION_LIST='autojump gpgv2 lynx mutt pinta shellcheck silversearcher-ag tmux x11vnc xclip xdotool vim-gtk vlc'
-DEFAULT_DEV_LIST='autoconf automake build-essential checkinstall dconf-cli'
+DEFAULT_WORKSTATION_LIST='autojump gpgv2 lynx mutt pinta x11vnc xclip vlc'
+DEFAULT_DEV_LIST='autoconf automake build-essential checkinstall dconf-cli shellcheck silversearcher-ag tmux tidy xdotool vim-gtk'
 
 # --------------------------  PROMPT FOR PROGRAMS
 
@@ -316,7 +361,9 @@ else
     notify "Packages to install with npm"
     read -ep "   : " -i 'bower browser-sync coffee-script csslint doctoc gulp' NPMS
     notify "Packages to install with pip"
-    read -ep "   : " -i 'jrnl[encrypted] python-slugify' PIPS
+    read -ep "   : " -i 'jrnl[encrypted] pyflakes python-slugify' PIPS
+    notify "Packages to install with pip3"
+    read -ep "   : " -i 'pep8' PIP3S
     notify "Workstation packages to install (delete all to skip)"
     read -ep "   : " -i "$DEFAULT_WORKSTATION_LIST" APTS1
     notify "Developer packages to install"
@@ -329,6 +376,7 @@ fi
 gem_check_list+=($GEMS)
 npm_check_list+=($NPMS)
 pip_check_list+=($PIPS)
+pip3_check_list+=($PIP3S)
 apt_check_list+=($APTS1)
 apt_check_list+=($APTS2)
 
@@ -337,4 +385,5 @@ apt_check_list+=($APTS2)
 gem_install
 npm_install
 pip_install
+pip3_install
 apt_install "$UPDATE"
