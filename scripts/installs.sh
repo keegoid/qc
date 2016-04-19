@@ -35,7 +35,7 @@ install_rbenv_ruby() {
     # rbenv
     # shellcheck disable=SC2016
     set_sourced_config  "https://github.com/rbenv/rbenv.git" \
-                        "$HOME/.bashrc" \
+                        "$HOME/.bash_profile" \
                         "$HOME/.rbenv/" \
                         '[[ ":$PATH:" =~ ":$HOME/.rbenv/bin:" ]] || PATH="$HOME/.rbenv/bin:$PATH"'
 
@@ -44,14 +44,14 @@ install_rbenv_ruby() {
 
     # add rbenv init - command to .profile
     # shellcheck disable=SC2016
-    set_source_cmd      "$HOME/.bashrc" \
+    set_source_cmd      "$HOME/.bash_profile" \
                         'rbenv/shims:' \
                         '[[ ":$PATH:" =~ ":$HOME/.rbenv/shims:" ]] || eval "$(rbenv init -)"'
 
     # ruby-build
     # shellcheck disable=SC2016
     set_sourced_config  "https://github.com/rbenv/ruby-build.git" \
-                        "$HOME/.bashrc" \
+                        "$HOME/.bash_profile" \
                         "$HOME/.rbenv/plugins/ruby-build/" \
                         '[[ ":$PATH:" =~ ":$HOME/.rbenv/plugins/ruby-build/bin:" ]] || PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"'
 
