@@ -139,9 +139,9 @@ is_root() {
 
 not_installed() {
     dpkg -s "$1" 2>&1 | grep -q 'Version:'
-    if [ "$?" -eq 0 ]; then
+    if [ $? -eq 0 ]; then
         apt-cache policy "$1" | grep 'Installed: (none)'
-        [ "$?" -eq 0 ] && return 0 || return 1
+        [ $? -eq 0 ] && return 0 || return 1
     else
         return 0
     fi
@@ -230,7 +230,7 @@ pip_must_exist() {
 program_must_exist() {
     not_installed "$1"
 
-    if [ "$?" -eq 0 ]; then
+    if [ $? -eq 0 ]; then
         notify2 "$1 must be installed to continue."
         pause "Press [Enter] to install it now" true
         sudo apt-get -y install "$1"
@@ -253,15 +253,15 @@ lnif() {
 # $2 -> script directory
 run_script() {
     local name="$1"
-    local scripts="$2"
+    local script="$2"
     local result
 
     # make sure dos2unix is installed
     program_must_exist "dos2unix"
 
     # change to scripts directory to run scripts
-    if [ -n "$scripts" ]; then
-        cd "$scripts" || exit
+    if [ -n "$script" ]; then
+        cd "$script" || exit
 
         # get script ready to run
         dos2unix -k -q "${name}"
