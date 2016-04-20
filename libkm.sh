@@ -261,20 +261,20 @@ run_script() {
 
     # change to scripts directory to run scripts
     if [ -n "$scripts" ]; then
-        (
-            cd "$scripts" || exit
+        cd "$scripts" || exit
 
-            # get script ready to run
-            dos2unix -k -q "${name}"
-            chmod +x "${name}"
+        # get script ready to run
+        dos2unix -k -q "${name}"
+        chmod +x "${name}"
 
-            # clear the screen and run the script
-            [ "$DEBUG_MODE" -eq 1 ] || clear
-            . ./"${name}"
-            result="$?"
-            notify3 "script: ${name} has finished"
-            return "$result"
-        )
+        # clear the screen and run the script
+        [ "$DEBUG_MODE" -eq 1 ] || clear
+        . ./"${name}"
+        result="$?"
+        notify3 "script: ${name} has finished"
+        return "$result"
+
+        cd - >/dev/null
     fi
     return 1
 }
