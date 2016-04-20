@@ -35,14 +35,18 @@ install_rbenv_ruby() {
     # rbenv
     # shellcheck disable=SC2016
     set_sourced_config  "https://github.com/rbenv/rbenv.git" \
-                        "$HOME/.bash_profile" \
+                        "$HOME/.bashrc" \
                         "$HOME/.rbenv/" \
                         '[[ ":$PATH:" =~ ":$HOME/.rbenv/bin:" ]] || PATH="$HOME/.rbenv/bin:$PATH"'
 
     # optional, to speed up rbenv
     [ -d "$HOME/.rbenv" ] && cd "$HOME/.rbenv" && src/configure && make -C src && cd - >/dev/null
 
-    # add rbenv init - command to .profile
+    # add rbenv init - command to .bashrc and .bash_profile (for SublimeLinter)
+    # shellcheck disable=SC2016
+    set_source_cmd      "$HOME/.bashrc" \
+                        'rbenv/shims:' \
+                        '[[ ":$PATH:" =~ ":$HOME/.rbenv/shims:" ]] || eval "$(rbenv init -)"'
     # shellcheck disable=SC2016
     set_source_cmd      "$HOME/.bash_profile" \
                         'rbenv/shims:' \
@@ -51,7 +55,7 @@ install_rbenv_ruby() {
     # ruby-build
     # shellcheck disable=SC2016
     set_sourced_config  "https://github.com/rbenv/ruby-build.git" \
-                        "$HOME/.bash_profile" \
+                        "$HOME/.bashrc" \
                         "$HOME/.rbenv/plugins/ruby-build/" \
                         '[[ ":$PATH:" =~ ":$HOME/.rbenv/plugins/ruby-build/bin:" ]] || PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"'
 
