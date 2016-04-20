@@ -31,4 +31,4 @@ install_keybase() {
 # --------------------------  MAIN
 
 confirm "Install Keybase?" true
-[ "$?" -eq 0 ] && install_keybase
+[ $? -eq 0 ] && install_keybase

@@ -40,7 +40,7 @@ do_backup() {
     local today
 
     confirm "Backup config files before making changes?" true
-    [ "$?" -gt 0 ] && return 1
+    [ $? -gt 0 ] && return 1
 
     today=$(date +%Y%m%d_%s)
     mkdir -pv "$BACKUP-$today"
@@ -86,7 +86,7 @@ set_subl_config() {
 
     # copy config file to proper location
     cp "$repo_file" "$conf_file"
-    if [ "$?" -eq 0 ] && [ "$cloned" -eq 0 ]; then
+    if [ $? -eq 0 ] && [ "$cloned" -eq 0 ]; then
         success "configured: $conf_file"
     fi
 
@@ -121,7 +121,7 @@ set_git_config() {
 
     # copy config file to proper location
     cp "$repo_file" "$conf_file"
-    if [ "$?" -eq 0 ] && [ "$cloned" -eq 0 ]; then
+    if [ $? -eq 0 ] && [ "$cloned" -eq 0 ]; then
         success "configured: $conf_file"
     fi
 

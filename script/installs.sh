@@ -90,8 +90,8 @@ qc_install_rbenv_ruby() {
 
     # install ruby
     # export MAKE=make (uncomment if build fails)
-    [ "$?" -eq 0 ] && ~/.rbenv/bin/rbenv install "$ruby_v"
-    [ "$?" -eq 0 ] && ~/.rbenv/bin/rbenv global "$ruby_v"
+    [ $? -eq 0 ] && ~/.rbenv/bin/rbenv install "$ruby_v"
+    [ $? -eq 0 ] && ~/.rbenv/bin/rbenv global "$ruby_v"
 
     # check ruby and rubygem versions
     ~/.rbenv/shims/ruby -v
@@ -248,7 +248,7 @@ qc_apt_check() {
 qc_gem_install() {
     # install ruby with rbenv
     confirm "Install the latest version of ruby with rbenv?" true
-    [ "$?" -eq 0 ] && install_rbenv_ruby
+    [ $? -eq 0 ] && install_rbenv_ruby
 
     qc_gem_check
 
@@ -270,7 +270,7 @@ qc_gem_install() {
 qc_npm_install() {
     # make sure npm is installed
     confirm "Install nodejs?" true
-    if [ "$?" -eq 0 ]; then
+    if [ $? -eq 0 ]; then
       msg "Which version to install?"
       select version in "Long Term Support" "Package Manager"; do
         case $version in

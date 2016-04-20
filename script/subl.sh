@@ -37,4 +37,4 @@ install_subl() {
 pause "" true
 
 confirm "Install Sublime Text?" true
-[ "$?" -eq 0 ] && install_subl
+[ $? -eq 0 ] && install_subl

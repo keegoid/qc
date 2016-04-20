@@ -41,7 +41,7 @@ init_juju_lxd() {
     notify3 "http://goo.gl/z6Xg5Z and https://goo.gl/1e3a5e"
     confirm "Create a sparse, loopback file for the ZFS pool instead?" true
     # create zfs block
-    [ "$?" -eq 0 ] && sudo lxd init
+    [ $? -eq 0 ] && sudo lxd init
 
     # set compression and turn off dedup
     read -ep "Enter the name you used for your zpool: " zpool_name
@@ -217,7 +217,7 @@ deploy_wordpress() {
 
     # optionally set wp-content to git repository
     confirm "Use a git repository for wp-content?" true
-    [ "$?" -eq 0 ] && notify3 "Format: git@host:path/repo.git or http://host/path/repo.git" && read -ep "Enter a git repository: " git_repo && juju set wordpress wp-content="$git_repo"
+    [ $? -eq 0 ] && notify3 "Format: git@host:path/repo.git or http://host/path/repo.git" && read -ep "Enter a git repository: " git_repo && juju set wordpress wp-content="$git_repo"
 
     RET="$?"
     debug
@@ -236,27 +236,27 @@ add_memcached() {
 # --------------------------  MAIN
 
 confirm "Install Juju, ZFS and LXD?" true
-[ "$?" -eq 0 ] && install_juju_zfs_lxd && { notify2 "You must log out and log back in to continue."; return 1; }
+[ $? -eq 0 ] && install_juju_zfs_lxd && { notify2 "You must log out and log back in to continue."; return 1; }
 
 confirm "Create ZFS pool and init Juju?" true
-[ "$?" -eq 0 ] && init_juju_lxd
+[ $? -eq 0 ] && init_juju_lxd
 
 # not a server
 if [ "$IS_SERVER" -eq 1 ]; then
     confirm "Import ubuntu image?" true
-    [ "$?" -eq 0 ] && import_lxd_image
+    [ $? -eq 0 ] && import_lxd_image
 
     confirm "Create lxd container from ubuntu image?" true
-    [ "$?" -eq 0 ] && create_lxd_container
+    [ $? -eq 0 ] && create_lxd_container
 
 # Juju2 isn't ready yet
 
 #    confirm "Deploy WordPress to container using Juju" true
-#    [ "$?" -eq 0 ] && deploy_wordpress
+#    [ $? -eq 0 ] && deploy_wordpress
 
 #    notify2 "Use your browser to create a WordPress user before proceeding."
 
 #    confirm "Add memcached relation to WordPress?" true
-#    [ "$?" -eq 0 ] && add_memcached
+#    [ $? -eq 0 ] && add_memcached
 fi
 

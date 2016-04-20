@@ -13,7 +13,7 @@ echo "# --------------------------------------------"
 # --------------------------  MAIN
 
 confirm "install Virtualbox?" true
-[ "$?" -eq 0 ] && install_apt virtualbox
+[ $? -eq 0 ] && install_apt virtualbox
 
 confirm "install Vagrant?" true
-[ "$?" -eq 0 ] && install_apt vagrant
+[ $? -eq 0 ] && install_apt vagrant
