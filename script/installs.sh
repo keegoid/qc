@@ -1,4 +1,7 @@
 #!/bin/bash
+
+{ # this ensures the entire script is downloaded #
+
 echo "# --------------------------------------------"
 echo "# Install and update programs.                "
 echo "#                                             "
@@ -25,10 +28,14 @@ npm_check_list=()
 pip_check_list=()
 pip3_check_list=()
 
+qc_has() {
+  type "$1" > /dev/null 2>&1
+}
+
 # --------------------------  CUSTOM INSTALL SCRIPTS
 
 # install ruby with rbenv and ruby-build
-install_rbenv_ruby() {
+qc_install_rbenv_ruby() {
     # ruby dependencies
     install_apt "gpgv2 git-core curl zlib1g-dev build-essential libssl-dev libssl1.0.0 libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties libffi-dev"
 
@@ -88,15 +95,29 @@ install_rbenv_ruby() {
     debug
 }
 
-# install the long terms support version of Node.js
-install_npm_lts() {
-    curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -
-    echo "deb https://deb.nodesource.com/node_4.x trusty main" | sudo tee /etc/apt/sources.list.d/nodesource.list
-    sudo apt-get update
-    sudo apt-get -y install nodejs
+# install the latest version of Node.js via NVM
+qc_install_node_latest() {
+    # install NVM
+    curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | bash
+
+    # source nvm
+    . ~/.nvm/nvm.sh
+
+    # make sure nvm is insatlled
+    qc_has nvm || error "nvm install failed"
+
+    # install nodejs
+    nvm install node
+
+    # check which node
+    which node
+    which npm
 
     # check node version
     node -v
+    npm -v
+
+    notify "After switching node versions, remember to run \`npm build\`."
 
     RET="$?"
     debug
@@ -105,7 +126,7 @@ install_npm_lts() {
 # --------------------------  CHECK FOR MISSING PROGRAMS
 
 # loop through check list and add missing gems to install list
-gem_check() {
+qc_gem_check() {
     local pkg
     local pkg_version
 
@@ -125,7 +146,7 @@ gem_check() {
 }
 
 # loop through check list and add missing npms to install list
-npm_check() {
+qc_npm_check() {
     local pkg
     local pkg_version
 
@@ -145,7 +166,7 @@ npm_check() {
 }
 
 # loop through check list and add missing pips to install list
-pip_check() {
+qc_pip_check() {
     local pkg
     local pkg_trim
     local pkg_version
@@ -167,7 +188,7 @@ pip_check() {
 }
 
 # loop through check list and add missing pip3s to install list
-pip3_check() {
+qc_pip3_check() {
     local pkg
     local pkg_trim
     local pkg_version
@@ -189,7 +210,7 @@ pip3_check() {
 }
 
 # loop through check list and add missing packages to install list
-apt_check() {
+qc_apt_check() {
     local pkg
     local pkg_version
 
@@ -211,12 +232,12 @@ apt_check() {
 # --------------------------  INSTALL MISSING PROGRAMS
 
 # loop through install list and install any gems that are in the list
-gem_install() {
+qc_gem_install() {
     # install ruby with rbenv
     confirm "Install the latest version of ruby with rbenv?" true
     [ "$?" -eq 0 ] && install_rbenv_ruby
 
-    gem_check
+    qc_gem_check
 
     if [[ "${#gem_install_list[@]}" -eq 0 ]]; then
         notify "No gems to install"
@@ -233,21 +254,28 @@ gem_install() {
 }
 
 # loop through install list and install any npms that are in the list
-npm_install() {
+qc_npm_install() {
     # make sure npm is installed
-    confirm "Install the long term support version of Node.js?" true
+    confirm "Install nodejs?" true
     if [ "$?" -eq 0 ]; then
-        install_npm_lts
-    else
-        node -v | grep "not installed" && program_must_exist npm
+      msg "Which version to install?"
+      select version in "Latest version" "Package Manager version"; do
+        case $version in
+          "Latest version") qc_install_node_latest
+            ;;
+          "Package Manager version") program_must_exist nodejs
+            ;;
+          *) echo "case not found"
+            ;;
+        esac
+        break
+      done
     fi
 
-    npm_check
+    # make sure npm is installed before proceeding
+    qc_has npm || { notify3 "warning: nodejs is not installed, skipping npms" && return 0; }
 
-    # symlink nodejs to path
-    if [ ! -L /usr/bin/node ]; then
-        sudo ln -s "$(which nodejs)" /usr/bin/node
-    fi
+    qc_npm_check
 
     if [[ "${#npm_install_list[@]}" -eq 0 ]]; then
         notify "No npms to install"
@@ -255,7 +283,7 @@ npm_install() {
         # install required npms
         pause "Press [Enter] to install npms" true
         # shellcheck disable=SC2068
-        sudo npm install -g ${npm_install_list[@]}
+        npm install ${npm_install_list[@]}
     fi
 
     RET="$?"
@@ -263,14 +291,14 @@ npm_install() {
 }
 
 # loop through install list and install any pips that are in the list
-pip_install() {
+qc_pip_install() {
     # make sure dependencies are installed
     program_must_exist "python-pip"
     program_must_exist "python3-pip"
     program_must_exist "python-keyring"
     program_must_exist "python-setuptools"
 
-    pip_check
+    qc_pip_check
 
     if [[ "${#pip_install_list[@]}" -eq 0 ]]; then
         notify "No pips to install"
@@ -286,11 +314,11 @@ pip_install() {
 }
 
 # loop through install list and install any pips that are in the list
-pip3_install() {
+qc_pip3_install() {
     # make sure dependencies are installed
     program_must_exist "python3-pip"
 
-    pip3_check
+    qc_pip3_check
 
     if [[ "${#pip3_install_list[@]}" -eq 0 ]]; then
         notify "No pip3s to install"
@@ -307,8 +335,8 @@ pip3_install() {
 
 # loop through install list and install any packages that are in the list
 # $1 -> to update sources or not
-apt_install() {
-    apt_check
+qc_apt_install() {
+    qc_apt_check
 
     if [[ "${#apt_install_list[@]}" -eq 0 ]]; then
         notify "No packages to install"
@@ -363,11 +391,12 @@ else
     notify "Packages to install with gem"
     read -ep "   : " -i 'bundler gist travis' GEMS
     notify "Packages to install with npm"
-    read -ep "   : " -i 'bower browser-sync coffee-script csslint doctoc gulp' NPMS
+    read -ep "   : " -i 'bower browser-sync coffee-script csslint gulp remark remark-toc svgo' NPMS
     notify "Packages to install with pip"
     read -ep "   : " -i 'jrnl[encrypted] pyflakes python-slugify' PIPS
-    notify "Packages to install with pip3"
-    read -ep "   : " -i 'pep8' PIP3S
+    # notify "Packages to install with pip3"
+    # shellcheck disable=SC2034
+    # read -ep "   : " -i 'pep8' PIP3S
     notify "Workstation packages to install (delete all to skip)"
     read -ep "   : " -i "$DEFAULT_WORKSTATION_LIST" APTS1
     notify "Developer packages to install"
@@ -380,14 +409,26 @@ fi
 gem_check_list+=($GEMS)
 npm_check_list+=($NPMS)
 pip_check_list+=($PIPS)
-pip3_check_list+=($PIP3S)
+# pip3_check_list+=($PIP3S)
 apt_check_list+=($APTS1)
 apt_check_list+=($APTS2)
 
+# --------------------------  RESET FUNCTIONS
+
+# unset the various functions defined during execution of the install script
+qc_reset() {
+  unset -f qc_reset qc_has qc_gem_install qc_npm_install qc_pip_install qc_apt_install \
+    qc_gem_check qc_npm_check qc_pip_check qc_apt_check \
+    qc_install_node_latest qc_install_rbenv_ruby
+}
+
 # --------------------------  INSTALL PROGRAMS
 
-gem_install
-npm_install
-pip_install
-pip3_install
-apt_install "$UPDATE"
+qc_gem_install
+qc_npm_install
+qc_pip_install
+# qc_pip3_install
+qc_apt_install "$UPDATE"
+qc_reset
+
+} # this ensures the entire script is downloaded #
