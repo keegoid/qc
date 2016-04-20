@@ -12,6 +12,16 @@ echo "#                                             "
 echo "# http://keegoid.mit-license.org              "
 echo "# --------------------------------------------"
 
+# --------------------------  SETUP PARAMETERS
+
+[ -z "$LTS" ] && LTS=4
+
+# --------------------------  LOCAL FUNCTIONS
+
+qc_has() {
+  type "$1" > /dev/null 2>&1
+}
+
 # --------------------------  MISSING PROGRAM CHECKS
 
 # install lists (perform install)
@@ -27,10 +37,6 @@ gem_check_list=()
 npm_check_list=()
 pip_check_list=()
 pip3_check_list=()
-
-qc_has() {
-  type "$1" > /dev/null 2>&1
-}
 
 # --------------------------  CUSTOM INSTALL SCRIPTS
 
@@ -71,7 +77,7 @@ qc_install_rbenv_ruby() {
                         'no-rdoc' \
                         'gem: --no-ri --no-rdoc'
 
-    type ~/.rbenv/bin/rbenv
+    qc_has ~/.rbenv/bin/rbenv || error "rbenv install failed"
     ~/.rbenv/bin/rbenv version
 
     # ruby-build-github
@@ -95,19 +101,26 @@ qc_install_rbenv_ruby() {
     debug
 }
 
-# install the latest version of Node.js via NVM
-qc_install_node_latest() {
+# install the long term support version of Node.js via NVM
+qc_install_node() {
+    local node_v
     # install NVM
     curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | bash
 
     # source nvm
     . ~/.nvm/nvm.sh
 
-    # make sure nvm is insatlled
+    # make sure nvm is installed
     qc_has nvm || error "nvm install failed"
 
+    # get long term support version
+    node_v=$(nvm ls-remote | grep "v${LTS}.*" | tail -1 | tr -d ' ')
+
     # install nodejs
-    nvm install node
+    nvm install "$node_v"
+    # nvm use "$node_v"
+    nvm alias default "$node_v"
+    npm build
 
     # check which node
     which node
@@ -259,11 +272,11 @@ qc_npm_install() {
     confirm "Install nodejs?" true
     if [ "$?" -eq 0 ]; then
       msg "Which version to install?"
-      select version in "Latest version" "Package Manager version"; do
+      select version in "Long Term Support" "Package Manager"; do
         case $version in
-          "Latest version") qc_install_node_latest
+          "Long Term Support") qc_install_node
             ;;
-          "Package Manager version") program_must_exist nodejs
+          "Package Manager") program_must_exist nodejs
             ;;
           *) echo "case not found"
             ;;
@@ -275,6 +288,7 @@ qc_npm_install() {
     # make sure npm is installed before proceeding
     qc_has npm || { notify3 "warning: nodejs is not installed, skipping npms" && return 0; }
 
+    npm build
     qc_npm_check
 
     if [[ "${#npm_install_list[@]}" -eq 0 ]]; then
@@ -282,8 +296,13 @@ qc_npm_install() {
     else
         # install required npms
         pause "Press [Enter] to install npms" true
-        # shellcheck disable=SC2068
-        npm install ${npm_install_list[@]}
+        if qc_has nvm; then
+            # shellcheck disable=SC2068
+            npm install -g ${npm_install_list[@]}
+        else
+            # shellcheck disable=SC2068
+            sudo npm install -g ${npm_install_list[@]}
+        fi
     fi
 
     RET="$?"
@@ -419,7 +438,7 @@ apt_check_list+=($APTS2)
 qc_reset() {
   unset -f qc_reset qc_has qc_gem_install qc_npm_install qc_pip_install qc_apt_install \
     qc_gem_check qc_npm_check qc_pip_check qc_apt_check \
-    qc_install_node_latest qc_install_rbenv_ruby
+    qc_install_node qc_install_rbenv_ruby
 }
 
 # --------------------------  INSTALL PROGRAMS
