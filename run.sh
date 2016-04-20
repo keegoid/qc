@@ -81,13 +81,13 @@ select_options() {
     cd "$PROJECT"
     read -rp "Enter choice [1 - 9]: " choice
     case $choice in
-        1) run_script installs.sh "scripts";;
-        2) run_script subl.sh "scripts";;
-        3) run_script keybase.sh "scripts";;
-        4) run_script config.sh "scripts";;
-        5) run_script sshkey.sh "scripts";;
-        6) run_script vm.sh "scripts";;
-        7) run_script lxd.sh "scripts";;
+        1) run_script installs.sh "script";;
+        2) run_script subl.sh "script";;
+        3) run_script keybase.sh "script";;
+        4) run_script config.sh "script";;
+        5) run_script sshkey.sh "script";;
+        6) run_script vm.sh "script";;
+        7) run_script lxd.sh "script";;
         8) fix_permissions;;
         9) exit_msg && exit 0;;
         *) alert "Error..." && sleep 1
