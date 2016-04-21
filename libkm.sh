@@ -310,11 +310,11 @@ lkm_set_sourced_config() {
   local repo_dir
   local today
 
-  repo_name=$(trim_longest_left_pattern "$3" "/")
-  repo_dir=$(trim_shortest_right_pattern "$3" "/")
+  repo_name=$(lkm_trim_longest_left_pattern "$3" "/")
+  repo_dir=$(lkm_trim_shortest_right_pattern "$3" "/")
   today=$(date +%Y%m%d_%s)
 
-  [ -z "$repo_name" ] && repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
+  [ -z "$repo_name" ] && repo_name=$(lkm_trim_longest_left_pattern "$repo_dir" "/")
 
   if [ -n "$repo_name" ]; then
     if [ -d "$repo_dir" ] && grep -q "$repo_name" "$conf_file" >/dev/null 2>&1; then
@@ -405,7 +405,7 @@ lkm_install_pip() {
 
   # install pips in the list
   for pkg in $names; do
-    pkg=$(trim_longest_right_pattern "$pkg" "[")
+    pkg=$(lkm_trim_longest_right_pattern "$pkg" "[")
     if ! pip list | grep "$pkg" >/dev/null 2>&1; then
       echo
       read -p "Press [Enter] to install $pkg..."
@@ -508,7 +508,7 @@ lkm_get_public_key() {
   local key_file
   local key_id
 
-  key_file=$(trim_longest_left_pattern "${url}" /)
+  key_file=$(lkm_trim_longest_left_pattern "${url}" /)
 
   [ -z "${url}" ] && lkm_alert "missing URL to public key" && return 1
   lkm_pause "Press [Enter] to download and import the GPG Key"
@@ -558,8 +558,7 @@ lkm_configure_git() {
 #   $3 -> location of Repos directory
 #   $4 -> use SSH protocal for git operations? (optional)
 lkm_clone_repo() {
-  local github_user="$1"
-  local address="${github_user}/$2.git"
+  local address="$1/$2.git"
   local repos_dir="$3"
   local use_ssh=$4
 
@@ -589,17 +588,11 @@ lkm_clone_repo() {
 #   $3 -> set remote upstream or origin (true for upstream)
 #   $4 -> use SSH protocal for git operations? (optional)
 lkm_set_remote_repo() {
-  local github_user="$1"
-  local address="${github_user}/$2.git"
+  local address="$1/$2.git"
   local set_upstream=$3
   local use_ssh=$4
 
   [ -z "${use_ssh}" ] && use_ssh=false
-
-  if [ "${set_upstream}" = true ] && [ "${github_user}" = 'keegoid' ]; then
-    #      echo "upstream doesn't exist for $github_user, skipping..."
-    echo false
-  fi
 
   if git config --list | grep -q "${address}"; then
     echo
