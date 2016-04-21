@@ -8,9 +8,6 @@
 # License: keegoid.mit-license.org
 #
 # Attributions:
-# qc_has
-# github.com/creationix/nvm
-#
 # package install functions & lists
 # github.com/Varying-Vagrant-Vagrants/VVV/
 # --------------------------------------------
@@ -20,12 +17,6 @@
 # --------------------------  SETUP PARAMETERS
 
 [ -z "$QC_LTS" ] && QC_LTS=4
-
-# --------------------------  LOCAL FUNCTIONS
-
-qc_has() {
-  type "$1" > /dev/null 2>&1
-}
 
 # --------------------------  MISSING PROGRAM CHECKS
 
@@ -82,7 +73,7 @@ qc_install_rbenv_ruby() {
                           'no-rdoc' \
                           'gem: --no-ri --no-rdoc'
 
-  qc_has ~/.rbenv/bin/rbenv || lkm_error "rbenv install failed"
+  lkm_has ~/.rbenv/bin/rbenv || lkm_error "rbenv install failed"
   ~/.rbenv/bin/rbenv version
 
   # ruby-build-github
@@ -116,7 +107,7 @@ qc_install_node() {
   . ~/.nvm/nvm.sh
 
   # make sure nvm is installed
-  qc_has nvm || lkm_error "nvm install failed"
+  lkm_has nvm || lkm_error "nvm install failed"
 
   # get long term support version
   node_v=$(nvm ls-remote | grep "v${QC_LTS}.*" | tail -1 | tr -d ' ')
@@ -291,7 +282,7 @@ qc_npm_install() {
   fi
 
   # make sure npm is installed before proceeding
-  qc_has npm || { lkm_notify3 "warning: nodejs is not installed, skipping npms" && return 0; }
+  lkm_has npm || { lkm_notify3 "warning: nodejs is not installed, skipping npms" && return 0; }
 
   npm build
   qc_npm_check
@@ -301,7 +292,7 @@ qc_npm_install() {
   else
     # install required npms
     lkm_pause "Press [Enter] to install npms" true
-    if qc_has nvm; then
+    if lkm_has nvm; then
       # shellcheck disable=SC2068
       npm install -g ${npm_install_list[@]}
     else
@@ -441,7 +432,7 @@ apt_check_list+=($APTS2)
 
 # unset the various functions defined during execution of the install script
 qc_reset() {
-  unset -f qc_reset qc_has qc_gem_install qc_npm_install qc_pip_install qc_apt_install \
+  unset -f qc_reset lkm_has qc_gem_install qc_npm_install qc_pip_install qc_apt_install \
   qc_gem_check qc_npm_check qc_pip_check qc_apt_check \
   qc_install_node qc_install_rbenv_ruby
 }
