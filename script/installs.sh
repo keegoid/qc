@@ -185,7 +185,7 @@ qc_pip_check() {
 
   for pkg in "${pip_check_list[@]}"
   do
-    pkg_trim=$(trim_longest_right_pattern "$pkg" "[")
+    pkg_trim=$(lkm_trim_longest_right_pattern "$pkg" "[")
     if pip list | grep -w "$pkg_trim" >/dev/null 2>&1; then
       pkg_version=$(pip list | grep -w "${pkg_trim}" | cut -d " " -f 2 | tr -d "(" | tr -d ")")
       lkm_print_pkg_info "$pkg" "$pkg_version"
@@ -207,7 +207,7 @@ qc_pip3_check() {
 
   for pkg in "${pip3_check_list[@]}"
   do
-    pkg_trim=$(trim_longest_right_pattern "$pkg" "[")
+    pkg_trim=$(lkm_trim_longest_right_pattern "$pkg" "[")
     if pip list | grep -w "$pkg_trim" >/dev/null 2>&1; then
       pkg_version=$(pip3 list | grep -w "${pkg_trim}" | cut -d " " -f 2 | tr -d "(" | tr -d ")")
       lkm_print_pkg_info "$pkg" "$pkg_version"

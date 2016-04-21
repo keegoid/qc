@@ -49,7 +49,7 @@ qc_do_backup() {
   for i in $1
   do
     if [ -e "$i" ] && [ ! -L "$i" ]; then
-      name=$(trim_longest_left_pattern "$i" "/")
+      name=$(lkm_trim_longest_left_pattern "$i" "/")
       cp "$i" "$QC_BACKUP-$today/$name" && lkm_success "made backup: $QC_BACKUP-$today/$name"
     fi
   done
@@ -71,8 +71,8 @@ qc_set_subl_config() {
   local repo_name
   local cloned=1
 
-  repo_dir=$(trim_shortest_right_pattern "$REPO3" "/")
-  repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
+  repo_dir=$(lkm_trim_shortest_right_pattern "$REPO3" "/")
+  repo_name=$(lkm_trim_longest_left_pattern "$repo_dir" "/")
 
   # update or clone repository
   if [ -d "$repo_dir" ]; then
@@ -106,8 +106,8 @@ qc_set_git_config() {
   local repo_name
   local cloned=1
 
-  repo_dir=$(trim_shortest_right_pattern "$REPO8" "/")
-  repo_name=$(trim_longest_left_pattern "$repo_dir" "/")
+  repo_dir=$(lkm_trim_shortest_right_pattern "$REPO8" "/")
+  repo_name=$(lkm_trim_longest_left_pattern "$repo_dir" "/")
 
   # update or clone repository
   if [ -d "$repo_dir" ]; then
