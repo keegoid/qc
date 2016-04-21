@@ -1,4 +1,7 @@
 #!/bin/bash
+
+{ # this ensures the entire script is downloaded #
+
 echo "# --------------------------------------------"
 echo "# Quickly configures a fresh install of       "
 echo "# Ubuntu 16.04 64-bit.                        "
@@ -6,8 +9,7 @@ echo "#                                             "
 echo "# Author : Keegan Mullaney                    "
 echo "# Website: keegoid.com                        "
 echo "# Email  : keeganmullaney@gmail.com           "
-echo "#                                             "
-echo "# http://keegoid.mit-license.org              "
+echo "# License: keegoid.mit-license.org            "
 echo "# --------------------------------------------"
 
 # library file
@@ -15,102 +17,112 @@ source libkm.sh
 
 # --------------------------  SETUP PARAMETERS
 
-APP_NAME="quick-config"
-PROJECT="$PWD"
+QC_APP_NAME="qc"
+QC_DIR="$PWD"
 
 # set to true (0) to prevent clearing the screen and report errors
-DEBUG_MODE=0
+QC_DEBUG_MODE=0
 
 # make sure $HOME variable is set
-variable_set "$HOME"
+lkm_variable_set "$HOME"
 
 # config for server
-confirm "Is this a server?"
-IS_SERVER="$?"
+lkm_confirm "Is this a server?"
+QC_IS_SERVER="$?"
 
 # make sure curl and git are installed
-program_must_exist curl
-program_must_exist git
+lkm_program_must_exist curl
+lkm_program_must_exist git
 
 # --------------------------  FUNCTIONS
 
 # if any files in home are not owned by home user, fix that
-fix_permissions() {
-    # set ownership
-    pause "Press [Enter] to make sure all files in $HOME are owned by $(whoami)" true
-    sudo chown --preserve-root -cR "$(whoami)":"$(whoami)" "$HOME"
+qc_fix_permissions() {
+  # set ownership
+  lkm_pause "Press [Enter] to make sure all files in $HOME are owned by $(whoami)" true
+  sudo chown --preserve-root -cR "$(whoami)":"$(whoami)" "$HOME"
 }
 
 # display message before exit
-exit_msg() {
-    echo
-    notify "Lastly: execute sudo ./sudoers.sh to increase the sudo timeout."
-    msg             "\nThanks for using $APP_NAME."
-    msg             "(c) $(date +%Y) keegoid.mit-license.org"
+qc_exit_msg() {
+  echo
+  lkm_notify "Lastly: execute sudo ./sudoers.sh to increase the sudo timeout."
+  lkm_msg             "\nThanks for using $QC_APP_NAME."
+  lkm_msg             "(c) $(date +%Y) keegoid.mit-license.org"
 }
 
 # --------------------------  MENU OPTIONS
 
-display_menu() {
-      [ "$DEBUG_MODE" -eq 1 ] || clear
-      echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-    if [ "$IS_SERVER" -eq 0 ]; then
-      echo "     M A I N - M E N U     "
-      echo "          server           "
-    else
-      echo "     M A I N - M E N U     "
-      echo "        workstation        "
-    fi
-      echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-      echo "1. UBUNTU PACKAGES & UPDATES"
-      echo "2. SUBLIME TEXT"
-      echo "3. KEYBASE"
-      echo "4. SYSTEM CONFIG"
-      echo "5. SSH KEY"
-      echo "6. VIRTUALBOX & VAGRANT"
-      echo "7. WORDPRESS WITH LXD, ZFS & JUJU"
-      echo "8. FIX PERMISSIONS"
-      echo "9. QUIT"
+qc_display_menu() {
+  [ $QC_DEBUG_MODE -eq 1 ] || clear
+  echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  if [ $QC_IS_SERVER -eq 0 ]; then
+  echo "     M A I N - M E N U     "
+  echo "          server           "
+  else
+  echo "     M A I N - M E N U     "
+  echo "        workstation        "
+  fi
+  echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  echo "1. UBUNTU PACKAGES & UPDATES"
+  echo "2. SUBLIME TEXT"
+  echo "3. KEYBASE"
+  echo "4. SYSTEM CONFIG"
+  echo "5. SSH KEY"
+  echo "6. VIRTUALBOX & VAGRANT"
+  echo "7. WORDPRESS WITH LXD, ZFS & JUJU"
+  echo "8. FIX PERMISSIONS"
+  echo "9. QUIT"
 }
 
 # --------------------------  USER SELECTION
 
-select_options() {
-    local choice
-    # make sure we're always starting from the right place
-    cd "$PROJECT"
-    read -rp "Enter choice [1 - 9]: " choice
-    case $choice in
-        1) run_script installs.sh "script";;
-        2) run_script subl.sh "script";;
-        3) run_script keybase.sh "script";;
-        4) run_script config.sh "script";;
-        5) run_script sshkey.sh "script";;
-        6) run_script vm.sh "script";;
-        7) run_script lxd.sh "script";;
-        8) fix_permissions;;
-        9) exit_msg && exit 0;;
-        *) alert "Error..." && sleep 1
-    esac
+qc_select_options() {
+  local choice
+  # make sure we're always starting from the right place
+  cd "$QC_DIR"
+  read -rp "Enter choice [1 - 9]: " choice
+  case $choice in
+    1) lkm_run_script installs.sh "script";;
+    2) lkm_run_script subl.sh "script";;
+    3) lkm_run_script keybase.sh "script";;
+    4) lkm_run_script config.sh "script";;
+    5) lkm_run_script sshkey.sh "script";;
+    6) lkm_run_script vm.sh "script";;
+    7) lkm_run_script lxd.sh "script";;
+    8) qc_fix_permissions;;
+    9) qc_exit_msg && exit 0;;
+    *) lkm_alert "Error..." && sleep 1
+  esac
 
-    # check for program errors
-    # shellcheck disable=SC2034
-    RET="$?"
-    debug
+  # check for program errors
+  # shellcheck disable=SC2034
+  RET="$?"
+  lkm_debug
 }
 
 # trap Ctrl+Z to return to the main menu
-trap "echo; menu_loop" SIGTSTP
+trap "echo; qc_menu_loop" SIGTSTP
+
+# --------------------------  UNSET FUNCTIONS
+
+# unset the various functions defined during execution of the script
+qc_reset() {
+  unset -f qc_reset qc_menu_loop qc_display_menu qc_select_options qc_exit_msg qc_fix_permissions
+}
 
 # --------------------------  MAIN
 
-menu_loop() {
-    # infinite loop until user exits
-    while true; do
-        display_menu
-        select_options
-        pause
-    done
+qc_menu_loop() {
+  # infinite loop until user exits
+  while true; do
+    qc_display_menu
+    qc_select_options
+    lkm_pause
+  done
 }
 # start program
-menu_loop
+qc_menu_loop
+qc_reset
+
+} # this ensures the entire script is downloaded #

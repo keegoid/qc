@@ -1,34 +1,35 @@
 #!/bin/bash
-echo "# --------------------------------------------"
-echo "# Install Keybase command line client.        "
-echo "#                                             "
-echo "# Author : Keegan Mullaney                    "
-echo "# Website: keegoid.com                        "
-echo "# Email  : keeganmullaney@gmail.com           "
-echo "#                                             "
-echo "# http://keegoid.mit-license.org              "
-echo "# --------------------------------------------"
+# --------------------------------------------
+# Install Keybase command line client.
+#
+# Author : Keegan Mullaney
+# Website: keegoid.com
+# Email  : keeganmullaney@gmail.com
+# License: keegoid.mit-license.org
+# --------------------------------------------
 
-# --------------------------  SETUP PARAMETERS
-
-KEYBASE_URL='https://dist.keybase.io/linux/deb/keybase-latest-amd64.deb'
+{ # this ensures the entire script is downloaded #
 
 # --------------------------  INSTALL KEYBASE (fun!)
 
 # install the keybase cli client
-install_keybase() {
-    if not_installed "keybase"; then
-        (
-            # change to tmp directory to download file within subshell
-            cd /tmp || exit
-            curl -O "$KEYBASE_URL" && sudo dpkg -i keybase-latest-amd64.deb
-        )
-    else
-        notify "keybase is already installed"
-    fi
+qc_install_keybase() {
+  local keybase_url='https://dist.keybase.io/linux/deb/keybase-latest-amd64.deb'
+
+  if lkm_not_installed "keybase"; then
+    (
+      # change to tmp directory to download file within subshell
+      cd /tmp || exit
+      curl -O "$keybase_url" && sudo dpkg -i keybase-latest-amd64.deb
+    )
+  else
+    lkm_notify "keybase is already installed"
+  fi
 }
 
 # --------------------------  MAIN
 
-confirm "Install Keybase?" true
-[ $? -eq 0 ] && install_keybase
+lkm_confirm "Install Keybase?" true
+[ $? -eq 0 ] && qc_install_keybase
+
+} # this ensures the entire script is downloaded #
