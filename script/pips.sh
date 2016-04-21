@@ -1,0 +1,147 @@
+#!/bin/bash
+# --------------------------------------------
+# Install / update Python packages via PIP
+#
+# Author : Keegan Mullaney
+# Website: keegoid.com
+# Email  : keeganmullaney@gmail.com
+# License: keegoid.mit-license.org
+#
+# Attributions:
+# package install functions & lists
+# github.com/Varying-Vagrant-Vagrants/VVV/
+# --------------------------------------------
+
+{ # this ensures the entire script is downloaded #
+
+# --------------------------  MISSING PROGRAM CHECKS
+
+# install lists (perform install)
+pip_install_list=()
+pip3_install_list=()
+
+# check lists (check if installed)
+pip_check_list=()
+pip3_check_list=()
+
+# --------------------------  CHECK FOR MISSING PROGRAMS
+
+# loop through check list and add missing pips to install list
+qc_pip_check() {
+  local pkg
+  local pkg_trim
+  local pkg_version
+
+  for pkg in "${pip_check_list[@]}"
+  do
+    pkg_trim=$(lkm_trim_longest_right_pattern "$pkg" "[")
+    if pip list | grep -w "$pkg_trim" >/dev/null 2>&1; then
+      pkg_version=$(pip list | grep -w "${pkg_trim}" | cut -d " " -f 2 | tr -d "(" | tr -d ")")
+      lkm_print_pkg_info "$pkg" "$pkg_version"
+    else
+      echo -e " ${YELLOW_BLACK} * $pkg_trim [not installed] ${NONE_WHITE}"
+      pip_install_list+=($pkg)
+    fi
+  done
+
+  RET="$?"
+  lkm_debug
+}
+
+# loop through check list and add missing pip3s to install list
+qc_pip3_check() {
+  local pkg
+  local pkg_trim
+  local pkg_version
+
+  for pkg in "${pip3_check_list[@]}"
+  do
+    pkg_trim=$(lkm_trim_longest_right_pattern "$pkg" "[")
+    if pip list | grep -w "$pkg_trim" >/dev/null 2>&1; then
+      pkg_version=$(pip3 list | grep -w "${pkg_trim}" | cut -d " " -f 2 | tr -d "(" | tr -d ")")
+      lkm_print_pkg_info "$pkg" "$pkg_version"
+    else
+      echo -e " ${YELLOW_BLACK} * $pkg_trim [not installed] ${NONE_WHITE}"
+      pip3_install_list+=($pkg)
+    fi
+  done
+
+  RET="$?"
+  lkm_debug
+}
+
+# --------------------------  INSTALL MISSING PROGRAMS
+
+# loop through install list and install any pips that are in the list
+qc_pip_install() {
+  # make sure dependencies are installed
+  lkm_program_must_exist "python-pip"
+  lkm_program_must_exist "python3-pip"
+  lkm_program_must_exist "python-keyring"
+  lkm_program_must_exist "python-setuptools"
+
+  qc_pip_check
+
+  if [[ "${#pip_install_list[@]}" -eq 0 ]]; then
+    lkm_notify "No pips to install"
+  else
+    # install required pips
+    lkm_pause "Press [Enter] to install pips" true
+    # shellcheck disable=SC2068
+    sudo -H pip install ${pip_install_list[@]}
+  fi
+
+  RET="$?"
+  lkm_debug
+}
+
+# loop through install list and install any pips that are in the list
+qc_pip3_install() {
+  # make sure dependencies are installed
+  lkm_program_must_exist "python3-pip"
+
+  qc_pip3_check
+
+  if [[ "${#pip3_install_list[@]}" -eq 0 ]]; then
+    lkm_notify "No pip3s to install"
+  else
+    # install required pips
+    lkm_pause "Press [Enter] to install pip3s" true
+    # shellcheck disable=SC2068
+    sudo -H pip3 install ${pip3_install_list[@]}
+  fi
+
+  # shellcheck disable=SC2034
+  RET="$?"
+  lkm_debug
+}
+
+echo
+echo "PIPs"
+echo
+lkm_notify "Packages to install with pip"
+read -ep "   : " -i 'jrnl[encrypted] pyflakes python-slugify' PIPS
+# lkm_notify "Packages to install with pip3"
+# shellcheck disable=SC2034
+# read -ep "   : " -i 'pep8' PIP3S
+
+# --------------------------  ARRAY ASSIGNMENTS
+
+# add pips to check
+pip_check_list+=($PIPS)
+# pip3_check_list+=($PIP3S)
+
+# --------------------------  UNSET FUNCTIONS
+
+# unset the various functions defined during execution of the install script
+qc_reset() {
+  unset -f qc_reset qc_pip_install qc_pip_check
+}
+
+# --------------------------  INSTALL PROGRAMS
+
+qc_pip_install
+# qc_pip3_install
+qc_reset
+
+} # this ensures the entire script is downloaded #

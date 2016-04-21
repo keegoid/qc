@@ -1,0 +1,127 @@
+#!/bin/bash
+# --------------------------------------------
+# Install / update packages via APT
+#
+# Author : Keegan Mullaney
+# Website: keegoid.com
+# Email  : keeganmullaney@gmail.com
+# License: keegoid.mit-license.org
+#
+# Attributions:
+# package install functions & lists
+# github.com/Varying-Vagrant-Vagrants/VVV/
+# --------------------------------------------
+
+{ # this ensures the entire script is downloaded #
+
+# --------------------------  MISSING PROGRAM CHECKS
+
+# install lists (perform install)
+apt_install_list=()
+
+# check lists (check if installed)
+apt_check_list=()
+
+# --------------------------  CHECK FOR MISSING PROGRAMS
+
+# loop through check list and add missing packages to install list
+qc_apt_check() {
+  local pkg
+  local pkg_version
+
+  for pkg in "${apt_check_list[@]}"
+  do
+    if lkm_not_installed "$pkg"; then
+      echo -e " ${YELLOW_BLACK} * $pkg [not installed] ${NONE_WHITE}"
+      apt_install_list+=($pkg)
+    else
+      pkg_version=$(dpkg -s "${pkg}" 2>&1 | grep 'Version:' | cut -d " " -f 2)
+      lkm_print_pkg_info "$pkg" "$pkg_version"
+    fi
+  done
+
+  RET="$?"
+  lkm_debug
+}
+
+# --------------------------  INSTALL MISSING PROGRAMS
+
+# loop through install list and install any packages that are in the list
+# $1 -> to update sources or not
+qc_apt_install() {
+  qc_apt_check
+
+  if [[ "${#apt_install_list[@]}" -eq 0 ]]; then
+    lkm_notify "No packages to install"
+  else
+    # update all of the package references before installing anything
+    if [ "${1}" -eq 0 ]; then
+      lkm_pause "Press [Enter] to update Ubuntu sources" true
+      sudo apt-get -y update
+    fi
+
+    # install packages in the list
+    read -p "Press [Enter] to install apt packages..."
+    # shellcheck disable=SC2068
+    sudo apt-get -y install ${apt_install_list[@]}
+
+    # clean up apt caches
+    sudo apt-get clean
+  fi
+
+  # shellcheck disable=SC2034
+  RET="$?"
+  lkm_debug
+}
+
+# --------------------------  64-BIT ARCHITECTURE
+
+UPDATE=0
+if [ "$(dpkg --print-foreign-architectures)" = "i386" ]; then
+  dpkg --get-selections | grep i386 || lkm_notify "no i386 packages installed"
+  lkm_pause "Press [Enter] to purge all i386 packages and remove the i386 architecture" true
+  sudo apt-get purge ".*:i386" && sudo dpkg --remove-architecture i386 && sudo apt-get update && lkm_success "Success, goodbye i386!" && UPDATE=1
+fi
+
+# --------------------------  DEFAULT APT PACKAGES
+
+DEFAULT_SERVER_LIST='ca-certificates gettext-base less man-db openssh-server python-software-properties software-properites-common vim-gtk wget'
+DEFAULT_WORKSTATION_LIST='autojump gpgv2 lynx mutt pinta x11vnc xclip vlc'
+DEFAULT_DEV_LIST='autoconf automake build-essential checkinstall dconf-cli shellcheck silversearcher-ag tmux tidy xdotool vim-gtk'
+
+# --------------------------  PROMPT FOR PROGRAMS
+
+if [ "$QC_IS_SERVER" -eq 0 ]; then
+  lkm_notify "Server packages to install (none to skip)"
+  read -ep "   : " -i "$DEFAULT_SERVER_LIST" APTS1
+else
+  lkm_notify3 "The following default packages can be modified prior to installation."
+  echo
+  echo "WORKSTATION"
+  echo "DEVELOPER"
+  echo
+  lkm_notify "Workstation packages to install (delete all to skip)"
+  read -ep "   : " -i "$DEFAULT_WORKSTATION_LIST" APTS1
+  lkm_notify "Developer packages to install"
+  read -ep "   : " -i "$DEFAULT_DEV_LIST" APTS2
+fi
+
+# --------------------------  ARRAY ASSIGNMENTS
+
+# add packages to check
+apt_check_list+=($APTS1)
+apt_check_list+=($APTS2)
+
+# --------------------------  UNSET FUNCTIONS
+
+# unset the various functions defined during execution of the install script
+qc_reset() {
+  unset -f qc_reset qc_apt_install qc_apt_check
+}
+
+# --------------------------  INSTALL PROGRAMS
+
+qc_apt_install "$UPDATE"
+qc_reset
+
+} # this ensures the entire script is downloaded #

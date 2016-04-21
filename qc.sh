@@ -64,15 +64,18 @@ qc_display_menu() {
   echo "        workstation        "
   fi
   echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-  echo "1. UBUNTU PACKAGES & UPDATES"
-  echo "2. SUBLIME TEXT"
-  echo "3. KEYBASE"
-  echo "4. SYSTEM CONFIG"
-  echo "5. SSH KEY"
-  echo "6. VIRTUALBOX & VAGRANT"
-  echo "7. WORDPRESS WITH LXD, ZFS & JUJU"
-  echo "8. FIX PERMISSIONS"
-  echo "9. QUIT"
+  echo "1.  RUBY & RUBYGEMS VIA RBENV"
+  echo "2.  NODEJS & NPMS VIA NVM"
+  echo "3.  PYTHON PACKAGES VIA PIP"
+  echo "4.  APT PACKAGES & UPDATES"
+  echo "5.  SUBLIME TEXT"
+  echo "6.  KEYBASE"
+  echo "7.  SYSTEM CONFIG"
+  echo "8.  SSH KEY"
+  echo "9.  VIRTUALBOX & VAGRANT"
+  echo "10. WORDPRESS WITH LXD, ZFS & JUJU"
+  echo "11. FIX PERMISSIONS"
+  echo "12. QUIT"
 }
 
 # --------------------------  USER SELECTION
@@ -83,16 +86,19 @@ qc_select_options() {
   cd "$QC_DIR"
   read -rp "Enter choice [1 - 9]: " choice
   case $choice in
-    1) lkm_run_script installs.sh "script";;
-    2) lkm_run_script subl.sh "script";;
-    3) lkm_run_script keybase.sh "script";;
-    4) lkm_run_script config.sh "script";;
-    5) lkm_run_script sshkey.sh "script";;
-    6) lkm_run_script vm.sh "script";;
-    7) lkm_run_script lxd.sh "script";;
-    8) qc_fix_permissions;;
-    9) qc_exit_msg && exit 0;;
-    *) lkm_alert "Error..." && sleep 1
+    1)  lkm_run_script gems.sh "script";;
+    2)  lkm_run_script npms.sh "script";;
+    3)  lkm_run_script pips.sh "script";;
+    4)  lkm_run_script apts.sh "script";;
+    5)  lkm_run_script subl.sh "script";;
+    6)  lkm_run_script keybase.sh "script";;
+    7)  lkm_run_script config.sh "script";;
+    8)  lkm_run_script sshkey.sh "script";;
+    9)  lkm_run_script vm.sh "script";;
+    10) lkm_run_script lxd.sh "script";;
+    11) qc_fix_permissions;;
+    12) qc_exit_msg && exit 0;;
+    *)  lkm_alert "Error..." && sleep 1
   esac
 
   # check for program errors
