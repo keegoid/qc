@@ -6,11 +6,12 @@
 # Author : Keegan Mullaney
 # Website: keegoid.com
 # Email  : keeganmullaney@gmail.com
-#
-# http://keegoid.mit-license.org
+# License: keegoid.mit-license.org
 # --------------------------------------------
 
-DEBUG_COLORS=1
+{ # this ensures the entire script is downloaded #
+
+LKM_DEBUG_COLORS=1
 
 # --------------------------  DECLARE COLOR VARIABLES
 
@@ -65,29 +66,31 @@ declare -r RED_X="${NONE_RED}✘${NONE_WHITE}"
 
 # --------------------------  TESTING
 
-if [ "$DEBUG_COLORS" -eq 0 ]; then
-    echo -e "${GRAY_BLACK} ...some text... ${NONE_WHITE}"
-    echo -e "${TEAL_BLACK} ...some text... ${NONE_WHITE}"
-    echo -e "${PURPLE_BLACK} ...some text... ${NONE_WHITE}"
-    echo -e "${BLUE_BLACK} ...some text... ${NONE_WHITE}"
-    echo -e "${YELLOW_BLACK} ...some text... ${NONE_WHITE}"
-    echo -e "${GREEN_BLACK} ...some text... ${NONE_WHITE}"
-    echo -e "${RED_BLACK} ...some text... ${NONE_WHITE}"
-    echo -e "${BLACK_WHITE} ...some text... ${NONE_WHITE}"
+if [ "$LKM_DEBUG_COLORS" -eq 0 ]; then
+  echo -e "${GRAY_BLACK} ...some text... ${NONE_WHITE}"
+  echo -e "${TEAL_BLACK} ...some text... ${NONE_WHITE}"
+  echo -e "${PURPLE_BLACK} ...some text... ${NONE_WHITE}"
+  echo -e "${BLUE_BLACK} ...some text... ${NONE_WHITE}"
+  echo -e "${YELLOW_BLACK} ...some text... ${NONE_WHITE}"
+  echo -e "${GREEN_BLACK} ...some text... ${NONE_WHITE}"
+  echo -e "${RED_BLACK} ...some text... ${NONE_WHITE}"
+  echo -e "${BLACK_WHITE} ...some text... ${NONE_WHITE}"
 
-    echo -e "${NONE_WHITE} ...some text... ${NONE_WHITE}"
-    echo -e "${NONE_GRAY} ...some text... ${NONE_WHITE}"
-    echo -e "${NONE_TEAL} ...some text... ${NONE_WHITE}"
-    echo -e "${NONE_PURPLE} ...some text... ${NONE_WHITE}"
-    echo -e "${NONE_BLUE} ...some text... ${NONE_WHITE}"
-    echo -e "${NONE_YELLOW} ...some text... ${NONE_WHITE}"
-    echo -e "${NONE_GREEN} ...some text... ${NONE_WHITE}"
-    echo -e "${NONE_RED} ...some text... ${NONE_WHITE}"
-    echo -e "${NONE_BLACK} ...some text... ${NONE_WHITE}"
+  echo -e "${NONE_WHITE} ...some text... ${NONE_WHITE}"
+  echo -e "${NONE_GRAY} ...some text... ${NONE_WHITE}"
+  echo -e "${NONE_TEAL} ...some text... ${NONE_WHITE}"
+  echo -e "${NONE_PURPLE} ...some text... ${NONE_WHITE}"
+  echo -e "${NONE_BLUE} ...some text... ${NONE_WHITE}"
+  echo -e "${NONE_YELLOW} ...some text... ${NONE_WHITE}"
+  echo -e "${NONE_GREEN} ...some text... ${NONE_WHITE}"
+  echo -e "${NONE_RED} ...some text... ${NONE_WHITE}"
+  echo -e "${NONE_BLACK} ...some text... ${NONE_WHITE}"
 
-    echo -e "${GREEN_CHK} ...some text..."
-    echo -e "${YELLOW_CHK} ...some text..."
-    echo -e "${BLUE_CHK} ...some text..."
-    echo -e "${BLACK_CHK} ...some text..."
-    echo -e "${RED_X} ...some text..."
+  echo -e "${GREEN_CHK} ...some text..."
+  echo -e "${YELLOW_CHK} ...some text..."
+  echo -e "${BLUE_CHK} ...some text..."
+  echo -e "${BLACK_CHK} ...some text..."
+  echo -e "${RED_X} ...some text..."
 fi
+
+} # this ensures the entire script is downloaded #
