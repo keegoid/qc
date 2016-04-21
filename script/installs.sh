@@ -118,9 +118,12 @@ qc_install_node() {
 
     # install nodejs
     nvm install "$node_v"
-    # nvm use "$node_v"
-    nvm alias default "$node_v"
-    npm build
+
+    if [ $? -eq 0 ]; then
+        # nvm use "$node_v"
+        nvm alias default "$node_v"
+        npm build
+    fi
 
     # check which node
     which node
