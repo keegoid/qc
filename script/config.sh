@@ -12,7 +12,7 @@
 
 # --------------------------  SETUP PARAMETERS
 
-[ -z "$QC_CONFIG" ] && QC_CONFIG="$HOME/.quick-config"
+[ -z "$QC_CONFIG" ] && QC_CONFIG="$HOME/.qc"
 [ -z "$QC_BACKUP" ] && QC_BACKUP="$QC_CONFIG/backup"
 [ -z "$QC_SYNCED" ] && QC_SYNCED="$HOME/Dropbox/config"
 
@@ -27,7 +27,7 @@ CONF8="$HOME/.gitignore_global"
 
 # config files copied from repositories
 REPO1="/usr/share/autojump/autojump.sh"
-REPO3="$HOME/.config/sublime-text-3/Packages/KMS Theme/subl.conf"
+REPO3="$HOME/.config/sublime-text-3/Packages/Theme - KMS/subl.conf"
 REPO5="$QC_CONFIG/mutt/colors/mutt-colors-solarized-dark-16.muttrc"
 REPO6="$QC_CONFIG/tmux/tmux.conf"
 REPO7="$QC_CONFIG/vim/vim.conf"

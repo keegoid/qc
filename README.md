@@ -1,5 +1,4 @@
-quick-config
-============
+# Quick Config
 
 Quickly configures a fresh install of [Ubuntu 16.04 64-bit][xx] on a workstation or server.
 
