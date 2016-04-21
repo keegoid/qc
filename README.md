@@ -18,7 +18,7 @@ Quickly configures a fresh install of [Ubuntu 16.04 64-bit][xx] on a workstation
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-## What it can do
+## What qc can do
 
 - update [Ubuntu][ubuntu] and install some programs using apt-get, gem, npm and pip
 - generate an [RSA key][sshkey] for remote [SSH sessions][ssh]
@@ -37,37 +37,20 @@ Quickly configures a fresh install of [Ubuntu 16.04 64-bit][xx] on a workstation
 - install the latest [VirtualBox][vb] and [Vagrant][vg]
 - install [LXD][lxd], use it to download an [Ubuntu][xx] cloud image and create an [LXC][lxc] container
 - install [ZFS][zfs] for use with [LXD][lxd]
-- install [Juju][juju] and use it to configure the [WordPress][wp] Juju [Charm][charms]
+- install [Juju][juju]
+
+## Installation
+
+Clone or download this repo.
+
+```bash
+git clone https://github.com/keegoid/qc.git
+```
 
 ## Usage
 
-### Clone or download this project
-
-- HTTPS: `git clone https://github.com/keegoid/quick-config.git`
-- SSH: `git clone git@github.com:keegoid/quick-config.git`
-
-### Run it
-
-Run the main program with `./run.sh`
-
-If it doesn't work, you might need to do this:
-
-```bash
-chmod +x run.sh
-dos2unix -k run.sh
-```
-
-Also run `./sudoers.sh` if you want to increase the sudo timeout which is set to 15 minutes by default.
-
-## SSH Keys
-
-You can save a backup copy of your [SSH key pair][sshkey] that gets generated and output to the screen. I prefer saving it as a secure note in [LastPass][lp]. Copy the keys from the [terminal][gt] with `ctrl+shift+c` before clearing the screen.
-
-```bash
-cat ~/.ssh/id_rsa.pub
-cat ~/.ssh/id_rsa
-clear
-```
+Run the main program with `./qc.sh`
+Optionally run `./sudoers.sh` if you want to increase the sudo timeout which is set to 15 minutes by default.
 
 ## License
 
@@ -80,7 +63,6 @@ SEE: http://keegoid.mit-license.org
 [lxc]:      https://linuxcontainers.org/lxc/introduction/
 [zfs]:      https://wiki.ubuntu.com/ZFS
 [juju]:     http://www.ubuntu.com/cloud/juju
-[charms]:   https://jujucharms.com/
 [gedit]:    https://wiki.gnome.org/Apps/Gedit
 [subl]:     https://www.sublimetext.com/
 [vim]:      http://www.vim.org/
@@ -95,7 +77,6 @@ SEE: http://keegoid.mit-license.org
 [vb]:       https://www.virtualbox.org/
 [vg]:       https://www.vagrantup.com/
 [aj]:       https://github.com/wting/autojump
-[wp]:       https://wordpress.org/
 [ssh]:      http://en.wikipedia.org/wiki/Secure_Shell
 [sshkey]:   http://en.wikipedia.org/wiki/Ssh-keygen
 [sa]:       http://en.wikipedia.org/wiki/Alias_%28command%29
