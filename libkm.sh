@@ -212,8 +212,12 @@ lkm_gem_must_exist() {
   if ! ~/.rbenv/shims/gem list ^"$1"$ -i >/dev/null; then
     lkm_notify2 "$1 must be installed to continue."
     lkm_pause "Press [Enter] to install it now" true
-    ~/.rbenv/shims/gem install "$1"
-    ~/.rbenv/bin/rbenv rehash
+    if [ -f ~/.rbenv/shims/gem ]; then
+      ~/.rbenv/shims/gem install "$1"
+      ~/.rbenv/bin/rbenv rehash
+    else
+      sudo gem install "$1"
+    fi
   fi
 }
 
@@ -221,7 +225,11 @@ lkm_npm_must_exist() {
   if ! npm ls -gs | grep -q "${1}@"; then
     lkm_notify2 "$1 must be installed to continue."
     lkm_pause "Press [Enter] to install it now" true
-    sudo npm install -g "$1"
+    if [ -f ~/.nvm/nvm.sh ]; then
+      npm install -g "$1"
+    else
+      sudo npm install -g "$1"
+    fi
   fi
 }
 
@@ -229,7 +237,11 @@ lkm_pip_must_exist() {
   if ! pip list | grep -w "$1" >/dev/null 2>&1; then
     lkm_notify2 "$1 must be installed to continue."
     lkm_pause "Press [Enter] to install it now" true
-    sudo -H pip install "$1"
+    if [ -f ~/.virtualenv/bin/pip ]; then
+      pip install "$1"
+    else
+      sudo -H pip install "$1"
+    fi
   fi
 }
 
