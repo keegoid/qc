@@ -39,7 +39,11 @@ qc_virtualenv() {
   virtualenv ~/.virtualenv
 
   # source virtualenv
-  source ~/.virtualenv/bin/activate
+  # shellcheck disable=SC2016
+  lkm_set_source_cmd      "$HOME/.bashrc" \
+                          'virtualenv/bin:' \
+                          '[[ ":$PATH:" =~ ":$HOME/.virtualenv/bin:" ]] || PATH="$HOME/.virtualenv/bin:$PATH"'
+  source ~/.bashrc
 
   # check which pip
   which pip
