@@ -29,7 +29,7 @@ npm_check_list=()
 # --------------------------  CUSTOM INSTALL SCRIPTS
 
 # install the long term support version of Node.js via NVM
-qc_install_node() {
+qc_nvm() {
   local node_v
   # install NVM
   curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | bash
@@ -92,20 +92,6 @@ qc_npm_check() {
 
 # loop through install list and install any npms that are in the list
 qc_npm_install() {
-  # make sure npm is installed
-  lkm_confirm "Install nodejs?" true
-  if [ $? -eq 0 ]; then
-    lkm_msg "Which version to install?"
-    select version in "Long Term Support" "Package Manager"; do
-      case $version in
-        "Long Term Support") qc_install_node;;
-        "Package Manager") lkm_program_must_exist nodejs;;
-        *) echo "case not found";;
-      esac
-      break
-    done
-  fi
-
   # make sure npm is installed before proceeding
   lkm_has npm || { lkm_notify3 "warning: nodejs is not installed, skipping npms" && return 0; }
 
@@ -121,8 +107,7 @@ qc_npm_install() {
       # shellcheck disable=SC2068
       npm install -g ${npm_install_list[@]}
     else
-      # shellcheck disable=SC2068
-      sudo npm install -g ${npm_install_list[@]}
+      notify2 "missing ~/.nvm directory, skipping npm installs"
     fi
   fi
 
@@ -146,11 +131,15 @@ npm_check_list+=($NPMS)
 
 # unset the various functions defined during execution of the install script
 qc_reset() {
-  unset -f qc_reset qc_npm_install qc_npm_check qc_install_node
+  unset -f qc_reset qc_npm_install qc_npm_check qc_nvm
 }
 
 # --------------------------  INSTALL PROGRAMS
 
+lkm_confirm "Install Nodejs via NVM?" true
+if [ $? -eq 0 ]; then
+  qc_nvm
+fi
 qc_npm_install
 qc_reset
 
