@@ -117,7 +117,7 @@ qc_npm_install() {
   else
     # install required npms
     lkm_pause "Press [Enter] to install npms" true
-    if lkm_has nvm; then
+    if [ -d ~/.nvm ]; then
       # shellcheck disable=SC2068
       npm install -g ${npm_install_list[@]}
     else
@@ -135,7 +135,7 @@ echo
 echo "NODE.JS"
 echo
 lkm_notify "Packages to install with npm"
-read -ep "   : " -i 'bower browser-sync coffee-script csslint gulp remark remark-toc svgo' NPMS
+read -ep "   : " -i 'bower browser-sync coffee-script csslint doctoc gulp remark remark-toc svgo' NPMS
 
 # --------------------------  ARRAY ASSIGNMENTS
 
