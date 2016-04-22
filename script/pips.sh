@@ -1,6 +1,6 @@
 #!/bin/bash
 # --------------------------------------------
-# Install / update Python packages via PIP
+# Install / update PIPs via Virtualenv
 #
 # Author : Keegan Mullaney
 # Website: keegoid.com
@@ -23,6 +23,34 @@ pip3_install_list=()
 # check lists (check if installed)
 pip_check_list=()
 pip3_check_list=()
+
+# --------------------------  CUSTOM INSTALL SCRIPTS
+
+# install the Virtualenv to manage Python versions
+qc_virtualenv() {
+  # make sure dependencies are installed
+  lkm_program_must_exist "python-pip"
+  lkm_program_must_exist "python-setuptools"
+
+  # install Virtualenv
+  sudo pip -H install virtualenv
+
+  # install PIP, wheel and Python
+  virtualenv ~/.virtualenv
+
+  # source virtualenv
+  source ~/.virtualenv/bin/activate
+
+  # check which pip
+  which pip
+
+  # check versions
+  virtualenv --version
+  pip -v
+
+  RET="$?"
+  lkm_debug
+}
 
 # --------------------------  CHECK FOR MISSING PROGRAMS
 
@@ -76,9 +104,8 @@ qc_pip3_check() {
 qc_pip_install() {
   # make sure dependencies are installed
   lkm_program_must_exist "python-pip"
-  lkm_program_must_exist "python3-pip"
-  lkm_program_must_exist "python-keyring"
   lkm_program_must_exist "python-setuptools"
+  lkm_program_must_exist "python-keyring"
 
   qc_pip_check
 
@@ -88,7 +115,7 @@ qc_pip_install() {
     # install required pips
     lkm_pause "Press [Enter] to install pips" true
     # shellcheck disable=SC2068
-    sudo -H pip install ${pip_install_list[@]}
+    pip install ${pip_install_list[@]}
   fi
 
   RET="$?"
@@ -108,7 +135,7 @@ qc_pip3_install() {
     # install required pips
     lkm_pause "Press [Enter] to install pip3s" true
     # shellcheck disable=SC2068
-    sudo -H pip3 install ${pip3_install_list[@]}
+    pip3 install ${pip3_install_list[@]}
   fi
 
   # shellcheck disable=SC2034
@@ -135,11 +162,15 @@ pip_check_list+=($PIPS)
 
 # unset the various functions defined during execution of the install script
 qc_reset() {
-  unset -f qc_reset qc_pip_install qc_pip_check
+  unset -f qc_reset qc_pip_install qc_pip_check qc_virtualenv
 }
 
 # --------------------------  INSTALL PROGRAMS
 
+lkm_confirm "Install PIP via Virtualenv?" true
+if [ $? -eq 0 ]; then
+  qc_virtualenv
+fi
 qc_pip_install
 # qc_pip3_install
 qc_reset
