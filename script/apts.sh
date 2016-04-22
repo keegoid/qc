@@ -74,6 +74,19 @@ qc_apt_install() {
   lkm_debug
 }
 
+# add git lfs from packagecloud.io to add large file support to git
+qc_git_lfs() {
+  curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | os=debian dist=xenial sudo -E sudo bash
+
+  lkm_program_must_exist 'git'
+  lkm_install_apt 'git-lfs'
+  git lfs install
+
+  # shellcheck disable=SC2034
+  RET="$?"
+  lkm_debug
+}
+
 # --------------------------  64-BIT ARCHITECTURE
 
 UPDATE=0
@@ -116,12 +129,13 @@ apt_check_list+=($APTS2)
 
 # unset the various functions defined during execution of the install script
 qc_reset() {
-  unset -f qc_reset qc_apt_install qc_apt_check
+  unset -f qc_reset qc_apt_install qc_apt_check qc_git_lfs
 }
 
 # --------------------------  INSTALL PROGRAMS
 
 qc_apt_install "$UPDATE"
+qc_git_lfs
 qc_reset
 
 } # this ensures the entire script is downloaded #
