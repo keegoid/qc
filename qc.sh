@@ -84,7 +84,7 @@ qc_select_options() {
   local choice
   # make sure we're always starting from the right place
   cd "$QC_DIR"
-  read -rp "Enter choice [1 - 9]: " choice
+  read -rp "Enter choice [1 - 12]: " choice
   case $choice in
     1)  lkm_run_script gems.sh "script";;
     2)  lkm_run_script npms.sh "script";;
