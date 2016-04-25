@@ -47,17 +47,14 @@ qc_nvm() {
   nvm install "$node_v"
 
   if [ $? -eq 0 ]; then
-    # nvm use "$node_v"
     nvm alias default "$node_v"
-    npm build
   fi
 
-  # check which node
+  # check which node and npm
   which node
   which npm
 
-  # check node version
-  node -v
+  # check npm version
   npm -v
 
   lkm_notify "After switching node versions, remember to run \`npm build\`."
