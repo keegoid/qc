@@ -17,7 +17,7 @@
 # --------------------------  SETUP PARAMETERS
 
 [ -z "$QC_LTS" ] && QC_LTS=4
-[ -z "$NVM_V" ] && NVM_V=0.31.0
+[ -z "$NVM_V" ] && NVM_V=0.31.1
 
 # --------------------------  MISSING PROGRAM CHECKS
 
