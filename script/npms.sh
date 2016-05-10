@@ -17,6 +17,7 @@
 # --------------------------  SETUP PARAMETERS
 
 [ -z "$QC_LTS" ] && QC_LTS=4
+[ -z "$NVM_V" ] && NVM_V=0.31.0
 
 # --------------------------  MISSING PROGRAM CHECKS
 
@@ -32,7 +33,7 @@ npm_check_list=()
 qc_nvm() {
   local node_v
   # install NVM
-  curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | bash
+  curl -o- "https://raw.githubusercontent.com/creationix/nvm/v${NVM_V}/install.sh" | bash
 
   # source nvm
   . ~/.nvm/nvm.sh
