@@ -118,7 +118,7 @@ echo
 echo "NODE.JS"
 echo
 lkm_notify "Packages to install with npm"
-read -ep "   : " -i 'bower browser-sync coffee-script csslint doctoc gulp npm-check-updates remark remark-toc svgo' NPMS
+read -ep "   : " -i 'bower browser-sync coffee-script csslint doctoc gulp npm-check-updates remark remark-lint' NPMS
 
 # --------------------------  ARRAY ASSIGNMENTS
 
