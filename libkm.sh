@@ -358,7 +358,6 @@ lkm_install_apt() {
   for pkg in $names; do
     if lkm_not_installed "$pkg"; then
       echo
-      read -p "Press [Enter] to install $pkg..."
       if [ -z "${repo}" ]; then
         sudo apt-get -y install "$pkg"
       else
