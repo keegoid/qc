@@ -113,7 +113,7 @@ qc_gem_check() {
 qc_gem_install() {
   # install ruby with rbenv
   lkm_confirm "Install ruby via rbenv?" true
-  [ $? -eq 0 ] && install_rbenv_ruby
+  [ $? -eq 0 ] && qc_install_rbenv_ruby
 
   qc_gem_check
 
