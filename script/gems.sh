@@ -27,7 +27,7 @@ gem_check_list=()
 # install ruby with rbenv and ruby-build
 qc_install_rbenv_ruby() {
   # ruby dependencies
-  lkm_install_apt "ruby autoconf bison gpgv2 git-core curl zlib1g-dev build-essential libssl-dev libssl1.0.0 libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties libffi-dev"
+  lkm_install_apt "autoconf bison gpgv2 git-core curl zlib1g-dev build-essential libssl-dev libssl1.0.0 libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties libffi-dev"
 
   # rbenv
   # shellcheck disable=SC2016
@@ -68,12 +68,15 @@ qc_install_rbenv_ruby() {
   rm -rf ~/.rbenv/plugins/ruby-build-github
   git clone https://github.com/parkr/ruby-build-github.git ~/.rbenv/plugins/ruby-build-github
 
+  export MAKE=make
+
   # list ruby versions compatible with github pages
   local ruby_v
   ruby_v=$(~/.rbenv/bin/rbenv install --list | grep github$ | tail -n 1 | tr -d ' ')
+  [ $? -eq 0 ] && ~/.rbenv/bin/rbenv install "$ruby_v"
 
-  # install ruby
-  # export MAKE=make (uncomment if build fails)
+  # install latest stable ruby
+  ruby_v=$(~/.rbenv/bin/rbenv install --list | tr -d ' ' | grep "^2.*.[0..9]$" | tail -1)
   [ $? -eq 0 ] && ~/.rbenv/bin/rbenv install "$ruby_v"
   # [ $? -eq 0 ] && ~/.rbenv/bin/rbenv global "$ruby_v"
 
