@@ -64,21 +64,23 @@ qc_install_rbenv_ruby() {
   lkm_has ~/.rbenv/bin/rbenv || lkm_error "rbenv install failed"
   ~/.rbenv/bin/rbenv version
 
-  # ruby-build-github
-  rm -rf ~/.rbenv/plugins/ruby-build-github
-  git clone https://github.com/parkr/ruby-build-github.git ~/.rbenv/plugins/ruby-build-github
+  # ruby versions
+  local ruby_global_v
+  local ruby_local_v
 
   export MAKE=make
 
-  # list ruby versions compatible with github pages
-  local ruby_v
-  ruby_v=$(~/.rbenv/bin/rbenv install --list | grep github$ | tail -n 1 | tr -d ' ')
-  [ $? -eq 0 ] && ~/.rbenv/bin/rbenv install "$ruby_v"
-
   # install latest stable ruby
-  ruby_v=$(~/.rbenv/bin/rbenv install --list | tr -d ' ' | grep "^2.*.[0..9]$" | tail -1)
-  [ $? -eq 0 ] && ~/.rbenv/bin/rbenv install "$ruby_v"
-  # [ $? -eq 0 ] && ~/.rbenv/bin/rbenv global "$ruby_v"
+  ruby_global_v=$(~/.rbenv/bin/rbenv install --list | tr -d ' ' | grep "^2.*.[0..9]$" | tail -1)
+  [ $? -eq 0 ] && ~/.rbenv/bin/rbenv install "$ruby_global_v"
+  [ $? -eq 0 ] && ~/.rbenv/bin/rbenv global "$ruby_global_v"
+
+  # ruby-build-github
+  rm -rf ~/.rbenv/plugins/ruby-build-github
+  git clone https://github.com/parkr/ruby-build-github.git ~/.rbenv/plugins/ruby-build-github
+  ruby_local_v=$(~/.rbenv/bin/rbenv install --list | grep github$ | tail -n 1 | tr -d ' ')
+  [ $? -eq 0 ] && ~/.rbenv/bin/rbenv install "$ruby_local_v"
+  [ $? -eq 0 ] && ~/.rbenv/bin/rbenv global "$ruby_global_v"
 
   # check ruby and rubygem versions
   ~/.rbenv/shims/ruby -v
