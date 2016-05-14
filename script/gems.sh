@@ -127,6 +127,9 @@ qc_install_ruby() {
   ruby_global_v=$(~/.rbenv/bin/rbenv install --list | tr -d ' ' | grep "^2.*.[0..9]$" | tail -1)
   [ $? -eq 0 ] && ~/.rbenv/bin/rbenv install "$ruby_global_v"
 
+  # set global ruby version
+  ~/.rbenv/bin/rbenv global "$ruby_global_v"
+
   # check ruby and rubygem versions
   ~/.rbenv/shims/ruby -v
   ~/.rbenv/shims/gem env home
@@ -138,6 +141,9 @@ qc_install_ruby() {
   git clone https://github.com/parkr/ruby-build-github.git ~/.rbenv/plugins/ruby-build-github
   ruby_local_v=$(~/.rbenv/bin/rbenv install --list | grep github$ | tail -n 1 | tr -d ' ')
   [ $? -eq 0 ] && ~/.rbenv/bin/rbenv install "$ruby_local_v"
+
+  # set global ruby version
+  ~/.rbenv/bin/rbenv global "$ruby_local_v"
 
   # check ruby and rubygem versions
   ~/.rbenv/shims/ruby -v
