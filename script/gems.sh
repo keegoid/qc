@@ -27,7 +27,7 @@ gem_check_list=()
 # install ruby with rbenv and ruby-build
 qc_install_rbenv_ruby() {
   # ruby dependencies
-  lkm_install_apt "gpgv2 git-core curl zlib1g-dev build-essential libssl-dev libssl1.0.0 libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties libffi-dev"
+  lkm_install_apt "autoconf bison gpgv2 git-core curl zlib1g-dev build-essential libssl-dev libssl1.0.0 libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties libffi-dev"
 
   # rbenv
   # shellcheck disable=SC2016
