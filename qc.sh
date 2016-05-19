@@ -64,10 +64,10 @@ qc_display_menu() {
   echo "        workstation        "
   fi
   echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-  echo "1.  RUBY & RUBYGEMS VIA RBENV"
-  echo "2.  NODEJS & NPMS VIA NVM"
-  echo "3.  PYTHON PACKAGES VIA PIP"
-  echo "4.  APT PACKAGES & UPDATES"
+  echo "1.  APT PACKAGES & UPDATES"
+  echo "2.  RUBY & RUBYGEMS VIA RBENV"
+  echo "3.  NODEJS & NPMS VIA NVM"
+  echo "4.  PYTHON PACKAGES VIA PIP"
   echo "5.  SUBLIME TEXT"
   echo "6.  KEYBASE"
   echo "7.  SYSTEM CONFIG"
@@ -86,10 +86,10 @@ qc_select_options() {
   cd "$QC_DIR"
   read -rp "Enter choice [1 - 12]: " choice
   case $choice in
-    1)  lkm_run_script gems.sh "script";;
-    2)  lkm_run_script npms.sh "script";;
-    3)  lkm_run_script pips.sh "script";;
-    4)  lkm_run_script apts.sh "script";;
+    1)  lkm_run_script apts.sh "script";;
+    2)  lkm_run_script gems.sh "script";;
+    3)  lkm_run_script npms.sh "script";;
+    4)  lkm_run_script pips.sh "script";;
     5)  lkm_run_script subl.sh "script";;
     6)  lkm_run_script keybase.sh "script";;
     7)  lkm_run_script config.sh "script";;
