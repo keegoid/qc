@@ -2,7 +2,7 @@
 # configure sudoers file
 # chmod +x sudoers.sh
 
-local conf_file="/etc/sudoers.d/sudomods"
+conf_file="/etc/sudoers.d/sudomods"
 
 # add sudomods to /etc/sudoers.d/
 [ -f "$conf_file" ] || touch "$conf_file"
