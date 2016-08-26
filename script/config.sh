@@ -26,7 +26,7 @@ CONF7="$HOME/.gitignore_global"
 
 # config files copied from repositories
 REPO1="/usr/share/autojump/autojump.sh"
-REPO3="$QC_CONFIG/sublime/User/Theme - KMS/subl.conf"
+REPO3="$QC_SYNCED/sublime/User/Theme - KMS/subl.conf"
 REPO5="$QC_CONFIG/mutt/colors/mutt-colors-solarized-dark-16.muttrc"
 REPO6="$QC_CONFIG/vim/vim.conf"
 REPO7="$QC_CONFIG/git/gitignore_global"
@@ -68,9 +68,20 @@ qc_set_subl_config() {
   local repo_dir
   local repo_name
   local cloned=1
+  local user_dir="$HOME/.config/sublime-text-3/Packages/User"
 
   repo_dir=$(lkm_trim_shortest_right_pattern "$REPO3" "/")
   repo_name=$(lkm_trim_longest_left_pattern "$repo_dir" "/")
+
+  # check if standard directory exists and if so, make a backup and remove it
+  [ -d "$user_dir" ] && { mv "$user_dir" "${user_dir}-bak"; rm -r "$user_dir"; }
+
+  # make sure directories exist
+  mkdir -p "$HOME/.config/sublime-text-3/Packages"
+  mkdir -p "$QC_SYNCED/sublime/User"
+
+  # symlink to User directory in Dropbox
+  ln -s "$QC_SYNCED/sublime/User" "$user_dir"
 
   # update or clone repository
   if [ -d "$repo_dir" ]; then
@@ -232,9 +243,6 @@ lkm_set_sourced_config  "https://gist.github.com/00a60c7355c27c692262.git" \
 #                        "$QC_CONFIG/terminal/profile/gconf.xml"
 
 # sublime text
-mkdir -p "$QC_SYNCED/sublime/User"
-mkdir -p "$HOME/.config/sublime-text-3/Packages/User"
-ln -s "$QC_SYNCED/sublime/User" "$HOME/.config/sublime-text-3/Packages/User"
 qc_set_subl_config      "https://github.com/keegoid/kms-theme.git"
 
 qc_set_git_config       "https://gist.github.com/efa547b362910ac7077c.git"
