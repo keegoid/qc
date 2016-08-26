@@ -104,8 +104,8 @@ fi
 # --------------------------  DEFAULT APT PACKAGES
 
 DEFAULT_SERVER_LIST='ca-certificates gettext-base less man-db openssh-server python-software-properties software-properites-common vim-gtk wget'
-DEFAULT_WORKSTATION_LIST='autojump gpgv2 lynx mutt pinta x11vnc xclip vlc'
-DEFAULT_DEV_LIST='autoconf automake build-essential checkinstall dconf-cli shellcheck silversearcher-ag tmux tidy xdotool vim-gtk'
+DEFAULT_WORKSTATION_LIST='autojump gpgv2 links mutt pinta x11vnc xclip vlc'
+DEFAULT_DEV_LIST='autoconf automake build-essential checkinstall dconf-cli shellcheck silversearcher-ag tidy xdotool vim-gtk'
 
 # --------------------------  PROMPT FOR PROGRAMS
 
