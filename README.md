@@ -1,8 +1,6 @@
 # Quick Config
 
-Quickly configures a fresh install of [Ubuntu 16.04.1 LTS 64-bit][xx] on a workstation or server.
-
-*(The server part is a work in progress...)*
+Quickly configures a fresh install of [Ubuntu 16.04.1 LTS 64-bit][xx] on a workstation.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
