@@ -128,7 +128,7 @@ qc_set_git_config() {
   if ! git config --list | grep -q "user.name"; then
     read -ep "your name for git commit logs: " -i 'Keegan Mullaney' real_name
     read -ep "your email for git commit logs: " -i 'keeganmullaney@gmail.com' email_address
-    read -ep "your preferred text editor for git commits: " -i '\vi' git_editor
+    read -ep "your preferred text editor for git commits: " -i 'vi' git_editor
     lkm_configure_git "$real_name" "$email_address" "$git_editor" && lkm_success "configured: $CONF7"
   fi
 
