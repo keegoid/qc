@@ -46,7 +46,7 @@ qc_fix_permissions() {
 # display message before exit
 qc_exit_msg() {
   echo
-  lkm_notify "Lastly: execute sudo ./sudoers.sh to increase the sudo timeout."
+  lkm_notify "Lastly: execute ./sudoers.sh to increase the sudo timeout."
   lkm_msg             "\nThanks for using $QC_APP_NAME."
   lkm_msg             "(c) $(date +%Y) keegoid.mit-license.org"
 }
