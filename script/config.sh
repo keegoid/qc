@@ -19,14 +19,14 @@
 # system and program config files
 CONF1="$HOME/.bashrc"
 CONF2="$HOME/.inputrc"
-CONF3="$HOME/.config/sublime-text-3/Packages/User/Preferences.sublime-settings"
+CONF3="$QC_SYNCED/sublime/User/Preferences.sublime-settings"
 CONF5="$HOME/.muttrc"
 CONF6="$HOME/.vimrc"
 CONF7="$HOME/.gitignore_global"
 
 # config files copied from repositories
 REPO1="/usr/share/autojump/autojump.sh"
-REPO3="$HOME/.config/sublime-text-3/Packages/Theme - KMS/subl.conf"
+REPO3="$QC_CONFIG/sublime/User/Theme - KMS/subl.conf"
 REPO5="$QC_CONFIG/mutt/colors/mutt-colors-solarized-dark-16.muttrc"
 REPO6="$QC_CONFIG/vim/vim.conf"
 REPO7="$QC_CONFIG/git/gitignore_global"
@@ -232,7 +232,9 @@ lkm_set_sourced_config  "https://gist.github.com/00a60c7355c27c692262.git" \
 #                        "$QC_CONFIG/terminal/profile/gconf.xml"
 
 # sublime text
+mkdir -p "$QC_SYNCED/sublime/User"
 mkdir -p "$HOME/.config/sublime-text-3/Packages/User"
+ln -s "$QC_SYNCED/sublime/User" "$HOME/.config/sublime-text-3/Packages/User"
 qc_set_subl_config      "https://github.com/keegoid/kms-theme.git"
 
 qc_set_git_config       "https://gist.github.com/efa547b362910ac7077c.git"
