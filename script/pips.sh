@@ -174,9 +174,12 @@ qc_reset() {
 lkm_confirm "Install PIP via Virtualenv?" true
 if [ $? -eq 0 ]; then
   qc_virtualenv
+  echo "Close the terminal window and reopen to enable the new PIP with Virtualenv. Then rerun this script."
+else
+  qc_pip_install
+  # qc_pip3_install
 fi
-qc_pip_install
-# qc_pip3_install
+
 qc_reset
 
 } # this ensures the entire script is downloaded #
