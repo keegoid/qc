@@ -5,7 +5,7 @@
 conf_file="/etc/sudoers.d/sudomods"
 
 # add sudomods to /etc/sudoers.d/
-[ -f "$conf_file" ] || touch "$conf_file"
+[ -f "$conf_file" ] || sudo touch "$conf_file"
 egrep -qi "timestamp_timeout=120" "$conf_file"
 if [ $? -eq 0 ]; then
   echo "$conf_file already updated"
