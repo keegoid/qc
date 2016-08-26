@@ -14,7 +14,7 @@
 
 [ -z "$QC_CONFIG" ] && QC_CONFIG="$HOME/.qc"
 [ -z "$QC_BACKUP" ] && QC_BACKUP="$QC_CONFIG/backup"
-[ -z "$QC_SYNCED" ] && QC_SYNCED="$HOME/Dropbox/config"
+[ -z "$QC_SYNCED" ] && read -ep "Directory to store/sync your config: " -i "$HOME/Dropbox/config" QC_SYNCED
 
 # system and program config files
 CONF1="$HOME/.bashrc"
