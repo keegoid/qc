@@ -49,7 +49,7 @@ git clone https://github.com/keegoid/qc.git
 ## Usage
 
 Run the main program with `./qc.sh`
-Optionally run `./sudoers.sh` if you want to increase the sudo timeout which is set to 15 minutes by default.
+Optionally run `sudo ./sudoers.sh` if you want to increase the sudo timeout which is set to 15 minutes by default.
 
 ## License
 
