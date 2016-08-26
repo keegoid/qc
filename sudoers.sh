@@ -10,6 +10,7 @@ egrep -qi "timestamp_timeout=120" "$conf_file"
 if [ $? -eq 0 ]; then
   echo "$conf_file already updated"
 else
+  echo "setting sudo timeout to 120 minutes"
   echo "Defaults        timestamp_timeout=120" | sudo tee "$conf_file"
 fi
 
