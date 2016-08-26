@@ -50,7 +50,7 @@ qc_virtualenv() {
 
   # check versions
   virtualenv --version
-  pip -v
+  pip -V
 
   RET="$?"
   lkm_debug
