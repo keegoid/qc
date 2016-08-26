@@ -33,8 +33,6 @@ qc_install_subl() {
 
 # --------------------------  MAIN
 
-lkm_pause "" true
-
 lkm_confirm "Install Sublime Text?" true
 [ $? -eq 0 ] && qc_install_subl
 
