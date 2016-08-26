@@ -21,17 +21,15 @@ CONF1="$HOME/.bashrc"
 CONF2="$HOME/.inputrc"
 CONF3="$HOME/.config/sublime-text-3/Packages/User/Preferences.sublime-settings"
 CONF5="$HOME/.muttrc"
-CONF6="$HOME/.tmux.conf"
-CONF7="$HOME/.vimrc"
-CONF8="$HOME/.gitignore_global"
+CONF6="$HOME/.vimrc"
+CONF7="$HOME/.gitignore_global"
 
 # config files copied from repositories
 REPO1="/usr/share/autojump/autojump.sh"
 REPO3="$HOME/.config/sublime-text-3/Packages/Theme - KMS/subl.conf"
 REPO5="$QC_CONFIG/mutt/colors/mutt-colors-solarized-dark-16.muttrc"
-REPO6="$QC_CONFIG/tmux/tmux.conf"
-REPO7="$QC_CONFIG/vim/vim.conf"
-REPO8="$QC_CONFIG/git/gitignore_global"
+REPO6="$QC_CONFIG/vim/vim.conf"
+REPO7="$QC_CONFIG/git/gitignore_global"
 
 # --------------------------  BACKUPS
 
@@ -100,13 +98,13 @@ qc_set_subl_config() {
 # clone or pull git repo and copy repo file onto conf file
 qc_set_git_config() {
   local repo_url="$1"
-  local conf_file="$CONF8"
-  local repo_file="$REPO8"
+  local conf_file="$CONF7"
+  local repo_file="$REPO7"
   local repo_dir
   local repo_name
   local cloned=1
 
-  repo_dir=$(lkm_trim_shortest_right_pattern "$REPO8" "/")
+  repo_dir=$(lkm_trim_shortest_right_pattern "$REPO7" "/")
   repo_name=$(lkm_trim_longest_left_pattern "$repo_dir" "/")
 
   # update or clone repository
@@ -131,7 +129,7 @@ qc_set_git_config() {
     read -ep "your name for git commit logs: " -i 'Keegan Mullaney' real_name
     read -ep "your email for git commit logs: " -i 'keeganmullaney@gmail.com' email_address
     read -ep "your preferred text editor for git commits: " -i '\vi' git_editor
-    lkm_configure_git "$real_name" "$email_address" "$git_editor" && lkm_success "configured: $CONF8"
+    lkm_configure_git "$real_name" "$email_address" "$git_editor" && lkm_success "configured: $CONF7"
   fi
 
   RET="$?"
@@ -206,7 +204,7 @@ qc_reset() {
 
 lkm_pause "" true
 
-qc_do_backup            "$CONF1 $CONF2 $CONF3 $CONF5 $CONF6 $CONF7 $CONF8"
+qc_do_backup            "$CONF1 $CONF2 $CONF3 $CONF5 $CONF6 $CONF7"
 
 # aliases (to practice terminal commands for Linux certification exams, I'm not using aliases at the moment)
 #lkm_set_sourced_config  "https://gist.github.com/9d74e08779c1db6cb7b7" \
@@ -220,19 +218,13 @@ lkm_set_sourced_config  "https://github.com/altercation/mutt-colors-solarized.gi
                         "$REPO5" \
                         "# source colorscheme file\nsource $REPO5\n\n# signature and alias files\nset signature=$QC_SYNCED/mutt/sig\nset alias_file=$QC_SYNCED/mutt/aliases\n\n# aliases are stored in their own file\nsource \"\$alias_file\""
 
-# tmux config
-lkm_set_sourced_config  "https://gist.github.com/3247d5a1c172167e593c.git" \
-                        "$CONF6" \
-                        "$REPO6" \
-                        "source-file $REPO6"
-
 # vim config
 lkm_set_sourced_config  "https://gist.github.com/00a60c7355c27c692262.git" \
-                        "$CONF7" \
-                        "$REPO7" \
-                        "\" source config file\n:so $REPO7\n\nset spellfile=$QC_SYNCED/vim/vim.utf-8.add\t\" spell check file to sync with other computers"
+                        "$CONF6" \
+                        "$REPO6" \
+                        "\" source config file\n:so $REPO6\n\nset spellfile=$QC_SYNCED/vim/vim.utf-8.add\t\" spell check file to sync with other computers"
 
-[ -d "$QC_SYNCED/vim" ] || { mkdir -pv "$QC_SYNCED/vim"; lkm_notify3 "note: vim spellfile will be located in $QC_SYNCED/vim, you can change this in $CONF7"; }
+[ -d "$QC_SYNCED/vim" ] || { mkdir -pv "$QC_SYNCED/vim"; lkm_notify3 "note: vim spellfile will be located in $QC_SYNCED/vim, you can change this in $CONF6"; }
 
 # terminal profile (can't find profile file in new Ubuntu 16.04)
 #set_copied_config       "https://gist.github.com/dad1663d2463db32c6e8.git" \
