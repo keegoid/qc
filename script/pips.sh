@@ -33,7 +33,7 @@ qc_virtualenv() {
   lkm_program_must_exist "python-setuptools"
 
   # install Virtualenv
-  sudo pip -H install virtualenv
+  sudo -H pip install virtualenv
 
   # install PIP, wheel and Python
   virtualenv ~/.virtualenv
