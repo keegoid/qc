@@ -26,7 +26,7 @@ CONF7="$HOME/.gitignore_global"
 
 # config files copied from repositories
 REPO1="/usr/share/autojump/autojump.sh"
-REPO3=$HOME/.config/sublime-text-3/Packages/Theme - KMS/subl.conf"
+REPO3="$HOME/.config/sublime-text-3/Packages/Theme - KMS/subl.conf"
 REPO5="$QC_CONFIG/mutt/colors/mutt-colors-solarized-dark-16.muttrc"
 REPO6="$QC_CONFIG/vim/vim.conf"
 REPO7="$QC_CONFIG/git/gitignore_global"
