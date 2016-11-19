@@ -14,7 +14,7 @@
 
 # install Sublime Text
 qc_install_subl() {
-  local subl_v='3114'
+  local subl_v='3126'
   local subl_url="https://download.sublimetext.com/sublime-text_build-${subl_v}_amd64.deb"
 
   if lkm_not_installed "subl"; then
