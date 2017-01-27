@@ -13,6 +13,7 @@ echo "# License: keegoid.mit-license.org            "
 echo "# --------------------------------------------"
 
 # library file
+# shellcheck disable=SC1091
 source libkm.sh
 
 # --------------------------  SETUP PARAMETERS
@@ -83,7 +84,7 @@ qc_display_menu() {
 qc_select_options() {
   local choice
   # make sure we're always starting from the right place
-  cd "$QC_DIR"
+  cd "$QC_DIR" || exit
   read -rp "Enter choice [1 - 12]: " choice
   case $choice in
     1)  lkm_run_script apts.sh "script";;
