@@ -17,7 +17,7 @@ Quickly configures a fresh install of [Ubuntu 16.10 64-bit][yy] on a workstation
 
 ## What qc can do
 
-- update [Ubuntu][ubuntu] and install some programs using apt-get, gem, npm and pip
+- update [Ubuntu][ubuntu] and install some programs using apt-get, gem, npm, and pip
 - generate an [RSA key][sshkey] for remote [SSH sessions][ssh]
 - add useful [shell aliases][sa]
 - make the [terminal][gt] easier to read and use with:
