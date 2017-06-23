@@ -23,8 +23,8 @@ qc_set_authorized_key() {
   sudo chmod a-w /etc/ssh/sshd_config.original
 
   # client allive interval
-  read -ep "Enter the client alive interval in seconds to prevent SSH from dropping out: " -i "60" client_alive
-  read -ep "Enter the ssh port number to use on the server: " -i "22" ssh_port
+  read -rep "Enter the client alive interval in seconds to prevent SSH from dropping out: " -i "60" client_alive
+  read -rep "Enter the ssh port number to use on the server: " -i "22" ssh_port
 
   # edit /etc/ssh/sshd_config
   sudo sed -i.bak -e "{ s/#Port 22/Port $ssh_port/
@@ -60,12 +60,6 @@ qc_set_authorized_key() {
 
 # --------------------------  MAIN
 
-if [ "$QC_IS_SERVER" -eq 0 ]; then
-  qc_set_authorized_key
-else
-  lkm_gen_ssh_key "$HOME/.ssh" "$(whoami)"
-fi
-
-unset -f qc_set_authorized_key
+lkm_gen_ssh_key "$HOME/.ssh" "$(whoami)"
 
 } # this ensures the entire script is downloaded #

@@ -16,8 +16,8 @@
 
 # --------------------------  SETUP PARAMETERS
 
-[ -z "$QC_LTS" ] && QC_LTS=4
-[ -z "$NVM_V" ] && NVM_V=0.31.1
+[ -z "$QC_LTS" ] && QC_LTS=6
+[ -z "$NVM_V" ] && NVM_V=0.33.2
 
 # --------------------------  MISSING PROGRAM CHECKS
 
@@ -36,6 +36,7 @@ qc_nvm() {
   curl -o- "https://raw.githubusercontent.com/creationix/nvm/v${NVM_V}/install.sh" | bash
 
   # source nvm
+  # shellcheck source=/dev/null
   . ~/.nvm/nvm.sh
 
   # make sure nvm is installed
@@ -118,7 +119,7 @@ echo
 echo "NODE.JS"
 echo
 lkm_notify "Packages to install with npm"
-read -ep "   : " -i 'bower browser-sync coffee-script csslint doctoc gulp npm-check-updates remark remark-lint' NPMS
+read -rep "   : " -i 'bower browser-sync coffee-script csslint doctoc gulp npm-check-updates remark remark-lint' NPMS
 
 # --------------------------  ARRAY ASSIGNMENTS
 

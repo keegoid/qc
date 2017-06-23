@@ -1,6 +1,6 @@
 # Quick Config
 
-Quickly configures a fresh install of [Ubuntu 16.04.1 LTS 64-bit][xx] on a workstation.
+Quickly configures a fresh install of [Ubuntu 16.10 64-bit][yy] on a workstation.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -25,16 +25,10 @@ Quickly configures a fresh install of [Ubuntu 16.04.1 LTS 64-bit][xx] on a works
     - dark profile
     - [autojump][aj]
     - [incremental history searching][ihs]
-- add [blackboard][bb] and [solarized][gsolar] color schemes to [gedit][gedit]
 - add [solarized][msolar] color scheme to [Mutt][mutt]
-- configure [tmux][tmux]
 - install and configure [vim-gtk][vim]
-- install and configure [Sublime Text][subl], it really is sublime for coding
+- install and configure [Visual Studio Code][code]
 - configure [git][git] global settings
-- install the latest [VirtualBox][vb] and [Vagrant][vg]
-- install [LXD][lxd], use it to download an [Ubuntu][xx] cloud image and create an [LXC][lxc] container
-- install [ZFS][zfs] for use with [LXD][lxd]
-- install [Juju][juju]
 
 ## Installation
 
@@ -55,24 +49,14 @@ SEE: http://keegoid.mit-license.org
 
 
 [ubuntu]:   http://www.ubuntu.com/global
-[xx]:       https://wiki.ubuntu.com/XenialXerus/ReleaseNotes
-[lxd]:      https://linuxcontainers.org/lxd/introduction/
-[lxc]:      https://linuxcontainers.org/lxc/introduction/
-[zfs]:      https://wiki.ubuntu.com/ZFS
-[juju]:     http://www.ubuntu.com/cloud/juju
-[gedit]:    https://wiki.gnome.org/Apps/Gedit
-[subl]:     https://www.sublimetext.com/
+[yy]:       https://wiki.ubuntu.com/YakketyYak/ReleaseNotes
+[code]:     https://code.visualstudio.com/
 [vim]:      http://www.vim.org/
 [gt]:       http://manpages.ubuntu.com/manpages/hardy/man1/gnome-terminal.1.html
 [ihs]:      https://help.ubuntu.com/community/UsingTheTerminal#An_extremely_handy_tool_::_Incremental_history_searching
-[tsolar]:   https://github.com/Anthony25/gnome-terminal-colors-solarized
-[gsolar]:   https://github.com/mattcan/solarized-gedit
 [msolar]:   https://github.com/altercation/mutt-colors-solarized
 [bb]:       https://github.com/afair/dot-gedit
-[tmux]:     https://tmux.github.io/
 [mutt]:     http://www.mutt.org/
-[vb]:       https://www.virtualbox.org/
-[vg]:       https://www.vagrantup.com/
 [aj]:       https://github.com/wting/autojump
 [ssh]:      http://en.wikipedia.org/wiki/Secure_Shell
 [sshkey]:   http://en.wikipedia.org/wiki/Ssh-keygen

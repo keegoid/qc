@@ -103,26 +103,20 @@ fi
 
 # --------------------------  DEFAULT APT PACKAGES
 
-DEFAULT_SERVER_LIST='ca-certificates gettext-base less man-db openssh-server python-software-properties software-properites-common vim-gtk wget'
 DEFAULT_WORKSTATION_LIST='autojump gpgv2 links mutt pinta x11vnc xclip vlc arp-scan'
 DEFAULT_DEV_LIST='autoconf automake build-essential checkinstall dconf-cli shellcheck silversearcher-ag tidy xdotool vim-gtk'
 
 # --------------------------  PROMPT FOR PROGRAMS
 
-if [ "$QC_IS_SERVER" -eq 0 ]; then
-  lkm_notify "Server packages to install (none to skip)"
-  read -ep "   : " -i "$DEFAULT_SERVER_LIST" APTS1
-else
-  lkm_notify3 "The following default packages can be modified prior to installation."
-  echo
-  echo "WORKSTATION"
-  echo "DEVELOPER"
-  echo
-  lkm_notify "Workstation packages to install (delete all to skip)"
-  read -ep "   : " -i "$DEFAULT_WORKSTATION_LIST" APTS1
-  lkm_notify "Developer packages to install"
-  read -ep "   : " -i "$DEFAULT_DEV_LIST" APTS2
-fi
+lkm_notify3 "The following default packages can be modified prior to installation."
+echo
+echo "WORKSTATION"
+echo "DEVELOPER"
+echo
+lkm_notify "Workstation packages to install (delete all to skip)"
+read -rep "   : " -i "$DEFAULT_WORKSTATION_LIST" APTS1
+lkm_notify "Developer packages to install"
+read -rep "   : " -i "$DEFAULT_DEV_LIST" APTS2
 
 # --------------------------  ARRAY ASSIGNMENTS
 

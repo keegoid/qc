@@ -14,7 +14,7 @@
 
 # --------------------------  SETUP PARAMETERS
 
-[ -z "$QC_REPOS" ] && read -ep "Directory to use for repositories: ~/" -i "Dropbox/coding/repos" QC_REPOS
+[ -z "$QC_REPOS" ] && read -rep "Directory to use for repositories: ~/" -i "Dropbox/coding/repos" QC_REPOS
 QC_SELECTED_CONTAINER
 
 # --------------------------  INSTALL LXD/LXC
@@ -45,7 +45,7 @@ qc_init_juju_lxd() {
   [ $? -eq 0 ] && sudo lxd init
 
   # set compression and turn off dedup
-  read -ep "Enter the name you used for your zpool: " zpool_name
+  read -rep "Enter the name you used for your zpool: " zpool_name
   sudo zfs set compression=on "$zpool_name"
   sudo zfs set compression=lz4 "$zpool_name"
   sudo zfs set dedup=off "$zpool_name"
@@ -97,7 +97,7 @@ qc_import_lxd_image() {
 # $1 -> host name
 qc_set_hosts() {
   lxc list
-  read -ep "Type an existing container name to use for ${1}: " QC_SELECTED_CONTAINER
+  read -rep "Type an existing container name to use for ${1}: " QC_SELECTED_CONTAINER
 
   # add container's ip to /etc/hosts
   lkm_pause "Press [Enter] to add $1 to /etc/hosts"
@@ -134,8 +134,8 @@ qc_set_hosts() {
 # $1 -> host name
 qc_set_shared_directory() {
   # set syncing directory paths
-  read -ep "Choose a source directory on host to sync: ~/${QC_REPOS}/" -i "${1}/site" relative_source
-  read -ep "Choose a target directory in container to sync: /" -i "var/www/${1}/public_html" target_dir
+  read -rep "Choose a source directory on host to sync: ~/${QC_REPOS}/" -i "${1}/site" relative_source
+  read -rep "Choose a target directory in container to sync: /" -i "var/www/${1}/public_html" target_dir
   source_dir="$HOME/${QC_REPOS}/$relative_source"
   target_dir="/${target_dir}"
 
@@ -185,8 +185,8 @@ qc_create_lxd_container() {
 
   # select an image and choose a container name
   lxc image list
-  read -ep "Select an image to use for the new container: " -i 'ubuntu-trusty' selected_image
-  read -ep "Enter a host name to use with /etc/hosts: " -i 'wordpress.dev' host_name
+  read -rep "Select an image to use for the new container: " -i 'ubuntu-trusty' selected_image
+  read -rep "Enter a host name to use with /etc/hosts: " -i 'wordpress.dev' host_name
 
   # create and start container
   lxc launch "$selected_image"
@@ -221,7 +221,7 @@ qc_deploy_wordpress() {
 
   # optionally set wp-content to git repository
   lkm_confirm "Use a git repository for wp-content?" true
-  [ $? -eq 0 ] && lkm_notify3 "Format: git@host:path/repo.git or http://host/path/repo.git" && read -ep "Enter a git repository: " git_repo && juju set wordpress wp-content="$git_repo"
+  [ $? -eq 0 ] && lkm_notify3 "Format: git@host:path/repo.git or http://host/path/repo.git" && read -rep "Enter a git repository: " git_repo && juju set wordpress wp-content="$git_repo"
 
   RET="$?"
   lkm_debug

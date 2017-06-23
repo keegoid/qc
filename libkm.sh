@@ -19,6 +19,7 @@
 
 # note: true=0 and false=1 in bash
 
+# shellcheck source=/dev/null
 source colors.sh
 
 # --------------------------  STRING MANIPULATION
@@ -175,7 +176,7 @@ lkm_pause() {
   [ -z "${prompt}" ] && prompt="Press [Enter] key to continue"
   # how to go back, with either default or user message
   [ "$back" = true ] && prompt="${prompt}, [Ctrl+Z] to go back"
-  read -p "$prompt..."
+  read -rp "$prompt..."
 }
 
 lkm_confirm() {
@@ -381,7 +382,7 @@ lkm_install_gem() {
   for pkg in $names; do
     if ! gem list "$pkg" -i >/dev/null 2>&1; then
       echo
-      read -p "Press [Enter] to install $pkg..."
+      read -rp "Press [Enter] to install $pkg..."
       gem install "$pkg"
     fi
   done
@@ -399,7 +400,7 @@ lkm_install_npm() {
   for pkg in $names; do
     if ! npm ls -gs | grep -qw "$pkg"; then
       echo
-      read -p "Press [Enter] to install $pkg..."
+      read -rp "Press [Enter] to install $pkg..."
       npm install -g "$pkg"
     fi
   done
@@ -419,7 +420,7 @@ lkm_install_pip() {
     pkg=$(lkm_trim_longest_right_pattern "$pkg" "[")
     if ! pip list | grep "$pkg" >/dev/null 2>&1; then
       echo
-      read -p "Press [Enter] to install $pkg..."
+      read -rp "Press [Enter] to install $pkg..."
       sudo -H pip install "$pkg"
     fi
   done
@@ -443,7 +444,7 @@ lkm_gen_ssh_key() {
   else
     # create a new ssh key with provided ssh key comment
     lkm_pause "Press [Enter] to generate a new SSH key at: ${ssh_dir}/id_rsa" true
-    read -ep "Enter an ssh key comment: " -i 'coding key' comment
+    read -rep "Enter an ssh key comment: " -i 'coding key' comment
     ssh-keygen -b 4096 -t rsa -C "$comment"
     echo "SSH key generated"
     chmod -c 0600 "${ssh_dir}/id_rsa"
@@ -501,7 +502,7 @@ lkm_authorized_ssh_key() {
     echo "*** NOTE ***"
     echo "Paste (using ctrl+shift+v) your public ssh-rsa key from your workstation"
     echo "to SSH into this server."
-    read -ep "Paste it here: " ssh_rsa
+    read -rep "Paste it here: " ssh_rsa
     echo "${ssh_rsa}" > "${ssh_dir}/authorized_keys"
     echo "public SSH key saved to ${ssh_dir}/authorized_keys"
     chmod -c 0600 "${ssh_dir}/authorized_keys"

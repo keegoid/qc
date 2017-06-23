@@ -4,7 +4,7 @@
 
 echo "# --------------------------------------------"
 echo "# Quickly configures a fresh install of       "
-echo "# Ubuntu 16.04 64-bit.                        "
+echo "# Ubuntu 16.10 64-bit.                        "
 echo "#                                             "
 echo "# Author : Keegan Mullaney                    "
 echo "# Website: keegoid.com                        "
@@ -26,10 +26,6 @@ QC_DEBUG_MODE=0
 
 # make sure $HOME variable is set
 lkm_variable_set "$HOME"
-
-# config for server
-lkm_confirm "Is this a server?"
-QC_IS_SERVER="$?"
 
 # make sure curl and git are installed
 lkm_program_must_exist curl
@@ -57,26 +53,17 @@ qc_exit_msg() {
 qc_display_menu() {
   [ $QC_DEBUG_MODE -eq 1 ] || clear
   echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-  if [ $QC_IS_SERVER -eq 0 ]; then
   echo "     M A I N - M E N U     "
-  echo "          server           "
-  else
-  echo "     M A I N - M E N U     "
-  echo "        workstation        "
-  fi
   echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-  echo "1.  APT PACKAGES & UPDATES"
-  echo "2.  RUBY & RUBYGEMS VIA RBENV"
-  echo "3.  NODEJS & NPMS VIA NVM"
-  echo "4.  PYTHON PACKAGES VIA PIP"
-  echo "5.  SUBLIME TEXT"
-  echo "6.  KEYBASE"
-  echo "7.  SYSTEM CONFIG"
-  echo "8.  SSH KEY"
-  echo "9.  VIRTUALBOX & VAGRANT"
-  echo "10. WORDPRESS WITH LXD, ZFS & JUJU"
-  echo "11. FIX PERMISSIONS"
-  echo "12. QUIT"
+  echo "1. APT PACKAGES & UPDATES"
+  echo "2. RUBY & RUBYGEMS VIA RBENV"
+  echo "3. NODEJS & NPMS VIA NVM"
+  echo "4. PYTHON PACKAGES VIA PIP"
+  echo "5. KEYBASE"
+  echo "6. SYSTEM CONFIG"
+  echo "7. SSH KEY"
+  echo "8. FIX PERMISSIONS"
+  echo "9. QUIT"
 }
 
 # --------------------------  USER SELECTION
@@ -85,20 +72,17 @@ qc_select_options() {
   local choice
   # make sure we're always starting from the right place
   cd "$QC_DIR" || exit
-  read -rp "Enter choice [1 - 12]: " choice
+  read -rp "Enter choice [1 - 9]: " choice
   case $choice in
-    1)  lkm_run_script apts.sh "script";;
-    2)  lkm_run_script gems.sh "script";;
-    3)  lkm_run_script npms.sh "script";;
-    4)  lkm_run_script pips.sh "script";;
-    5)  lkm_run_script subl.sh "script";;
-    6)  lkm_run_script keybase.sh "script";;
-    7)  lkm_run_script config.sh "script";;
-    8)  lkm_run_script sshkey.sh "script";;
-    9)  lkm_run_script vm.sh "script";;
-    10) lkm_run_script lxd.sh "script";;
-    11) qc_fix_permissions;;
-    12) qc_exit_msg && exit 0;;
+    1) lkm_run_script apts.sh "script";;
+    2) lkm_run_script gems.sh "script";;
+    3) lkm_run_script npms.sh "script";;
+    4) lkm_run_script pips.sh "script";;
+    5) lkm_run_script keybase.sh "script";;
+    6) lkm_run_script config.sh "script";;
+    7) lkm_run_script sshkey.sh "script";;
+    8) qc_fix_permissions;;
+    9) qc_exit_msg && exit 0;;
     *)  lkm_alert "Error..." && sleep 1
   esac
 

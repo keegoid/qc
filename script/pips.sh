@@ -43,6 +43,7 @@ qc_virtualenv() {
   lkm_set_source_cmd      "$HOME/.bashrc" \
                           'virtualenv/bin:' \
                           '[[ ":$PATH:" =~ ":$HOME/.virtualenv/bin:" ]] || PATH="$HOME/.virtualenv/bin:$PATH"'
+  # shellcheck source=/dev/null
   source ~/.bashrc
 
   # check which pip
@@ -151,10 +152,10 @@ echo
 echo "PIPs"
 echo
 lkm_notify "Packages to install with pip"
-read -ep "   : " -i 'jrnl[encrypted] pyflakes python-slugify keyrings.alt' PIPS
+read -rep "   : " -i 'jrnl[encrypted] pyflakes python-slugify keyrings.alt' PIPS
 # lkm_notify "Packages to install with pip3"
 # shellcheck disable=SC2034
-# read -ep "   : " -i 'pep8' PIP3S
+# read -rep "   : " -i 'pep8' PIP3S
 
 # --------------------------  ARRAY ASSIGNMENTS
 

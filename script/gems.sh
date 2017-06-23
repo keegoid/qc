@@ -84,7 +84,7 @@ qc_install_rbenv() {
                           '[[ ":$PATH:" =~ ":$HOME/.rbenv/bin:" ]] || PATH="$HOME/.rbenv/bin:$PATH"'
 
   # optional, to speed up rbenv
-  [ -d "$HOME/.rbenv" ] && cd "$HOME/.rbenv" && src/configure && make -C src && cd - >/dev/null
+  [ -d "$HOME/.rbenv" ] &&  cd "$HOME/.rbenv" && src/configure && make -C src && cd - >/dev/null
 
   # add rbenv init - command to .bashrc and .bash_profile (for SublimeLinter)
   # shellcheck disable=SC2016
@@ -165,7 +165,7 @@ echo
 echo "Rubygems"
 echo
 lkm_notify "Packages to install with gem"
-read -ep "   : " -i 'bundler gist travis' GEMS
+read -rep "   : " -i 'bundler gist travis' GEMS
 
 # --------------------------  ARRAY ASSIGNMENTS
 
