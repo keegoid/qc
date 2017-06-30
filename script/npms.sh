@@ -16,7 +16,7 @@
 
 # --------------------------  SETUP PARAMETERS
 
-[ -z "$MAJOR_NODE_V" ] && MAJOR_NODE_V=6
+[ -z "$NODE_LTS_V" ] && NODE_LTS_V=v6.11.0
 [ -z "$NVM_V" ] && NVM_V=0.33.2
 
 # --------------------------  MISSING PROGRAM CHECKS
@@ -43,10 +43,11 @@ qc_nvm() {
   lkm_has nvm || lkm_error "nvm install failed"
 
   # get latest version
-  node_v=$(nvm ls-remote | grep "v${MAJOR_NODE_V}.*\.*" | tr -d ' ' | cut -d'(' -f1 | tail -1)
+  # not working with nvm command inside script
+  # node_v=$(nvm ls-remote | grep "v${NODE_LTS_V}.*\.*" | tr -d ' ' | cut -d'(' -f1 | tail -1)
 
   # install nodejs
-  nvm install "$node_v"
+  nvm install "$NODE_LTS_V"
 
   if [ $? -eq 0 ]; then
     nvm alias default "$node_v"
