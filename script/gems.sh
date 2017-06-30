@@ -124,7 +124,7 @@ qc_install_ruby() {
   # export MAKE=make
 
   # install the latest stable ruby version
-  ruby_global_v=$(~/.rbenv/bin/rbenv install --list | tr -d ' ' | grep "^2.*.[0..9]$" | tail -1)
+  ruby_global_v=$(~/.rbenv/bin/rbenv install --list | tr -d ' ' | grep "^2.*\.[0-9]$" | tail -1)
   [ $? -eq 0 ] && ~/.rbenv/bin/rbenv install "$ruby_global_v"
 
   # set global ruby version

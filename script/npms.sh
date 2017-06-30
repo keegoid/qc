@@ -16,7 +16,7 @@
 
 # --------------------------  SETUP PARAMETERS
 
-[ -z "$QC_LTS" ] && QC_LTS=6
+[ -z "$MAJOR_NODE_V" ] && MAJOR_NODE_V=6
 [ -z "$NVM_V" ] && NVM_V=0.33.2
 
 # --------------------------  MISSING PROGRAM CHECKS
@@ -42,8 +42,8 @@ qc_nvm() {
   # make sure nvm is installed
   lkm_has nvm || lkm_error "nvm install failed"
 
-  # get long term support version
-  node_v=$(nvm ls-remote | grep "v${QC_LTS}.*" | tail -1 | tr -d ' ')
+  # get latest version
+  node_v=$(nvm ls-remote | grep "v${MAJOR_NODE_V}.*\.*" | tr -d ' ' | cut -d'(' -f1 | tail -1)
 
   # install nodejs
   nvm install "$node_v"
