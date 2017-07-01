@@ -59,11 +59,12 @@ qc_display_menu() {
   echo "2. RUBY & RUBYGEMS VIA RBENV"
   echo "3. NODEJS & NPMS VIA NVM"
   echo "4. PYTHON PACKAGES VIA PIP"
-  echo "5. KEYBASE"
-  echo "6. SYSTEM CONFIG"
-  echo "7. SSH KEY"
-  echo "8. FIX PERMISSIONS"
-  echo "9. QUIT"
+  echo "5. SUBLIME TEXT 3"
+  echo "6. KEYBASE"
+  echo "7. SYSTEM CONFIG"
+  echo "8. SSH KEY"
+  echo "9. FIX PERMISSIONS"
+  echo "10. QUIT"
 }
 
 # --------------------------  USER SELECTION
@@ -72,17 +73,18 @@ qc_select_options() {
   local choice
   # make sure we're always starting from the right place
   cd "$QC_DIR" || exit
-  read -rp "Enter choice [1 - 9]: " choice
+  read -rp "Enter choice [1 - 10]: " choice
   case $choice in
     1) lkm_run_script apts.sh "script";;
     2) lkm_run_script gems.sh "script";;
     3) lkm_run_script npms.sh "script";;
     4) lkm_run_script pips.sh "script";;
-    5) lkm_run_script keybase.sh "script";;
-    6) lkm_run_script config.sh "script";;
-    7) lkm_run_script sshkey.sh "script";;
-    8) qc_fix_permissions;;
-    9) qc_exit_msg && exit 0;;
+    5) lkm_run_script subl.sh "script";;
+    6) lkm_run_script keybase.sh "script";;
+    7) lkm_run_script config.sh "script";;
+    8) lkm_run_script sshkey.sh "script";;
+    9) qc_fix_permissions;;
+    10) qc_exit_msg && exit 0;;
     *)  lkm_alert "Error..." && sleep 1
   esac
 
