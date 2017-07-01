@@ -29,6 +29,8 @@ qc_install_subl() {
   else
     lkm_notify "subl is already installed"
   fi
+
+  lkm_notify "Make sure to install Package Control so subl can install any packages listed in your User directory. It can be installed from https://packagecontrol.io/installation"
 }
 
 # --------------------------  MAIN
