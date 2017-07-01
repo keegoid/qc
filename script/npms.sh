@@ -15,8 +15,6 @@
 { # this ensures the entire script is downloaded #
 
 # --------------------------  SETUP PARAMETERS
-
-[ -z "$NODE_LTS_V" ] && NODE_LTS_V=6
 [ -z "$NVM_V" ] && NVM_V=0.33.2
 
 # --------------------------  MISSING PROGRAM CHECKS
@@ -31,7 +29,6 @@ npm_check_list=()
 
 # install the long term support version of Node.js via NVM
 qc_nvm() {
-  local node_v
   # install NVM
   curl -o- "https://raw.githubusercontent.com/creationix/nvm/v${NVM_V}/install.sh" | bash
 
@@ -42,16 +39,10 @@ qc_nvm() {
   # make sure nvm is installed
   lkm_has nvm || lkm_error "nvm install failed"
 
-  # get latest version
-  node_v=$(nvm ls-remote | grep "$NODE_LTS_V.\w.\w*" | tr -d ' ' | cut -d'(' -f1 | tail -1)
+  # install latest long term support version
+  nvm install --lts=Boron
 
-  # install nodejs
-  nvm install "$node_v"
-
-  # if [ $? -eq 0 ]; then
-    echo "setting nvm default to $node_v"
-    nvm alias default "$node_v"
-
+  if [ $? -eq 0 ]; then
     # check which node and npm
     echo "checking which node"
     which node
@@ -63,7 +54,7 @@ qc_nvm() {
     npm -v
 
     lkm_notify "After switching node versions, remember to run \`npm build\`."
-  # fi
+  fi
 
   RET="$?"
   lkm_debug
