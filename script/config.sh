@@ -14,7 +14,7 @@
 
 [ -z "$QC_CONFIG" ] && QC_CONFIG="$HOME/.qc"
 [ -z "$QC_BACKUP" ] && QC_BACKUP="$QC_CONFIG/backup"
-[ -z "$QC_SYNCED" ] && read -rep "Directory to store/sync your config: " -i "$HOME/" QC_SYNCED
+[ -z "$QC_SYNCED" ] && read -rep "Directory to store/sync Sublime Text config: " -i "$HOME/" QC_SYNCED
 
 # system and program config files
 CONF1="$HOME/.bashrc"
@@ -26,7 +26,7 @@ CONF6="$HOME/.gitignore_global"
 
 # config files copied from repositories
 REPO1="/usr/share/autojump/autojump.sh" #autojump.bash in CentOS
-REPO3="$QC_CONFIG/sublime/sublconfig/Preferences.sublime-settings"
+REPO3="$QC_CONFIG/sublime/subl.conf"
 REPO4="$QC_CONFIG/mutt/colors/mutt-colors-solarized-dark-16.muttrc"
 REPO5="$QC_CONFIG/vim/vim.conf"
 REPO6="$QC_CONFIG/git/gitignore_global"
@@ -80,8 +80,8 @@ qc_set_subl_config() {
 
   repo_dir=$(lkm_trim_shortest_right_pattern "$REPO3" "/")
 
-  # make sure parent directory exists for symlink
-  mkdir -p "${user_dir%/*}"
+  # make sure directory exists for symlink
+  mkdir -p "$user_dir"
 
   # check User directory exists in QC_SYNCED/sublime/User/, else move from $HOME/.config/sublime/User/
   [ -d "$QC_SYNCED/sublime/User" ] || { mkdir -p "$QC_SYNCED/sublime/User" ; mv "$user_dir" "$QC_SYNCED/sublime/User" ; }

@@ -32,7 +32,7 @@ qc_gem_check() {
   for pkg in "${gem_check_list[@]}"
   do
     if ~/.rbenv/shims/gem list ^"$pkg"$ -i >/dev/null 2>&1; then
-      pkg_version=$(~/.rbenv/shims/gem list ^"$pkg"$ | grep "${pkg}" | cut -d " " -f 2 | cut -d "(" -f 2 | cut -d ")" -f 1)
+      pkg_version=$(~/.rbenv/shims/gem list ^"$pkg"$ | grep "${pkg}" | cut -d' ' -f2 | cut -d'(' -f2 | cut -d')' -f1)
       lkm_print_pkg_info "$pkg" "$pkg_version"
     else
       echo -e " ${YELLOW_BLACK} * $pkg [not installed] ${NONE_WHITE}"
@@ -124,7 +124,7 @@ qc_install_ruby() {
   # export MAKE=make
 
   # install the latest stable ruby version
-  ruby_global_v=$(~/.rbenv/bin/rbenv install --list | tr -d ' ' | grep "^2.*\.[0-9]$" | tail -1)
+  ruby_global_v=$(~/.rbenv/bin/rbenv install --list | tr -d ' ' | grep "^[[:digit:]].[[:digit:]].[[:digit:]]$" | tail -1)
   [ $? -eq 0 ] && ~/.rbenv/bin/rbenv install "$ruby_global_v"
 
   # set global ruby version
