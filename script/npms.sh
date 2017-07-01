@@ -43,12 +43,12 @@ qc_nvm() {
   lkm_has nvm || lkm_error "nvm install failed"
 
   # get latest version
-  node_v=$(nvm ls-remote | grep "${NODE_LTS_V}.[[:digit:]].[[:digit:]]" | tr -d 'v ' | cut -d'(' -f1 | tail -1)
+  node_v=$(nvm ls-remote | grep "$NODE_LTS_V.\w.\w*" | tr -d ' ' | cut -d'(' -f1 | tail -1)
 
   # install nodejs
   nvm install "$node_v"
 
-  if [ $? -eq 0 ]; then
+  # if [ $? -eq 0 ]; then
     echo "setting nvm default to $node_v"
     nvm alias default "$node_v"
 
@@ -63,7 +63,7 @@ qc_nvm() {
     npm -v
 
     lkm_notify "After switching node versions, remember to run \`npm build\`."
-  fi
+  # fi
 
   RET="$?"
   lkm_debug
