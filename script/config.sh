@@ -89,10 +89,7 @@ qc_set_subl_config() {
   [ -d "$conf_dir" ] || { mkdir -p "$conf_dir" ; mv "$user_dir" "$conf_dir" ; }
 
   # remove default user directory if not already a symlink
-  [ -L "$user_dir" ] || rm -r "$user_dir"
-
-  # symlink from user_dir to conf_dir
-  ln -s "$conf_dir" "$user_dir"
+  [ -L "$user_dir" ] || { rm -r "$user_dir" ; ln -s "$conf_dir" "$user_dir" ; }
 
   # update or clone repository if symbolic link exists for User directory
   if [ -d "$repo_dir" ]; then
