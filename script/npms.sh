@@ -36,9 +36,6 @@ qc_nvm() {
   # shellcheck source=/dev/null
   . ~/.nvm/nvm.sh
 
-  # make sure nvm is installed
-  lkm_has nvm || lkm_error "nvm install failed"
-
   # install latest long term support version
   nvm install --lts=Boron
 
