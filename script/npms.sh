@@ -43,7 +43,7 @@ qc_nvm() {
   lkm_has nvm || lkm_error "nvm install failed"
 
   # get latest version
-  node_v=$(nvm ls-remote | grep "v${NODE_LTS_V}.*\.*" | tr -d ' ' | cut -d'(' -f1 | tail -1)
+  node_v=$(nvm ls-remote | grep "${NODE_LTS_V}.[[:digit:]].[[:digit:]]" | tr -d 'v ' | cut -d'(' -f1 | tail -1)
 
   # install nodejs
   nvm install "$node_v"
