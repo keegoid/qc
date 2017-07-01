@@ -19,14 +19,14 @@
 # system and program config files
 CONF1="$HOME/.bashrc"
 CONF2="$HOME/.inputrc"
-CONF3="$QC_SYNCED/sublime/User/Preferences.sublime-settings"
+CONF3="$QC_SYNCED/subl/User/Preferences.sublime-settings"
 CONF4="$HOME/.muttrc"
 CONF5="$HOME/.vimrc"
 CONF6="$HOME/.gitignore_global"
 
 # config files copied from repositories
 REPO1="/usr/share/autojump/autojump.sh" #autojump.bash in CentOS
-REPO3="$QC_CONFIG/sublime/subl.conf"
+REPO3="$QC_CONFIG/subl/subl.conf"
 REPO4="$QC_CONFIG/mutt/colors/mutt-colors-solarized-dark-16.muttrc"
 REPO5="$QC_CONFIG/vim/vim.conf"
 REPO6="$QC_CONFIG/git/gitignore_global"
@@ -83,14 +83,14 @@ qc_set_subl_config() {
   # make sure directory exists for symlink
   mkdir -p "$user_dir"
 
-  # check User directory exists in QC_SYNCED/sublime/User/, else move from $HOME/.config/sublime/User/
-  [ -d "$QC_SYNCED/sublime/User" ] || { mkdir -p "$QC_SYNCED/sublime/User" ; mv "$user_dir" "$QC_SYNCED/sublime/User" ; }
+  # check User directory exists in QC_SYNCED/subl/User/, else move from $HOME/.config/sublime/User/
+  [ -d "$QC_SYNCED/subl/User" ] || { mkdir -p "$QC_SYNCED/subl/User" ; mv "$user_dir" "$QC_SYNCED/subl/User" ; }
 
   # check if standard directory exists and if so, remove it
   [ -d "$user_dir" ] && rm -r "$user_dir"
 
   # symlink to User directory
-  ln -s "$QC_SYNCED/sublime/User" "$user_dir"
+  ln -s "$QC_SYNCED/subl/User" "$user_dir"
 
   # update or clone repository if symbolic link exists for User directory
   if [ -d "$repo_dir" ]; then
@@ -238,7 +238,7 @@ lkm_set_sourced_config  "https://gist.github.com/00a60c7355c27c692262.git" \
 
 [ -d "$QC_SYNCED/vim" ] || { mkdir -pv "$QC_SYNCED/vim"; lkm_notify3 "note: vim spellfile will be located in $QC_SYNCED/vim, you can change this in $CONF5"; }
 
-# sublime text
+# sublime text 3
 qc_set_subl_config      "https://gist.github.com/6628da9ad09cf0eff9427c6dfdca6e5f.git"
 
 qc_set_git_config       "https://gist.github.com/efa547b362910ac7077c.git"
