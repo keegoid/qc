@@ -26,7 +26,7 @@ CONF6="$HOME/.gitignore_global"
 
 # config files copied from repositories
 REPO1="/usr/share/autojump/autojump.sh" #autojump.bash in CentOS
-REPO3="$HOME/.config/sublime-text-3/Packages/Theme - KMS/subl.conf"
+REPO3="$QC_CONFIG/sublime/sublconfig/Preferences.sublime-settings"
 REPO4="$QC_CONFIG/mutt/colors/mutt-colors-solarized-dark-16.muttrc"
 REPO5="$QC_CONFIG/vim/vim.conf"
 REPO6="$QC_CONFIG/git/gitignore_global"
@@ -80,12 +80,11 @@ qc_set_subl_config() {
 
   repo_dir=$(lkm_trim_shortest_right_pattern "$REPO3" "/")
 
-  # make sure directories exist
-  mkdir -p "$HOME/.config/sublime-text-3/Packages"
-  mkdir -p "$QC_SYNCED/sublime/User"
+  # make sure parent directory exists for symlink
+  mkdir -p "${user_dir%/*}"
 
   # check User directory exists in QC_SYNCED/sublime/User/, else move from $HOME/.config/sublime/User/
-  [ -d "$QC_SYNCED/sublime/User" ] || mv "$user_dir" "$QC_SYNCED/sublime/User"
+  [ -d "$QC_SYNCED/sublime/User" ] || { mkdir -p "$QC_SYNCED/sublime/User" ; mv "$user_dir" "$QC_SYNCED/sublime/User" ; }
 
   # check if standard directory exists and if so, remove it
   [ -d "$user_dir" ] && rm -r "$user_dir"
@@ -94,7 +93,7 @@ qc_set_subl_config() {
   ln -s "$QC_SYNCED/sublime/User" "$user_dir"
 
   # update or clone repository if symbolic link exists for User directory
-  if [ -L "$repo_dir" ] && [ -d "$repo_dir" ]; then
+  if [ -d "$repo_dir" ]; then
     (
       cd "$repo_dir" || exit
       echo "checking for updates: Keegoid's Sublime Text preferences"
@@ -104,12 +103,12 @@ qc_set_subl_config() {
     git clone "$repo_url" "$repo_dir" && cloned=0
   fi
 
-# no need to do this since it is already a symbolic link?
   # copy config file to proper location
-#  cp "$repo_file" "$conf_file"
-#  if [ $? -eq 0 ] && [ "$cloned" -eq 0 ]; then
-#    lkm_success "configured: $conf_file"
-#  fi
+  echo -e "copying $repo_file to \n$conf_file"
+  cp -i "$repo_file" "$conf_file"
+  if [ $? -eq 0 ] && [ "$cloned" -eq 0 ]; then
+    lkm_success "configured: $conf_file"
+  fi
 
   RET="$?"
   lkm_debug
@@ -150,7 +149,7 @@ qc_set_git_config() {
   if ! git config --list | grep -q "user.name"; then
     read -rep "your name for git commit logs: " -i 'Keegan Mullaney' real_name
     read -rep "your email for git commit logs: " -i 'keeganmullaney@gmail.com' email_address
-    read -rep "your preferred text editor for git commits: " -i 'code --wait' git_editor
+    read -rep "your preferred text editor for git commits: " -i 'subl --wait' git_editor
     lkm_configure_git "$real_name" "$email_address" "$git_editor" && lkm_success "configured: $CONF6"
   fi
 
@@ -240,7 +239,7 @@ lkm_set_sourced_config  "https://gist.github.com/00a60c7355c27c692262.git" \
 [ -d "$QC_SYNCED/vim" ] || { mkdir -pv "$QC_SYNCED/vim"; lkm_notify3 "note: vim spellfile will be located in $QC_SYNCED/vim, you can change this in $CONF5"; }
 
 # sublime text
-qc_set_subl_config      "https://github.com/keegoid/kms-theme.git"
+qc_set_subl_config      "https://gist.github.com/6628da9ad09cf0eff9427c6dfdca6e5f.git"
 
 qc_set_git_config       "https://gist.github.com/efa547b362910ac7077c.git"
 
