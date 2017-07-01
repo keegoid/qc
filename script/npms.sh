@@ -48,22 +48,22 @@ qc_nvm() {
   # install nodejs
   nvm install "$node_v"
 
-  if [[ $? -eq 0 ]] ; then
+  if [ $? -eq 0 ]; then
     echo "setting nvm default to $node_v"
     nvm alias default "$node_v"
+
+    # check which node and npm
+    echo "checking which node"
+    which node
+    echo "checking which npm"
+    which npm
+
+    # check npm version
+    echo "checking npm version"
+    npm -v
+
+    lkm_notify "After switching node versions, remember to run \`npm build\`."
   fi
-
-  # check which node and npm
-  echo "checking which node"
-  which node
-  echo "checking which npm"
-  which npm
-
-  # check npm version
-  echo "checking npm version"
-  npm -v
-
-  lkm_notify "After switching node versions, remember to run \`npm build\`."
 
   RET="$?"
   lkm_debug
