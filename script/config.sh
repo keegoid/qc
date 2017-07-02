@@ -242,6 +242,7 @@ qc_set_ps1() {
   # success message
   if [ $? -eq 0 ] && [ "$configured" -eq 0 ]; then
     lkm_success "configured: $conf_file with custom PS1 variable"
+    echo "Close and reopen the terminal to see the new prompt string."
   fi
 
   # shellcheck disable=SC2034
