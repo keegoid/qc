@@ -99,7 +99,7 @@ qc_set_subl_config() {
 
   # remove default user directory if not already a symlink
   echo "checking for symlink at $user_dir"
-  [ -L "$user_dir" ] || { echo "attempting to remove $user_dir" ; rm -rf "$user_dir" ; echo "creating symlink from $user_dir to $conf_dir" ; ln -s "$conf_dir" "$user_dir" ; }
+  [ -L "$user_dir" ] || { echo "creating symlink from $user_dir to $conf_dir" ; ln -s "$conf_dir" "$user_dir" ; }
 
   # update or clone repository if symbolic link exists for User directory
   if [ -d "$repo_dir" ]; then
