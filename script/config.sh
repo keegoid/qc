@@ -214,7 +214,7 @@ qc_set_ps1() {
   local repo_file="$REPO7"
   local repo_dir
   local repo_name
-  local cloned=1
+  local configured=1
 
   repo_dir=$(lkm_trim_shortest_right_pattern "$REPO7" "/")
   repo_name=$(lkm_trim_longest_left_pattern "$repo_dir" "/")
@@ -227,7 +227,7 @@ qc_set_ps1() {
       git pull
     )
   else
-    git clone "$repo_url" "$repo_dir" && cloned=0
+    git clone "$repo_url" "$repo_dir"
   fi
 
   # check if already added, else set source command in conf_file
@@ -236,11 +236,11 @@ qc_set_ps1() {
   else
     lkm_pause "Press [Enter] to configure PS1 variable for gnome-terminal" true
     # shellcheck disable=SC1090
-    sed -i.bak -e '0,/PS1/s//#PS1/' -e "/\"\$color_prompt\" = yes/ a $src_cmd" "$conf_file" && source "$conf_file"
+    sed -i.bak -e '0,/PS1/s//#PS1/' -e "/\"\$color_prompt\" = yes/ a $src_cmd" "$conf_file" && source "$conf_file" && configured=0
   fi
 
   # success message
-  if [ $? -eq 0 ] && [ "$cloned" -eq 0 ]; then
+  if [ $? -eq 0 ] && [ "$configured" -eq 0 ]; then
     lkm_success "configured: $conf_file with custom PS1 variable"
   fi
 
@@ -293,7 +293,7 @@ qc_set_autojump         "$CONF1" \
                         "\n# source autojump file\nif [ -f $REPO1 ]; then\n   . $REPO1\nfi"
 
 qc_set_ps1              "https://gist.github.com/13482742b6140ec0ffbc818173805889.git" \
-                        "  # source PS1 file\n  if [ -f $REPO7 ]; then\n     . $REPO7\n  fi"
+                        "# source PS1 file\n    if [ -f $REPO7 ]; then\n       . $REPO7\n    fi"
 
 qc_reset
 
