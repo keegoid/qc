@@ -236,12 +236,12 @@ qc_set_ps1() {
   else
     lkm_pause "Press [Enter] to configure PS1 variable for gnome-terminal" true
     # shellcheck disable=SC1090
-    sed -i.bak -e '0,/PS1/s//#PS1/' -e "/\"\$color_prompt\" = yes/ a $src_cmd" "$conf_file" && source "$conf_file" && lkm_success "configured: $conf_file with custom PS1 variable"
+    sed -i.bak -e '0,/PS1/s//#PS1/' -e "/\"\$color_prompt\" = yes/ a $src_cmd" "$conf_file" && source "$conf_file"
   fi
 
   # success message
   if [ $? -eq 0 ] && [ "$cloned" -eq 0 ]; then
-    lkm_success "configured: $conf_file"
+    lkm_success "configured: $conf_file with custom PS1 variable"
   fi
 
   # shellcheck disable=SC2034
@@ -293,9 +293,7 @@ qc_set_autojump         "$CONF1" \
                         "\n# source autojump file\nif [ -f $REPO1 ]; then\n   . $REPO1\nfi"
 
 qc_set_ps1              "https://gist.github.com/13482742b6140ec0ffbc818173805889.git" \
-                        "$CONF1" \
-                        "$REPO7" \
-                        "\n# source PS1 file\nif [ -f $REPO7 ]; then\n   . $REPO7\nfi"
+                        "  # source PS1 file\n  if [ -f $REPO7 ]; then\n     . $REPO7\n  fi"
 
 qc_reset
 
