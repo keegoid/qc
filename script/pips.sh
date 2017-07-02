@@ -173,6 +173,8 @@ qc_reset() {
 # --------------------------  INSTALL PROGRAMS
 
 lkm_confirm "Install PIP via Virtualenv?" true
+# check if virtualenv and pip are already installed
+[ -f ~/.virtualenv/bin/pip ] && lkm_confirm "Looks like Virtualenv and PIP are already installed. Proceed anyway?" true
 if [ $? -eq 0 ]; then
   qc_virtualenv
   echo "Close the terminal window and reopen to enable the new PIP with Virtualenv. Then rerun this script."

@@ -1,6 +1,6 @@
 # Quick Config
 
-Quickly configures a fresh install of [Ubuntu 16.10 64-bit][yy] on a workstation.
+Quickly configures a fresh install of [Ubuntu 17.04 64-bit][zz] on a workstation.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -49,7 +49,7 @@ SEE: http://keegoid.mit-license.org
 
 
 [ubuntu]:   http://www.ubuntu.com/global
-[yy]:       https://wiki.ubuntu.com/YakketyYak/ReleaseNotes
+[zz]:       https://wiki.ubuntu.com/ZestyZapus/ReleaseNotes
 [code]:     https://code.visualstudio.com/
 [vim]:      http://www.vim.org/
 [gt]:       http://manpages.ubuntu.com/manpages/hardy/man1/gnome-terminal.1.html
