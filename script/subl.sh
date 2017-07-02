@@ -32,6 +32,7 @@ qc_install_subl() {
   fi
 
   lkm_notify "Make sure to install Package Control so subl can install any packages listed in your User directory. It can be installed from https://packagecontrol.io/installation"
+  lkm_notify2 "Recommend installing the Material Theme package for Sublime Text 3 from https://github.com/equinusocio/material-theme"
 }
 
 # --------------------------  MAIN

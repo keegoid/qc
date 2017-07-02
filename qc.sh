@@ -58,12 +58,12 @@ qc_display_menu() {
   echo "1.  APT PACKAGES & UPDATES"
   echo "2.  RUBY & RUBYGEMS VIA RBENV"
   echo "3.  NODEJS & NPMS VIA NVM"
-  echo "4.  PYTHON PACKAGES VIA PIP"
+  echo "4.  PYTHON & PIP VIA VIRTUALENV"
   echo "5.  SUBLIME TEXT 3"
   echo "6.  KEYBASE"
   echo "7.  SYSTEM CONFIG"
   echo "8.  SSH KEY"
-  echo "9.  FIX PERMISSIONS"
+  echo "9.  FIX HOME OWNERSHIP"
   echo "10. QUIT"
 }
 

@@ -6,29 +6,29 @@ Quickly configures a fresh install of [Ubuntu 17.04 64-bit][zz] on a workstation
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [What it can do](#what-it-can-do)
+- [What qc can do](#what-qc-can-do)
+- [Installation](#installation)
 - [Usage](#usage)
-  - [Clone or download this project](#clone-or-download-this-project)
-  - [Run it](#run-it)
-- [SSH Keys](#ssh-keys)
 - [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## What qc can do
 
-- update [Ubuntu][ubuntu] and install some programs using apt-get, gem, npm, and pip
+- update [Ubuntu][ubuntu] and install some useful packages
+- setup standard developement environment utilizing package managers: [rbenv][rbenv], [nvm][nvm], [virtualenv][venv]
+- install gem, npm, and pip packages using appropriate package managers
 - generate an [RSA key][sshkey] for remote [SSH sessions][ssh]
-- add useful [shell aliases][sa]
 - make the [terminal][gt] easier to read and use with:
-    - colored prompts
-    - dark profile
+    - colored prompt string (PS1)
     - [autojump][aj]
     - [incremental history searching][ihs]
 - add [solarized][msolar] color scheme to [Mutt][mutt]
 - install and configure [vim-gtk][vim]
-- install and configure [Visual Studio Code][code]
+- install and configure [Sublime Text 3][subl]
+- install [Keybase][keyb]
 - configure [git][git] global settings
+- fix ownership issues in Home directory (warning: dangerous command, run at your own risk)
 
 ## Installation
 
@@ -50,17 +50,20 @@ SEE: http://keegoid.mit-license.org
 
 [ubuntu]:   http://www.ubuntu.com/global
 [zz]:       https://wiki.ubuntu.com/ZestyZapus/ReleaseNotes
-[code]:     https://code.visualstudio.com/
+[subl]:     https://www.sublimetext.com/
 [vim]:      http://www.vim.org/
 [gt]:       http://manpages.ubuntu.com/manpages/hardy/man1/gnome-terminal.1.html
 [ihs]:      https://help.ubuntu.com/community/UsingTheTerminal#An_extremely_handy_tool_::_Incremental_history_searching
 [msolar]:   https://github.com/altercation/mutt-colors-solarized
 [bb]:       https://github.com/afair/dot-gedit
 [mutt]:     http://www.mutt.org/
+[keyb]:     https://keybase.io/
 [aj]:       https://github.com/wting/autojump
 [ssh]:      http://en.wikipedia.org/wiki/Secure_Shell
 [sshkey]:   http://en.wikipedia.org/wiki/Ssh-keygen
-[sa]:       http://en.wikipedia.org/wiki/Alias_%28command%29
 [gh]:       https://github.com/
 [git]:      https://git-scm.com/
 [lp]:       https://lastpass.com/f?3202156
+[rbenv]:    https://github.com/rbenv/rbenv
+[nvm]:      https://github.com/creationix/nvm
+[venv]:     https://github.com/pypa/virtualenv
