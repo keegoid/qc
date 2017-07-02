@@ -4,7 +4,7 @@
 
 echo "# --------------------------------------------"
 echo "# Quickly configures a fresh install of       "
-echo "# Ubuntu 16.10 64-bit.                        "
+echo "# Ubuntu 17.04 64-bit.                        "
 echo "#                                             "
 echo "# Author : Keegan Mullaney                    "
 echo "# Website: keegoid.com                        "
@@ -36,6 +36,7 @@ lkm_program_must_exist git
 # if any files in home are not owned by home user, fix that
 qc_fix_permissions() {
   # set ownership
+  lkm_notify2 "Warning: The following is a dangerous command, run at your own risk."
   lkm_pause "Press [Enter] to make sure all files in $HOME are owned by $(whoami)" true
   sudo chown --preserve-root -cR "$(whoami)":"$(whoami)" "$HOME"
 }
