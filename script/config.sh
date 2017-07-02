@@ -76,18 +76,20 @@ qc_set_subl_config() {
   local conf_file="$CONF3"
   local repo_file="$REPO3"
   local conf_dir
+  local conf_parent_dir
   local repo_dir
   local cloned=1
   local user_dir="$HOME/.config/sublime-text-3/Packages/User"
 
   conf_dir=$(lkm_trim_shortest_right_pattern "$CONF3" "/")
+  conf_parent_dir=$(lkm_trim_shortest_right_pattern "$conf_dir" "/")
   repo_dir=$(lkm_trim_shortest_right_pattern "$REPO3" "/")
 
   # make sure directory exists for symlink
   mkdir -p "$user_dir"
 
-  # check if $conf_dir exists, else create it and move $user_dir to $conf_dir
-  [ -d "$conf_dir" ] || { mkdir -p "$conf_dir" ; mv "$user_dir" "$conf_dir" ; }
+  # check if $conf_dir exists, else create parent and move $user_dir to $conf_parent_dir
+  [ -d "$conf_dir" ] || { mkdir -p "$conf_parent_dir" ; mv "$user_dir" "$conf_parent_dir" ; }
 
   # remove default user directory if not already a symlink
   [ -L "$user_dir" ] || { rm -r "$user_dir" ; ln -s "$conf_dir" "$user_dir" ; }
@@ -236,7 +238,7 @@ qc_set_ps1() {
   else
     lkm_pause "Press [Enter] to configure PS1 variable for gnome-terminal" true
     # shellcheck disable=SC1090
-    sed -i.bak -e '0,/PS1/s//#PS1/' -e "/\"\$color_prompt\" = yes/ a $src_cmd" "$conf_file" && source "$conf_file" && configured=0
+    sed -i.bak -e '0,/PS1/s//#PS1/' -e "/\"\$color_prompt\" = yes/ a $src_cmd" "$conf_file" && configured=0
   fi
 
   # success message
