@@ -30,6 +30,7 @@ REPO3="$QC_CONFIG/subl/subl.conf"
 REPO4="$QC_CONFIG/mutt/colors/mutt-colors-solarized-dark-16.muttrc"
 REPO5="$QC_CONFIG/vim/vim.conf"
 REPO6="$QC_CONFIG/git/gitignore_global"
+REPO7="$QC_CONFIG/bashrc/ps1.conf"
 
 # --------------------------  BACKUPS
 
@@ -204,11 +205,55 @@ qc_set_autojump() {
   lkm_debug
 }
 
+# --------------------------  SET PS1
+
+qc_set_ps1() {
+  local repo_url="$1"
+  local src_cmd="$2"
+  local conf_file="$CONF1"
+  local repo_file="$REPO7"
+  local repo_dir
+  local repo_name
+  local cloned=1
+
+  repo_dir=$(lkm_trim_shortest_right_pattern "$REPO7" "/")
+  repo_name=$(lkm_trim_longest_left_pattern "$repo_dir" "/")
+
+  # update or clone repository
+  if [ -d "$repo_dir" ]; then
+    (
+      cd "$repo_dir" || exit
+      echo "checking for updates: $repo_name"
+      git pull
+    )
+  else
+    git clone "$repo_url" "$repo_dir" && cloned=0
+  fi
+
+  # check if already added, else set source command in conf_file
+  if grep -q "bashrc/ps1.conf" "$conf_file" >/dev/null 2>&1; then
+    echo "already added custom PS1 file"
+  else
+    lkm_pause "Press [Enter] to configure PS1 variable for gnome-terminal" true
+    # shellcheck disable=SC1090
+    sed -i.bak -e '0,/PS1/s//#PS1/' -e "/\"\$color_prompt\" = yes/ a $src_cmd" "$conf_file" && source "$conf_file" && lkm_success "configured: $conf_file with custom PS1 variable"
+  fi
+
+  # success message
+  if [ $? -eq 0 ] && [ "$cloned" -eq 0 ]; then
+    lkm_success "configured: $conf_file"
+  fi
+
+  # shellcheck disable=SC2034
+  RET="$?"
+  lkm_debug
+}
+
 # --------------------------  UNSET FUNCTIONS
 
 # unset the various functions defined during execution of the script
 qc_reset() {
-  unset -f qc_reset qc_do_backup qc_set_code_config qc_set_git_config qc_set_terminal_history qc_set_autojump
+  unset -f qc_reset qc_do_backup qc_set_code_config qc_set_git_config qc_set_terminal_history qc_set_autojump qc_set_ps1
 }
 
 # --------------------------  MAIN
@@ -246,6 +291,11 @@ qc_set_terminal_history "$CONF2"
 
 qc_set_autojump         "$CONF1" \
                         "\n# source autojump file\nif [ -f $REPO1 ]; then\n   . $REPO1\nfi"
+
+qc_set_ps1              "https://gist.github.com/13482742b6140ec0ffbc818173805889.git" \
+                        "$CONF1" \
+                        "$REPO7" \
+                        "\n# source PS1 file\nif [ -f $REPO7 ]; then\n   . $REPO7\nfi"
 
 qc_reset
 
