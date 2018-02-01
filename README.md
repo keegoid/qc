@@ -20,7 +20,7 @@ Quickly configures a fresh install of [Ubuntu 17.10 64-bit][aa] on a workstation
 - install gem, npm, and pip packages using appropriate package managers
 - generate an [RSA key][sshkey] for remote [SSH sessions][ssh]
 - make the [terminal][gt] easier to read and use with:
-    - colored prompt string (PS1)
+    - [colored prompt string (PS1)][ps1]
     - [autojump][aj]
     - [incremental history searching][ihs]
 - add [solarized][msolar] color scheme to [Mutt][mutt]
@@ -67,3 +67,4 @@ SEE: http://keegoid.mit-license.org
 [rbenv]:    https://github.com/rbenv/rbenv
 [nvm]:      https://github.com/creationix/nvm
 [venv]:     https://github.com/pypa/virtualenv
+[ps1]:      https://gist.github.com/keegoid/13482742b6140ec0ffbc818173805889
