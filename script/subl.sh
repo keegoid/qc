@@ -15,7 +15,7 @@
 # install Sublime Text
 qc_install_subl() {
   local subl_v
-  [ -z "$subl_v" ] && read -rep "Sublime Text 3 version to use: " -i "3126" subl_v
+  [ -z "$subl_v" ] && read -rep "Sublime Text 3 version to use: " -i "3143" subl_v
   local subl_url="https://download.sublimetext.com/sublime-text_build-${subl_v}_amd64.deb"
 
   if lkm_not_installed "subl"; then
