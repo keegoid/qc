@@ -15,7 +15,7 @@
 { # this ensures the entire script is downloaded #
 
 # --------------------------  SETUP PARAMETERS
-[ -z "$NVM_V" ] && read -rep "NVM version to use: " -i "0.33.2" NVM_V
+[ -z "$NVM_V" ] && read -rep "NVM version to use: " -i "0.33.8" NVM_V
 
 # --------------------------  MISSING PROGRAM CHECKS
 
@@ -34,12 +34,17 @@ qc_nvm() {
 
   # source nvm
   # shellcheck source=/dev/null
-  . ~/.nvm/nvm.sh
+  \. ~/.nvm/nvm.sh
 
   # install latest long term support version
-  nvm install --lts=Boron
+  nvm install --lts=boron
 
-  if [ $? -eq 0 ]; then
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+  RET="$?"
+  if [ $RET -eq 0 ]; then
     # check which node and npm
     echo "checking which node"
     which node
@@ -128,7 +133,8 @@ qc_reset() {
 # --------------------------  INSTALL PROGRAMS
 
 lkm_confirm "Install Nodejs via NVM?" true
-if [ $? -eq 0 ]; then
+RET="$?"
+if [ $RET -eq 0 ]; then
   qc_nvm
 fi
 qc_npm_install
