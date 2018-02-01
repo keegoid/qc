@@ -76,7 +76,8 @@ qc_apt_install() {
 # add git lfs from packagecloud.io to add large file support to git
 qc_git_lfs() {
   lkm_confirm "Install git-lfs?" true
-  if [ $? -eq 0 ]; then
+  RET="$?"
+  if [ $RET -eq 0 ]; then
     if lkm_not_installed 'git-lfs'; then
       curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | os=debian dist=xenial sudo -E sudo bash
       lkm_program_must_exist 'git'
@@ -87,7 +88,6 @@ qc_git_lfs() {
     fi
   fi
 
-  # shellcheck disable=SC2034
   RET="$?"
   lkm_debug
 }
@@ -95,10 +95,15 @@ qc_git_lfs() {
 # --------------------------  64-BIT ARCHITECTURE
 
 UPDATE=0
+SKIP=1
 if [ "$(dpkg --print-foreign-architectures)" = "i386" ]; then
-  dpkg --get-selections | grep i386 || lkm_notify "no i386 packages installed"
-  lkm_pause "Press [Enter] to purge all i386 packages and remove the i386 architecture" true
-  sudo apt-get purge ".*:i386" && sudo dpkg --remove-architecture i386 && sudo apt-get update && lkm_success "Success, goodbye i386!" && UPDATE=1
+  dpkg --get-selections | grep i386 || lkm_notify "no i386 packages installed" && SKIP=0
+  if [ "$SKIP" -eq 0 ]; then
+    lkm_pause "Press [Enter] to continue"
+  else
+    lkm_pause "Press [Enter] to purge all i386 packages and remove the i386 architecture" true
+    sudo apt-get purge ".*:i386" && sudo dpkg --remove-architecture i386 && sudo apt-get update && lkm_success "Success, goodbye i386!" && UPDATE=1
+  fi
 fi
 
 # --------------------------  DEFAULT APT PACKAGES
