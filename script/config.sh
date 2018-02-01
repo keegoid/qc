@@ -40,7 +40,8 @@ qc_do_backup() {
   local today
 
   lkm_confirm "Backup config files before making changes?" true
-  [ $? -gt 0 ] && return 1
+  RET="$?"
+  [ $RET -gt 0 ] && return 1
 
   today=$(date +%Y%m%d_%s)
   mkdir -pv "$QC_BACKUP-$today"
@@ -80,6 +81,7 @@ qc_set_subl_config() {
   local repo_dir
   local cloned=1
   local user_dir="$HOME/.config/sublime-text-3/Packages/User"
+  local user_dir_parent="$HOME/.config/sublime-text-3/Packages"
 
   conf_dir=$(lkm_trim_shortest_right_pattern "$CONF3" "/")
   conf_parent_dir=$(lkm_trim_shortest_right_pattern "$conf_dir" "/")
@@ -99,7 +101,7 @@ qc_set_subl_config() {
 
   # remove default user directory if not already a symlink
   echo "checking for symlink at $user_dir"
-  [ -L "$user_dir" ] || { echo "creating symlink from $user_dir to $conf_dir" ; ln -s "$conf_dir" "$user_dir" ; }
+  [ -L "$user_dir" ] || { mv "$user_dir" "$user_dir".bak ; echo "creating symlink from $user_dir_parent to $conf_dir" ; ln -s "$conf_dir" "$user_dir_parent" ; }
 
   # update or clone repository if symbolic link exists for User directory
   if [ -d "$repo_dir" ]; then
@@ -115,7 +117,8 @@ qc_set_subl_config() {
   # copy config file to proper location
   echo -e "copying $repo_file to \n$conf_file"
   cp -i "$repo_file" "$conf_file"
-  if [ $? -eq 0 ] && [ "$cloned" -eq 0 ]; then
+  RET="$?"
+  if [ $RET -eq 0 ] && [ "$cloned" -eq 0 ]; then
     lkm_success "configured: $conf_file"
   fi
 
@@ -150,7 +153,8 @@ qc_set_git_config() {
 
   # copy config file to proper location
   cp "$repo_file" "$conf_file"
-  if [ $? -eq 0 ] && [ "$cloned" -eq 0 ]; then
+  RET="$?"
+  if [ $RET -eq 0 ] && [ "$cloned" -eq 0 ]; then
     lkm_success "configured: $conf_file"
   fi
 
@@ -248,13 +252,14 @@ qc_set_ps1() {
     sed -i.bak -e '0,/PS1/s//#PS1/' -e "/\"\$color_prompt\" = yes/ a $src_cmd" "$conf_file" && configured=0
   fi
 
+  RET="$?"
+
   # success message
-  if [ $? -eq 0 ] && [ "$configured" -eq 0 ]; then
+  if [ $RET -eq 0 ] && [ "$configured" -eq 0 ]; then
     lkm_success "configured: $conf_file with custom PS1 variable"
     echo "Close and reopen the terminal to see the new prompt string."
   fi
 
-  # shellcheck disable=SC2034
   RET="$?"
   lkm_debug
 }
