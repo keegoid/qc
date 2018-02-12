@@ -43,9 +43,9 @@ qc_set_authorized_key() {
   # disable root user access and limit login attempts
   echo
   lkm_pause "Press [Enter] to configure sshd security settings..."
-  sudo sed -i -e "s/#PermitRootLogin yes|PermitRootLogin no/" \
+  sudo sed -i -e "s/#PermitRootLogin prohibit-password|PermitRootLogin prohibit-password/" \
   -e "s/PasswordAuthentication yes/PasswordAuthentication no/" \
-  -e "s/#MaxStartups 10:30:60/MaxStartups 2:30:10/" \
+  -e "s/#MaxStartups 10:30:100/MaxStartups 2:30:10/" \
   -e "/Banner \/etc\/issue.net/ s/^# //" /etc/ssh/sshd_config
   if grep -q "AllowUsers $(whoami)" /etc/ssh/sshd_config; then
     echo "AllowUsers is already configured"
