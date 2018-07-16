@@ -108,7 +108,7 @@ fi
 
 # --------------------------  DEFAULT APT PACKAGES
 
-DEFAULT_WORKSTATION_LIST='autojump gpgv2 links mutt pinta x11vnc xclip vlc arp-scan'
+DEFAULT_WORKSTATION_LIST='autojump gpgv2 links mutt pinta x11vnc xclip vlc arp-scan apt-transport-https'
 DEFAULT_DEV_LIST='autoconf automake build-essential checkinstall dconf-cli shellcheck silversearcher-ag tidy xdotool vim-gtk'
 
 # --------------------------  PROMPT FOR PROGRAMS
