@@ -1,6 +1,6 @@
 # Quick Config
 
-Quickly configures a fresh install of [Ubuntu 17.10 64-bit][aa] on a workstation.
+Quickly configures a fresh install of [Ubuntu Budgie 18.04.1 64-bit][aa] on a workstation.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -15,7 +15,7 @@ Quickly configures a fresh install of [Ubuntu 17.10 64-bit][aa] on a workstation
 
 ## What qc can do
 
-- update [Ubuntu][ubuntu] and install some useful packages
+- update [Ubuntu Budgie][ubuntubudgie] and install some useful packages
 - setup standard developement environment utilizing package managers: [rbenv][rbenv], [nvm][nvm], [virtualenv][venv]
 - install gem, npm, and pip packages using appropriate package managers
 - generate an [RSA key][sshkey] for remote [SSH sessions][ssh]
@@ -48,23 +48,23 @@ Optionally run `./sudoers.sh` if you want to increase the sudo timeout which is 
 SEE: http://keegoid.mit-license.org
 
 
-[ubuntu]:   http://www.ubuntu.com/global
-[aa]:       https://wiki.ubuntu.com/ArtfulAardvark/ReleaseNotes
-[subl]:     https://www.sublimetext.com/
-[vim]:      http://www.vim.org/
-[gt]:       http://manpages.ubuntu.com/manpages/hardy/man1/gnome-terminal.1.html
-[ihs]:      https://help.ubuntu.com/community/UsingTheTerminal#An_extremely_handy_tool_::_Incremental_history_searching
-[msolar]:   https://github.com/altercation/mutt-colors-solarized
-[bb]:       https://github.com/afair/dot-gedit
-[mutt]:     http://www.mutt.org/
-[keyb]:     https://keybase.io/
-[aj]:       https://github.com/wting/autojump
-[ssh]:      http://en.wikipedia.org/wiki/Secure_Shell
-[sshkey]:   http://en.wikipedia.org/wiki/Ssh-keygen
-[gh]:       https://github.com/
-[git]:      https://git-scm.com/
-[lp]:       https://lastpass.com/f?3202156
-[rbenv]:    https://github.com/rbenv/rbenv
-[nvm]:      https://github.com/creationix/nvm
-[venv]:     https://github.com/pypa/virtualenv
-[ps1]:      https://gist.github.com/keegoid/13482742b6140ec0ffbc818173805889
+[ubuntubudgie]:     https://ubuntubudgie.org/
+[aa]:               https://wiki.ubuntu.com/ArtfulAardvark/ReleaseNotes
+[subl]:             https://www.sublimetext.com/
+[vim]:              http://www.vim.org/
+[gt]:               http://manpages.ubuntu.com/manpages/hardy/man1/gnome-terminal.1.html
+[ihs]:              https://help.ubuntu.com/community/UsingTheTerminal#An_extremely_handy_tool_::_Incremental_history_searching
+[msolar]:           https://github.com/altercation/mutt-colors-solarized
+[bb]:               https://github.com/afair/dot-gedit
+[mutt]:             http://www.mutt.org/
+[keyb]:             https://keybase.io/
+[aj]:               https://github.com/wting/autojump
+[ssh]:              http://en.wikipedia.org/wiki/Secure_Shell
+[sshkey]:           http://en.wikipedia.org/wiki/Ssh-keygen
+[gh]:               https://github.com/
+[git]:              https://git-scm.com/
+[lp]:               https://lastpass.com/f?3202156
+[rbenv]:            https://github.com/rbenv/rbenv
+[nvm]:              https://github.com/creationix/nvm
+[venv]:             https://github.com/pypa/virtualenv
+[ps1]:              https://gist.github.com/keegoid/13482742b6140ec0ffbc818173805889

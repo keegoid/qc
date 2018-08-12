@@ -4,7 +4,7 @@
 
 echo "# --------------------------------------------"
 echo "# Quickly configures a fresh install of       "
-echo "# Ubuntu 17.04 64-bit.                        "
+echo "# Ubuntu Budgie 18.04.1 64-bit.               "
 echo "#                                             "
 echo "# Author : Keegan Mullaney                    "
 echo "# Website: keegoid.com                        "

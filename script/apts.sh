@@ -94,17 +94,17 @@ qc_git_lfs() {
 
 # --------------------------  64-BIT ARCHITECTURE
 
-UPDATE=0
-SKIP=1
-if [ "$(dpkg --print-foreign-architectures)" = "i386" ]; then
-  dpkg --get-selections | grep i386 || lkm_notify "no i386 packages installed" && SKIP=0
-  if [ "$SKIP" -eq 0 ]; then
-    lkm_pause "Press [Enter] to continue"
-  else
-    lkm_pause "Press [Enter] to purge all i386 packages and remove the i386 architecture" true
-    sudo apt-get purge ".*:i386" && sudo dpkg --remove-architecture i386 && sudo apt-get update && lkm_success "Success, goodbye i386!" && UPDATE=1
-  fi
-fi
+ UPDATE=0
+# SKIP=1
+# if [ "$(dpkg --print-foreign-architectures)" = "i386" ]; then
+#   dpkg --get-selections | grep i386 || lkm_notify "no i386 packages installed" && SKIP=0
+#   if [ "$SKIP" -eq 0 ]; then
+#     lkm_pause "Press [Enter] to continue"
+#   else
+#     lkm_pause "Press [Enter] to purge all i386 packages and remove the i386 architecture" true
+#     sudo apt-get purge ".*:i386" && sudo dpkg --remove-architecture i386 && sudo apt-get update && lkm_success "Success, goodbye i386!" && UPDATE=1
+#   fi
+# fi
 
 # --------------------------  DEFAULT APT PACKAGES
 
