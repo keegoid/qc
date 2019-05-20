@@ -15,7 +15,7 @@
 { # this ensures the entire script is downloaded #
 
 # --------------------------  SETUP PARAMETERS
-[ -z "$NVM_V" ] && read -rep "NVM version to use: " -i "0.33.8" NVM_V
+[ -z "$NVM_V" ] && read -rep "NVM version to use: " -i "0.34.0" NVM_V
 
 # --------------------------  MISSING PROGRAM CHECKS
 

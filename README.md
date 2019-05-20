@@ -1,6 +1,10 @@
 # Quick Config
 
+<<<<<<< HEAD
+Quickly configures a fresh install of [Ubuntu 18.04.2 64-bit][aa] on a workstation.
+=======
 Quickly configures a fresh install of [Ubuntu Budgie 18.04.1 64-bit][aa] on a workstation.
+>>>>>>> d5a3fbea1dc0c8dc36ef69f6e7db4b00dd2428eb
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->

@@ -4,7 +4,10 @@
 
 echo "# --------------------------------------------"
 echo "# Quickly configures a fresh install of       "
+<<<<<<< HEAD
+=======
 echo "# Ubuntu Budgie 18.04.1 64-bit.               "
+>>>>>>> d5a3fbea1dc0c8dc36ef69f6e7db4b00dd2428eb
 echo "#                                             "
 echo "# Author : Keegan Mullaney                    "
 echo "# Website: keegoid.com                        "
