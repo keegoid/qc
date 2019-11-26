@@ -89,6 +89,8 @@ EOF
     lkm_success "configured: $conf_file (Tilix)"
     sudo ln -s /etc/profile.d/vte-2.91.sh /etc/profile.d/vte.sh
     lkm_success "configured: symlink to vte-2.91.sh"
+    sudo update-alternatives --config x-terminal-emulator
+    lkm_success "configured: system default terminal emulator"
   fi
 
   RET="$?"
