@@ -26,7 +26,7 @@ CONF5="$HOME/.vimrc"
 CONF6="$HOME/.gitignore_global"
 
 # config files copied from repositories
-REPO1="/usr/share/autojump/autojump.sh" #autojump.bash in CentOS
+REPO1="/usr/share/autojump/autojump.sh"
 REPO3="$QC_CONFIG/subl/subl.conf"
 REPO4="$QC_CONFIG/mutt/colors/mutt-colors-solarized-dark-16.muttrc"
 REPO5="$QC_CONFIG/vim/vim.conf"
