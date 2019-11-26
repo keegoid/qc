@@ -71,6 +71,30 @@ qc_do_backup() {
 # greeter-hide-users=true \
 # allow-guest=false'
 
+# --------------------------  TILIX FIX
+
+# fix Tilix in Ubuntu
+qc_set_tilix() {
+  local conf_file="$1"
+
+  if grep -q "TILIX_ID" "$conf_file" >/dev/null 2>&1; then
+    echo "already added Tilix fix"
+  else
+    lkm_pause "Press [Enter] to configure Tilix in $conf_file" true
+cat << 'EOF' >> "$conf_file"
+if [ $TILIX_ID ] || [ $VTE_VERSION ]; then
+        source /etc/profile.d/vte.sh
+fi
+EOF
+    lkm_success "configured: $conf_file (Tilix)"
+    sudo ln -s /etc/profile.d/vte-2.91.sh /etc/profile.d/vte.sh
+    lkm_success "configured: symlink to vte-2.91.sh"
+  fi
+
+  RET="$?"
+  lkm_debug
+}
+
 # --------------------------  BYOBU PROMPT
 
 # check if byobu is installed and set prompt
@@ -294,7 +318,7 @@ qc_set_ps1() {
 
 # unset the various functions defined during execution of the script
 qc_reset() {
-  unset -f qc_do_backup qc_set_byobu_prompt qc_set_subl_config qc_set_git_config qc_set_terminal_history qc_set_autojump qc_set_ps1
+  unset -f qc_do_backup qc_set_tilix qc_set_byobu_prompt qc_set_subl_config qc_set_git_config qc_set_terminal_history qc_set_autojump qc_set_ps1
 }
 
 # --------------------------  MAIN
@@ -322,6 +346,8 @@ lkm_set_sourced_config  "https://gist.github.com/00a60c7355c27c692262.git" \
                         "\" source config file\n:so $REPO5\n\nset spellfile=$QC_SYNCED/vim/vim.utf-8.add\t\" spell check file to sync with other computers"
 
 [ -d "$QC_SYNCED/vim" ] || { mkdir -pv "$QC_SYNCED/vim"; lkm_notify3 "note: vim spellfile will be located in $QC_SYNCED/vim, you can change this in $CONF5"; }
+
+qc_set_tilix            "$CONF1"
 
 qc_set_byobu_prompt     "$CONF1"
 
