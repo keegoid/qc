@@ -138,16 +138,16 @@ qc_install_ruby() {
   # [ $? -eq 0 ] && ~/.rbenv/bin/rbenv install "$ruby_local_v"
 
   # set global ruby version
-  ~/.rbenv/bin/rbenv global "$ruby_local_v"
+  # ~/.rbenv/bin/rbenv global "$ruby_local_v"
 
   # check ruby and rubygem versions
-  ~/.rbenv/shims/ruby -v
-  ~/.rbenv/shims/gem env home
+  # ~/.rbenv/shims/ruby -v
+  # ~/.rbenv/shims/gem env home
 
-  qc_gem_install
+  # qc_gem_install
 
   # set global ruby version
-  ~/.rbenv/bin/rbenv global "$ruby_global_v"
+  # ~/.rbenv/bin/rbenv global "$ruby_global_v"
 
   # shellcheck disable=SC2034
   RET="$?"
