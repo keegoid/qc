@@ -4,7 +4,7 @@
 #
 # Author : Keegan Mullaney
 # Website: keegoid.com
-# Email  : keeganmullaney@gmail.com
+# Email  : keegan@kmauthorized.com
 # License: keegoid.mit-license.org
 #
 # Attributions:
@@ -108,7 +108,7 @@ qc_git_lfs() {
 
 # --------------------------  DEFAULT APT PACKAGES
 
-DEFAULT_WORKSTATION_LIST='autojump gpgv2 links mutt pinta x11vnc xclip vlc arp-scan apt-transport-https'
+DEFAULT_WORKSTATION_LIST='autojump gpgv2 links mutt pinta x11vnc xclip vlc arp-scan apt-transport-https tree net-tools'
 DEFAULT_DEV_LIST='autoconf automake build-essential checkinstall dconf-cli shellcheck silversearcher-ag tidy xdotool vim-gtk'
 
 # --------------------------  PROMPT FOR PROGRAMS

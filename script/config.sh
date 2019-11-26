@@ -4,7 +4,7 @@
 #
 # Author : Keegan Mullaney
 # Website: keegoid.com
-# Email  : keeganmullaney@gmail.com
+# Email  : keegan@kmauthorized.com
 # License: keegoid.mit-license.org
 # --------------------------------------------
 
@@ -162,7 +162,7 @@ qc_set_git_config() {
   # check if git is already configured
   if ! git config --list | grep -q "user.name"; then
     read -rep "your name for git commit logs: " -i 'Keegan Mullaney' real_name
-    read -rep "your email for git commit logs: " -i 'keeganmullaney@gmail.com' email_address
+    read -rep "your email for git commit logs: " -i 'keegan@kmauthorized.com' email_address
     read -rep "your preferred text editor for git commits: " -i 'subl --wait' git_editor
     lkm_configure_git "$real_name" "$email_address" "$git_editor" && lkm_success "configured: $CONF6"
   fi

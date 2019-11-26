@@ -6,7 +6,7 @@
 #
 # Author : Keegan Mullaney
 # Website: keegoid.com
-# Email  : keeganmullaney@gmail.com
+# Email  : keegan@kmauthorized.com
 # License: keegoid.mit-license.org
 # --------------------------------------------
 
@@ -14,7 +14,7 @@
 
 # --------------------------  SETUP PARAMETERS
 
-[ -z "$QC_REPOS" ] && read -rep "Directory to use for repositories: ~/" -i "Dropbox/coding/repos" QC_REPOS
+[ -z "$QC_REPOS" ] && read -rep "Directory to use for repositories: ~/" -i "f-drive/coding/repos" QC_REPOS
 QC_SELECTED_CONTAINER
 
 # --------------------------  INSTALL LXD/LXC

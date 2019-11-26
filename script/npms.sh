@@ -4,7 +4,7 @@
 #
 # Author : Keegan Mullaney
 # Website: keegoid.com
-# Email  : keeganmullaney@gmail.com
+# Email  : keegan@kmauthorized.com
 # License: keegoid.mit-license.org
 #
 # Attributions:
@@ -15,7 +15,7 @@
 { # this ensures the entire script is downloaded #
 
 # --------------------------  SETUP PARAMETERS
-[ -z "$NVM_V" ] && read -rep "NVM version to use: " -i "0.34.0" NVM_V
+[ -z "$NVM_V" ] && read -rep "NVM version to use: " -i "0.35.1" NVM_V
 
 # --------------------------  MISSING PROGRAM CHECKS
 

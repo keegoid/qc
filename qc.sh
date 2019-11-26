@@ -4,11 +4,11 @@
 
 echo "# --------------------------------------------"
 echo "# Quickly configures a fresh install of       "
-echo "# Ubuntu 18.04.2 64-bit.                      "
+echo "# Ubuntu 19.10 64-bit.                        "
 echo "#                                             "
 echo "# Author : Keegan Mullaney                    "
 echo "# Website: keegoid.com                        "
-echo "# Email  : keeganmullaney@gmail.com           "
+echo "# Email  : keegan@kmauthorized.com            "
 echo "# License: keegoid.mit-license.org            "
 echo "# --------------------------------------------"
 

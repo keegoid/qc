@@ -5,7 +5,7 @@
 #
 # Author : Keegan Mullaney
 # Website: keegoid.com
-# Email  : keeganmullaney@gmail.com
+# Email  : keegan@kmauthorized.com
 # License: keegoid.mit-license.org
 # --------------------------------------------
 
