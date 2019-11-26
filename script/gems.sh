@@ -133,7 +133,7 @@ qc_install_ruby() {
 
   # install the latest github pages compatible ruby version
   rm -rf ~/.rbenv/plugins/ruby-build-github
-  git clone https://github.com/parkr/ruby-build-github.git ~/.rbenv/plugins/ruby-build-github
+  git clone https://github.com/github/ruby.git ~/.rbenv/plugins/ruby-build-github
   ruby_local_v=$(~/.rbenv/bin/rbenv install --list | grep github$ | tail -n 1 | tr -d ' ')
   [ $? -eq 0 ] && ~/.rbenv/bin/rbenv install "$ruby_local_v"
 
