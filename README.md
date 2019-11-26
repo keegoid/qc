@@ -1,6 +1,6 @@
 # Quick Config
 
-Quickly configures a fresh install of [Ubuntu 18.04.2 64-bit][aa] on a workstation.
+Quickly configures a fresh install of [Ubuntu 19.10 64-bit][ee] on a workstation.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -15,7 +15,7 @@ Quickly configures a fresh install of [Ubuntu 18.04.2 64-bit][aa] on a workstati
 
 ## What qc can do
 
-- update [Ubuntu Budgie][ubuntubudgie] and install some useful packages
+- update [Ubuntu][ubuntu] and install some useful packages
 - setup standard developement environment utilizing package managers: [rbenv][rbenv], [nvm][nvm], [virtualenv][venv]
 - install gem, npm, and pip packages using appropriate package managers
 - generate an [RSA key][sshkey] for remote [SSH sessions][ssh]
@@ -49,7 +49,7 @@ SEE: http://keegoid.mit-license.org
 
 
 [ubuntu]:           https://ubuntu.com/
-[aa]:               https://wiki.ubuntu.com/ArtfulAardvark/ReleaseNotes
+[ee]:               https://wiki.ubuntu.com/EoanErmine/ReleaseNotes
 [subl]:             https://www.sublimetext.com/
 [vim]:              http://www.vim.org/
 [gt]:               http://manpages.ubuntu.com/manpages/hardy/man1/gnome-terminal.1.html
