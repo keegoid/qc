@@ -24,6 +24,7 @@ CONF3="$QC_SYNCED/subl/User/Preferences.sublime-settings"
 CONF4="$HOME/.muttrc"
 CONF5="$HOME/.vimrc"
 CONF6="$HOME/.gitignore_global"
+CONF7="$HOME/.byobu"
 
 # config files copied from repositories
 REPO1="/usr/share/autojump/autojump.sh"
@@ -69,6 +70,30 @@ qc_do_backup() {
 # greeter-show-manual-login=true \
 # greeter-hide-users=true \
 # allow-guest=false'
+
+# --------------------------  BYOBU PROMPT
+
+# check if byobu is installed and set prompt
+qc_set_byobu_prompt() {
+  local conf_file="$1"
+
+  if lkm_not_installed "byobu"; then
+    echo -e " ${YELLOW_BLACK} * byobu [not installed] ${NONE_WHITE}, skipping..."
+  else
+    pkg_version=$(dpkg -s "byobu" 2>&1 | grep 'Version:' | cut -d " " -f 2)
+    lkm_print_pkg_info "byobu" "$pkg_version"
+    if grep -q ".byobu/prompt" "$conf_file" >/dev/null 2>&1; then
+      echo "already configured byobu-prompt"
+    else
+      lkm_pause "Press [Enter] to configure byobu-prompt" true
+      byobu-prompt
+      lkm_success "configured: $conf_file"
+    fi
+  fi
+
+  RET="$?"
+  lkm_debug
+}
 
 # --------------------------  SUBL CONFIG
 
@@ -269,14 +294,14 @@ qc_set_ps1() {
 
 # unset the various functions defined during execution of the script
 qc_reset() {
-  unset -f qc_reset qc_do_backup qc_set_code_config qc_set_git_config qc_set_terminal_history qc_set_autojump qc_set_ps1
+  unset -f qc_do_backup qc_set_byobu_prompt qc_set_subl_config qc_set_git_config qc_set_terminal_history qc_set_autojump qc_set_ps1
 }
 
 # --------------------------  MAIN
 
 lkm_pause "" true
 
-qc_do_backup            "$CONF1 $CONF2 $CONF3 $CONF4 $CONF5 $CONF6"
+qc_do_backup            "$CONF1 $CONF2 $CONF3 $CONF4 $CONF5 $CONF6 $CONF7"
 
 # aliases (to practice terminal commands for Linux certification exams, I'm not using aliases at the moment)
 #lkm_set_sourced_config  "https://gist.github.com/9d74e08779c1db6cb7b7" \
@@ -297,6 +322,8 @@ lkm_set_sourced_config  "https://gist.github.com/00a60c7355c27c692262.git" \
                         "\" source config file\n:so $REPO5\n\nset spellfile=$QC_SYNCED/vim/vim.utf-8.add\t\" spell check file to sync with other computers"
 
 [ -d "$QC_SYNCED/vim" ] || { mkdir -pv "$QC_SYNCED/vim"; lkm_notify3 "note: vim spellfile will be located in $QC_SYNCED/vim, you can change this in $CONF5"; }
+
+qc_set_byobu_prompt     "$CONF1"
 
 # sublime text 3
 qc_set_subl_config      "https://gist.github.com/6628da9ad09cf0eff9427c6dfdca6e5f.git"
