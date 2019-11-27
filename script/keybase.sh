@@ -20,6 +20,8 @@ qc_install_keybase() {
     (
       # change to tmp directory to download file within subshell
       cd /tmp || exit
+      mkdir kb
+      cd kb
       curl --remote-name "$keybase_url" && sudo apt install ./keybase_amd64.deb
       run_keybase
     )
