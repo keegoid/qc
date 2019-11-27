@@ -14,13 +14,14 @@
 
 # install the keybase cli client
 qc_install_keybase() {
-  local keybase_url='https://dist.keybase.io/linux/deb/keybase-latest-amd64.deb'
+  local keybase_url='https://prerelease.keybase.io/keybase_amd64.deb'
 
   if lkm_not_installed "keybase"; then
     (
       # change to tmp directory to download file within subshell
       cd /tmp || exit
-      curl -O "$keybase_url" && sudo dpkg -i keybase-latest-amd64.deb
+      curl --remote-name "$keybase_url" && sudo apt install ./keybase_amd64.deb
+      run_keybase
     )
   else
     lkm_notify "keybase is already installed"
