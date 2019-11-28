@@ -108,7 +108,7 @@ qc_git_lfs() {
 
 # --------------------------  DEFAULT APT PACKAGES
 
-DEFAULT_WORKSTATION_LIST='arp-scan apt-transport-https autojump git git-annex gnupg2 links mutt net-tools pinta tree vlc x11vnc xclip'
+DEFAULT_WORKSTATION_LIST='arp-scan apt-transport-https autojump git gnupg2 links mutt net-tools pinta syncthing tree vlc x11vnc xclip'
 DEFAULT_DEV_LIST='autoconf automake build-essential byobu checkinstall dconf-cli shellcheck silversearcher-ag tidy tilix xdotool vim-gtk'
 
 # --------------------------  PROMPT FOR PROGRAMS
