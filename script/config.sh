@@ -25,6 +25,7 @@ CONF4="$HOME/.muttrc"
 CONF5="$HOME/.vimrc"
 CONF6="$HOME/.gitignore_global"
 CONF7="$HOME/.byobu"
+CONF8="/etc/sysctl.conf"
 
 # config files copied from repositories
 REPO1="/usr/share/autojump/autojump.sh"
@@ -70,6 +71,18 @@ qc_do_backup() {
 # greeter-show-manual-login=true \
 # greeter-hide-users=true \
 # allow-guest=false'
+
+# --------------------------  INOTIFY FIX
+
+# fix error when too many files in a directory
+qc_set_inotify_max() {
+  local conf_file="$1"
+
+  echo fs.inotify.max_user_watches=524288 | sudo tee -a "$conf_file" && sudo sysctl -p
+
+  RET="$?"
+  lkm_debug
+}
 
 # --------------------------  TILIX FIX
 
@@ -320,7 +333,7 @@ qc_set_ps1() {
 
 # unset the various functions defined during execution of the script
 qc_reset() {
-  unset -f qc_do_backup qc_set_tilix qc_set_byobu_prompt qc_set_subl_config qc_set_git_config qc_set_terminal_history qc_set_autojump qc_set_ps1
+  unset -f qc_do_backup qc_set_inotify_max qc_set_tilix qc_set_byobu_prompt qc_set_subl_config qc_set_git_config qc_set_terminal_history qc_set_autojump qc_set_ps1
 }
 
 # --------------------------  MAIN
@@ -348,6 +361,8 @@ lkm_set_sourced_config  "https://gist.github.com/00a60c7355c27c692262.git" \
                         "\" source config file\n:so $REPO5\n\nset spellfile=$QC_SYNCED/vim/vim.utf-8.add\t\" spell check file to sync with other computers"
 
 [ -d "$QC_SYNCED/vim" ] || { mkdir -pv "$QC_SYNCED/vim"; lkm_notify3 "note: vim spellfile will be located in $QC_SYNCED/vim, you can change this in $CONF5"; }
+
+qc_set_inotify_max      "$CONF8"
 
 qc_set_tilix            "$CONF1"
 
