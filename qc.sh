@@ -4,7 +4,7 @@
 
 echo "# --------------------------------------------"
 echo "# Quickly configures a fresh install of       "
-echo "# Ubuntu 19.10 64-bit.                        "
+echo "# Ubuntu Desktop 19.10.                       "
 echo "#                                             "
 echo "# Author : Keegan Mullaney                    "
 echo "# Website: keegoid.com                        "
