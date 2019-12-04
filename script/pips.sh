@@ -152,7 +152,7 @@ echo
 echo "PIPs"
 echo
 lkm_notify "Packages to install with pip"
-read -rep "   : " -i 'jrnl[encrypted] pyflakes python-slugify keyrings.alt yamllint' PIPS
+read -rep "   : " -i 'jrnl[encrypted] pyflakes python-slugify keyrings.alt' PIPS
 # lkm_notify "Packages to install with pip3"
 # shellcheck disable=SC2034
 # read -rep "   : " -i 'pep8' PIP3S
