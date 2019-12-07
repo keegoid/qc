@@ -26,22 +26,22 @@ apt_check_list=()
 
 # loop through check list and add missing packages to install list
 qc_apt_check() {
-  local pkg
-  local pkg_version
+	local pkg
+	local pkg_version
 
-  for pkg in "${apt_check_list[@]}"
-  do
-    if lkm_not_installed "$pkg"; then
-      echo -e " ${YELLOW_BLACK} * $pkg [not installed] ${NONE_WHITE}"
-      apt_install_list+=($pkg)
-    else
-      pkg_version=$(dpkg -s "${pkg}" 2>&1 | grep 'Version:' | cut -d " " -f 2)
-      lkm_print_pkg_info "$pkg" "$pkg_version"
-    fi
-  done
+	for pkg in "${apt_check_list[@]}"
+	do
+		if lkm_not_installed "$pkg"; then
+			echo -e " ${YELLOW_BLACK} * $pkg [not installed] ${NONE_WHITE}"
+			apt_install_list+=($pkg)
+		else
+			pkg_version=$(dpkg -s "${pkg}" 2>&1 | grep 'Version:' | cut -d " " -f 2)
+			lkm_print_pkg_info "$pkg" "$pkg_version"
+		fi
+	done
 
-  RET="$?"
-  lkm_debug
+	RET="$?"
+	lkm_debug
 }
 
 # --------------------------  INSTALL MISSING PROGRAMS
@@ -49,47 +49,47 @@ qc_apt_check() {
 # loop through install list and install any packages that are in the list
 # $1 -> to update sources or not
 qc_apt_install() {
-  qc_apt_check
+	qc_apt_check
 
-  if [[ "${#apt_install_list[@]}" -eq 0 ]]; then
-    lkm_notify "No packages to install"
-  else
-    # update all of the package references before installing anything
-    if [ "${1}" -eq 0 ]; then
-      lkm_pause "Press [Enter] to update Ubuntu sources" true
-      sudo apt-get -y update
-    fi
+	if [[ "${#apt_install_list[@]}" -eq 0 ]]; then
+		lkm_notify "No packages to install"
+	else
+		# update all of the package references before installing anything
+		if [ "${1}" -eq 0 ]; then
+			lkm_pause "Press [Enter] to update Ubuntu sources" true
+			sudo apt-get -y update
+		fi
 
-    # install packages in the list
-    lkm_pause "Press [Enter] to install apt packages"
-    # shellcheck disable=SC2068
-    sudo apt-get -y install ${apt_install_list[@]}
+		# install packages in the list
+		lkm_pause "Press [Enter] to install apt packages"
+		# shellcheck disable=SC2068
+		sudo apt-get -y install ${apt_install_list[@]}
 
-    # clean up apt caches
-    sudo apt-get clean
-  fi
+		# clean up apt caches
+		sudo apt-get clean
+	fi
 
-  RET="$?"
-  lkm_debug
+	RET="$?"
+	lkm_debug
 }
 
 # add git lfs from packagecloud.io to add large file support to git
 qc_git_lfs() {
-  lkm_confirm "Install git-lfs?" true
-  RET="$?"
-  if [ $RET -eq 0 ]; then
-    if lkm_not_installed 'git-lfs'; then
-      curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | os=debian dist=xenial sudo -E sudo bash
-      lkm_program_must_exist 'git'
-      lkm_install_apt 'git-lfs'
-      git lfs install
-    else
-      lkm_notify "git-lfs is already installed"
-    fi
-  fi
+	lkm_confirm "Install git-lfs?" true
+	RET="$?"
+	if [ $RET -eq 0 ]; then
+		if lkm_not_installed 'git-lfs'; then
+			curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | os=debian dist=xenial sudo -E sudo bash
+			lkm_program_must_exist 'git'
+			lkm_install_apt 'git-lfs'
+			git lfs install
+		else
+			lkm_notify "git-lfs is already installed"
+		fi
+	fi
 
-  RET="$?"
-  lkm_debug
+	RET="$?"
+	lkm_debug
 }
 
 # --------------------------  64-BIT ARCHITECTURE
@@ -108,7 +108,7 @@ qc_git_lfs() {
 
 # --------------------------  DEFAULT APT PACKAGES
 
-DEFAULT_WORKSTATION_LIST='arp-scan apt-transport-https autojump git gnupg2 links mutt net-tools pinta syncthing tree vlc x11vnc xclip'
+DEFAULT_WORKSTATION_LIST='arp-scan apt-transport-https autojump git gnupg2 figlet links mutt net-tools pinta syncthing tree vlc x11vnc xclip'
 DEFAULT_DEV_LIST='autoconf automake build-essential byobu checkinstall dconf-cli shellcheck silversearcher-ag tidy tilix xdotool vim-gtk yamllint'
 
 # --------------------------  PROMPT FOR PROGRAMS
@@ -133,7 +133,7 @@ apt_check_list+=($APTS2)
 
 # unset the various functions defined during execution of the install script
 qc_reset() {
-  unset -f qc_reset qc_apt_install qc_apt_check qc_git_lfs
+	unset -f qc_reset qc_apt_install qc_apt_check qc_git_lfs
 }
 
 # --------------------------  INSTALL PROGRAMS
