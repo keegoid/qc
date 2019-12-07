@@ -27,9 +27,10 @@ QC_DEBUG_MODE=0
 # make sure $HOME variable is set
 lkm_variable_set "$HOME"
 
-# make sure curl and git are installed
+# make sure needed packages are installed
 lkm_program_must_exist curl
 lkm_program_must_exist git
+lkm_program_must_exist figlet
 
 # --------------------------  FUNCTIONS
 
@@ -45,7 +46,7 @@ qc_fix_permissions() {
 qc_exit_msg() {
   echo
   lkm_notify "Lastly: execute ./sudoers.sh to increase the sudo timeout."
-  lkm_msg             "\nThanks for using $QC_APP_NAME."
+  lkm_msg             "\nThanks for using $QC_APP_NAME." | figlet -f small
   lkm_msg             "(c) $(date +%Y) keegoid.mit-license.org"
 }
 
