@@ -98,6 +98,8 @@ cat << 'EOF' >> "$conf_file"
 if [ $TILIX_ID ] || [ $VTE_VERSION ]; then
         source /etc/profile.d/vte.sh
 fi
+# don't break autojump by fixing tilix
+export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND ;} history -a"
 EOF
     lkm_success "configured: $conf_file (Tilix)"
     sudo ln -s /etc/profile.d/vte-2.91.sh /etc/profile.d/vte.sh
