@@ -4,7 +4,7 @@
 #
 # Author : Keegan Mullaney
 # Website: keegoid.com
-# Email  : keegan@kmauthorized.com
+# Email  : keeganmullaney@gmail.com
 # License: keegoid.mit-license.org
 #
 # Attributions:
@@ -546,21 +546,27 @@ lkm_get_public_key() {
 #   $1 -> code author's name
 #   $2 -> code author's email
 #   $3 -> editor to use for git
+#   $4 -> gpg key to use for git
 lkm_configure_git() {
   local name="$1"
   local email="$2"
   local editor="$3"
+  local gpgkey="$4"
 
   # specify a user
   git config --global user.name "$name"
   git config --global user.email "$email"
   # select a text editor
   git config --global core.editor "$editor"
+  # set a GPG key to sign commits with
+  git config --global user.signingkey "$gpgkey"
   # set default push and pull behavior to the old method
   git config --global push.default simple
   git config --global pull.default simple
   # create a global .gitignore file
   git config --global core.excludesfile "$HOME/.gitignore_global"
+  # sign commits
+  git config --global commit.gpgsign true
   lkm_pause "Press [Enter] to view the config"
   git config --list
 }
