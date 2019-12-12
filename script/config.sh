@@ -230,9 +230,8 @@ qc_set_git_config() {
 		read -rep "your name for git commit logs: " -i 'Keegan Mullaney' real_name
 		read -rep "your email for git commit logs: " -i 'keegan@kmauthorized.com' email_address
 		read -rep "your preferred text editor for git commits: " -i 'subl --wait' git_editor
-		# read -rep "your GPG signing key to sign git commits: " -i '0D8F7627F4E5B8C0' gpg_key
-		# lkm_configure_git "$real_name" "$email_address" "$git_editor" "$gpg_key" && lkm_success "configured: $CONF6"
-		lkm_configure_git "$real_name" "$email_address" "$git_editor" && lkm_success "configured: $CONF6"
+		read -rep "your GPG signing key to sign git commits: " -i '0D8F7627F4E5B8C0' gpg_key
+		lkm_configure_git "$real_name" "$email_address" "$git_editor" "$gpg_key" && lkm_success "configured: $CONF6"
 	fi
 
 # todo:
