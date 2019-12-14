@@ -24,12 +24,11 @@ CONF3="$QC_SYNCED/subl/User/Preferences.sublime-settings"
 CONF4="$HOME/.muttrc"
 CONF5="$HOME/.vimrc"
 CONF6="$HOME/.gitignore_global"
-CONF7="$HOME/.byobu"
-CONF8="/etc/sysctl.conf"
-CONF9="$HOME/.bash_aliases"
+#CONF7="$HOME/.byobu"
+CONF8="$HOME/.bash_aliases"
 
 # config files copied from repositories
-REPO1="$QC_CONFIG/aliases/bash_aliases.conf"
+#REPO1="$QC_CONFIG/aliases/bash_aliases.conf"
 REPO2="$QC_CONFIG/zlua/zlua.conf"
 REPO3="$QC_CONFIG/subl/subl.conf"
 REPO4="$QC_CONFIG/mutt/colors/mutt-colors-solarized-dark-16.muttrc"
@@ -80,7 +79,11 @@ qc_do_backup() {
 qc_set_inotify_max() {
   local conf_file="$1"
 
-  echo fs.inotify.max_user_watches=524288 | sudo tee -a "$conf_file" && sudo sysctl -p
+  if grep -q "max_user_watches=524288" "$conf_file" >/dev/null 2>&1; then
+    echo "already set fs.inotify.max_user_watches"
+  else
+    echo fs.inotify.max_user_watches=524288 | sudo tee -a "$conf_file" && sudo sysctl -p
+  fi
 
   RET="$?"
   lkm_debug
@@ -278,12 +281,6 @@ qc_set_zlua_config() {
   conf_repo_dir=$(lkm_trim_shortest_right_pattern "$REPO2" "/")
   conf_repo_name=$(lkm_trim_longest_left_pattern "$conf_repo_dir" "/")
 
-  # testing
-  echo "conf_repo_dir: $conf_repo_dir"
-  echo
-  echo "conf_repo_name: $conf_repo_name"
-  lkm_pause "Press [Enter] to proceed with testing" true
-
   # update or clone repository for conf file
   if [ -d "$conf_repo_dir" ]; then
     (
@@ -294,7 +291,6 @@ qc_set_zlua_config() {
   else
     git clone "$conf_repo_url" "$conf_repo_dir"
   fi
-  lkm_pause "Press [Enter] to proceed with testing" true
 
   # remove temp directory if it exists
   rm -rf /tmp/zlua
@@ -302,13 +298,10 @@ qc_set_zlua_config() {
   # clone source repository and copy src file to src_dir
   mkdir -p /tmp/zlua
   git clone "$src_repo_url" /tmp/zlua
-  lkm_pause "Press [Enter] to proceed with testing" true
 
   # update or clone repository for conf file
   mkdir -p "$QC_CONFIG/z"
   cp -f /tmp/zlua/z.lua "$QC_CONFIG/z/"
-  ls "$QC_CONFIG/z/"
-  lkm_pause "Press [Enter] to proceed with testing" true
 
   if grep -q "z.lua enhanced matching" "$CONF1" >/dev/null 2>&1; then
     echo "already added z.lua config to $CONF1"
@@ -381,7 +374,7 @@ qc_reset() {
 
 lkm_pause "" true
 
-qc_do_backup            "$CONF1 $CONF2 $CONF3 $CONF4 $CONF5 $CONF6 $CONF9"
+qc_do_backup            "$CONF1 $CONF2 $CONF3 $CONF4 $CONF5 $CONF6 $CONF8"
 
 # bash aliases
 # lkm_set_sourced_config  "https://gist.github.com/9d74e08779c1db6cb7b7.git" \
@@ -403,7 +396,7 @@ lkm_set_sourced_config  "https://gist.github.com/00a60c7355c27c692262.git" \
 
 [ -d "$QC_SYNCED/vim" ] || { mkdir -pv "$QC_SYNCED/vim"; lkm_notify3 "note: vim spellfile will be located in $QC_SYNCED/vim, you can change this in $CONF5"; }
 
-qc_set_inotify_max      "$CONF8"
+qc_set_inotify_max      "/etc/sysctl.conf"
 
 qc_set_tilix            "$CONF1"
 
