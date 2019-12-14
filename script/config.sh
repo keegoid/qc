@@ -379,7 +379,7 @@ qc_reset() {
 
 lkm_pause "" true
 
-qc_do_backup            "$CONF1 $CONF2 $CONF3 $CONF4 $CONF5 $CONF6 $CONF7"
+qc_do_backup            "$CONF1 $CONF2 $CONF3 $CONF4 $CONF5 $CONF6"
 
 # aliases (to practice terminal commands for Linux certification exams, I'm not using aliases at the moment)
 #lkm_set_sourced_config  "https://gist.github.com/9d74e08779c1db6cb7b7" \
