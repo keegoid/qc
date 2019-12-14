@@ -26,8 +26,10 @@ CONF5="$HOME/.vimrc"
 CONF6="$HOME/.gitignore_global"
 CONF7="$HOME/.byobu"
 CONF8="/etc/sysctl.conf"
+CONF9="$HOME/.bash_aliases"
 
 # config files copied from repositories
+REPO1="$QC_CONFIG/aliases/bash_aliases.conf"
 REPO2="$QC_CONFIG/zlua/zlua.conf"
 REPO3="$QC_CONFIG/subl/subl.conf"
 REPO4="$QC_CONFIG/mutt/colors/mutt-colors-solarized-dark-16.muttrc"
@@ -379,13 +381,13 @@ qc_reset() {
 
 lkm_pause "" true
 
-qc_do_backup            "$CONF1 $CONF2 $CONF3 $CONF4 $CONF5 $CONF6"
+qc_do_backup            "$CONF1 $CONF2 $CONF3 $CONF4 $CONF5 $CONF6 $CONF9"
 
-# aliases (to practice terminal commands for Linux certification exams, I'm not using aliases at the moment)
-#lkm_set_sourced_config  "https://gist.github.com/9d74e08779c1db6cb7b7" \
-#                        "$HOME/.bashrc" \
-#                        "$QC_CONFIG/bash/aliases/bash_aliases" \
-#                        "\n# source alias file\nif [ -f $QC_CONFIG/bash/aliases/bash_aliases ]; then\n   . $QC_CONFIG/bash/aliases/bash_aliases\nfi"
+# bash aliases
+# lkm_set_sourced_config  "https://gist.github.com/9d74e08779c1db6cb7b7.git" \
+#                         "$CONF1" \
+#                         "$REPO1" \
+#                         "\n# source alias file\nif [ -f $REPO1 ]; then\n   . $REPO1\nfi"
 
 # mutt config
 lkm_set_sourced_config  "https://github.com/altercation/mutt-colors-solarized.git" \
