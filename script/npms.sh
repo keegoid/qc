@@ -36,13 +36,14 @@ qc_nvm() {
   # shellcheck source=/dev/null
   \. ~/.nvm/nvm.sh
 
-  # install latest node version
-  nvm install node
+  # install highest lts node version
+  nvm install lts/*
 
   export NVM_DIR="$HOME/.nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
 
   RET="$?"
+
   if [ $RET -eq 0 ]; then
     # check which node and npm
     echo "checking which node"
@@ -53,6 +54,27 @@ qc_nvm() {
     # check npm version
     echo "checking npm version"
     npm -v
+
+    # install npm packages for lts/* node version
+    qc_npm_install
+  fi
+
+  # install latest node version
+  nvm install node
+
+  if [ $RET -eq 0 ]; then
+    # check which node and npm
+    echo "checking which node"
+    which node
+    echo "checking which npm"
+    which npm
+
+    # check npm version
+    echo "checking npm version"
+    npm -v
+
+    # install npm packages for latest node version
+    qc_npm_install
   fi
 
   RET="$?"
@@ -129,12 +151,13 @@ qc_reset() {
 
 # --------------------------  INSTALL PROGRAMS
 
-lkm_confirm "Install Nodejs via NVM?" true
+lkm_confirm "Install latest and lts/* Nodejs via NVM?" true
 RET="$?"
 if [ $RET -eq 0 ]; then
   qc_nvm
+else
+  qc_npm_install
 fi
-qc_npm_install
 qc_reset
 
 } # this ensures the entire script is downloaded #
