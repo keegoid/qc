@@ -15,7 +15,7 @@
 { # this ensures the entire script is downloaded #
 
 # --------------------------  SETUP PARAMETERS
-[ -z "$NVM_V" ] && read -rep "NVM version to use: " -i "0.35.1" NVM_V
+[ -z "$NVM_V" ] && read -rep "NVM version to use: " -i "0.35.2" NVM_V
 
 # --------------------------  MISSING PROGRAM CHECKS
 
@@ -36,12 +36,11 @@ qc_nvm() {
   # shellcheck source=/dev/null
   \. ~/.nvm/nvm.sh
 
-  # install latest long term support version
-  nvm install --lts=boron
+  # install latest node version
+  nvm install node
 
   export NVM_DIR="$HOME/.nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
 
   RET="$?"
   if [ $RET -eq 0 ]; then
@@ -54,8 +53,6 @@ qc_nvm() {
     # check npm version
     echo "checking npm version"
     npm -v
-
-    lkm_notify "After switching node versions, remember to run \`npm build\`."
   fi
 
   RET="$?"
@@ -116,7 +113,7 @@ echo
 echo "NODE.JS"
 echo
 lkm_notify "Packages to install with npm"
-read -rep "   : " -i 'bower browser-sync coffee-script csslint doctoc gulp npm-check-updates remark remark-lint' NPMS
+read -rep "   : " -i 'browser-sync coffeescript csslint doctoc gulp jshint remark remark-lint' NPMS
 
 # --------------------------  ARRAY ASSIGNMENTS
 
