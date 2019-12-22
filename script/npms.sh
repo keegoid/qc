@@ -135,7 +135,7 @@ echo
 echo "NODE.JS"
 echo
 lkm_notify "Packages to install with npm"
-read -rep "   : " -i 'browser-sync coffeescript csslint doctoc gulp jshint markdownlint-cli prettier' NPMS
+read -rep "   : " -i 'browser-sync coffeescript csslint doctoc gulp jshint' NPMS
 
 # --------------------------  ARRAY ASSIGNMENTS
 
