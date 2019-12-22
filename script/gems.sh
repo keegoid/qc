@@ -86,7 +86,7 @@ qc_install_rbenv() {
   # optional, to speed up rbenv
   [ -d "$HOME/.rbenv" ] &&  cd "$HOME/.rbenv" && src/configure && make -C src && cd - >/dev/null
 
-  # add rbenv init - command to .bashrc (for SublimeLinter, was also in .bash_profile but it overrides .profile)
+  # add rbenv init - command to .bashrc (for SublimeLinter)
   # shellcheck disable=SC2016
   lkm_set_source_cmd      "$HOME/.bashrc" \
                           'rbenv/shims:' \
