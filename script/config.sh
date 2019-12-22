@@ -30,7 +30,7 @@ CONF8="$HOME/.bash_aliases"
 # config files copied from repositories
 #REPO1="$QC_CONFIG/aliases/bash_aliases.conf"
 REPO2="$QC_CONFIG/zlua/zlua.conf"
-REPO3="$QC_CONFIG/subl/subl.conf"
+REPO3="$QC_CONFIG/subl/Preferences.sublime-settings"
 REPO4="$QC_CONFIG/mutt/colors/mutt-colors-solarized-dark-16.muttrc"
 REPO5="$QC_CONFIG/vim/vim.conf"
 REPO6="$QC_CONFIG/git/gitignore_global"
