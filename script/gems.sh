@@ -74,7 +74,10 @@ qc_gem_install() {
 # install ruby with rbenv and ruby-build
 qc_install_rbenv() {
   # ruby dependencies
-  lkm_install_apt "autoconf bison gnupg2 git curl zlib1g-dev build-essential libssl-dev libssl1.1 libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev software-properties-common libffi-dev"
+  lkm_install_apt "autoconf bison build-essential curl git gnupg2 \
+  libcurl4-openssl-dev libffi-dev libreadline-dev libsqlite3-dev libssl-dev \
+  libssl1.1 libxml2-dev libxslt1-dev libyaml-dev software-properties-common \
+  sqlite3 zlib1g-dev"
 
   # rbenv
   # shellcheck disable=SC2016
@@ -160,7 +163,7 @@ echo
 echo "Rubygems"
 echo
 lkm_notify "Packages to install with gem"
-read -rep "   : " -i 'bundler gist travis' GEMS
+read -rep "   : " -i 'bundler gist mdl travis' GEMS
 
 # --------------------------  ARRAY ASSIGNMENTS
 
