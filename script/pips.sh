@@ -47,7 +47,7 @@ qc_virtualenv() {
   source ~/.bashrc
 
   # check which pip
-  which pip
+  command -v pip
 
   # check versions
   virtualenv --version
