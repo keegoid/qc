@@ -163,7 +163,7 @@ echo
 echo "Rubygems"
 echo
 lkm_notify "Packages to install with gem"
-read -rep "   : " -i 'bundler gist mdl travis' GEMS
+read -rep "   : " -i 'bundler gist travis' GEMS
 
 # --------------------------  ARRAY ASSIGNMENTS
 
