@@ -108,7 +108,7 @@ qc_git_lfs() {
 
 # --------------------------  DEFAULT APT PACKAGES
 
-DEFAULT_WORKSTATION_LIST='arp-scan apt-transport-https git gnupg2 figlet links lua5.3 mutt net-tools pinta syncthing tree vlc xclip'
+DEFAULT_WORKSTATION_LIST='arp-scan apt-transport-https git gnupg2 figlet fzf links lua5.3 net-tools pinta syncthing tree xclip'
 DEFAULT_DEV_LIST='autoconf automake build-essential byobu checkinstall dconf-cli shellcheck silversearcher-ag tidy tilix xdotool vim-gtk yamllint'
 
 # --------------------------  PROMPT FOR PROGRAMS
