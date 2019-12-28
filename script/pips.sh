@@ -153,15 +153,15 @@ echo "PIPs"
 echo
 lkm_notify "Packages to install with pip"
 read -rep "   : " -i 'jrnl[encrypted] pyflakes python-slugify keyrings.alt' PIPS
-# lkm_notify "Packages to install with pip3"
+lkm_notify "Packages to install with pip3"
 # shellcheck disable=SC2034
-# read -rep "   : " -i 'pep8' PIP3S
+read -rep "   : " -i 'pep8' PIP3S
 
 # --------------------------  ARRAY ASSIGNMENTS
 
 # add pips to check
 pip_check_list+=($PIPS)
-# pip3_check_list+=($PIP3S)
+pip3_check_list+=($PIP3S)
 
 # --------------------------  UNSET FUNCTIONS
 
@@ -177,7 +177,7 @@ lkm_confirm "Install PIP via Virtualenv?" true
 qc_virtualenv
 echo "Close the terminal window and reopen to enable the new PIP with Virtualenv."
 qc_pip_install
-# qc_pip3_install
+qc_pip3_install
 
 qc_reset
 
