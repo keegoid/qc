@@ -14,8 +14,8 @@
 
 [ -z "$QC_CONFIG" ] && QC_CONFIG="$HOME/.qc"
 [ -z "$QC_BACKUP" ] && QC_BACKUP="$QC_CONFIG/backup"
-[ -z "$QC_SYNCED" ] && read -rep "Directory to store/sync Sublime Text config: " -i "$HOME/f-drive/syncthing/config" QC_SYNCED
-[ -z "$QC_SYNCED" ] && QC_SYNCED="$HOME/config"
+[ -z "$QC_SYNCED" ] && read -rep "Directory to store/sync Sublime Text config: " -i "$QC_CONFIG/config" QC_SYNCED
+[ -z "$QC_SYNCED" ] && QC_SYNCED="$QC_CONFIG/config"
 
 # system and program config files
 CONF1="$HOME/.bashrc"
