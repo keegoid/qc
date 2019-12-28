@@ -29,6 +29,8 @@ qc_apt_check() {
 	local pkg
 	local pkg_version
 
+  sudo apt update
+
 	for pkg in "${apt_check_list[@]}"
 	do
 		if lkm_not_installed "$pkg"; then

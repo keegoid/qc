@@ -29,6 +29,7 @@ pip3_check_list=()
 # install the Virtualenv to manage Python versions
 qc_virtualenv() {
   # make sure dependencies are installed
+  sudo apt update
   lkm_program_must_exist "python-pip"
   lkm_program_must_exist "python-setuptools"
 
