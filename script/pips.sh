@@ -26,6 +26,9 @@ pip3_check_list=()
 # --------------------------  CUSTOM INSTALL SCRIPTS
 
 # install the Virtualenv to manage Python versions
+# use system pip3 to install virtualenv to .local/bin
+# use virtualenv to install .venv and local pip
+# activate .venv before installing local pips
 qc_virtualenv() {
   # make sure dependencies are installed
   sudo apt update
