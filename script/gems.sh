@@ -1,11 +1,11 @@
 #!/bin/bash
 # --------------------------------------------
-# Install / update Ruby & Rubygems via Rbenv.
+# Install/update Ruby & Rubygems via Rbenv.
 #
 # Author : Keegan Mullaney
 # Website: keegoid.com
 # Email  : keegan@kmauthorized.com
-# License: keegoid.mit-license.org
+# License: MIT
 #
 # Attributions:
 # package install functions & lists
