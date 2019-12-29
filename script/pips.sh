@@ -33,18 +33,23 @@ qc_virtualenv() {
   lkm_program_must_exist "python-setuptools"
 
   # install Virtualenv
-  sudo -H pip install virtualenv
+  pip install --user virtualenv
 
   # install PIP, wheel and Python
-  virtualenv ~/.virtualenv
+  virtualenv ~/.venv
 
   # source virtualenv
   # shellcheck disable=SC2016
   lkm_set_source_cmd      "$HOME/.bashrc" \
-                          'virtualenv/bin:' \
-                          '[[ ":$PATH:" =~ ":$HOME/.virtualenv/bin:" ]] || PATH="$HOME/.virtualenv/bin:$PATH"'
+                          'venv/bin:' \
+                          '[[ ":$PATH:" =~ ":$HOME/.venv/bin:" ]] || PATH="$HOME/.venv/bin:$PATH"'
+
   # shellcheck source=/dev/null
   source ~/.bashrc
+
+  # activate .venv
+  # shellcheck source=/dev/null
+  source ~/.venv/bin/activate
 
   # check which pip
   command -v pip
@@ -52,6 +57,9 @@ qc_virtualenv() {
   # check versions
   virtualenv --version
   pip -V
+
+  # deactivate .venv
+  deactivate
 
   RET="$?"
   lkm_debug
