@@ -1,11 +1,10 @@
 #!/bin/bash
 # --------------------------------------------
-# Install / update PIPs via Virtualenv
+# Install/update PIPs via Virtualenv
 #
 # Author : Keegan Mullaney
-# Website: keegoid.com
 # Email  : keegan@kmauthorized.com
-# License: keegoid.mit-license.org
+# License: MIT
 #
 # Attributions:
 # package install functions & lists
