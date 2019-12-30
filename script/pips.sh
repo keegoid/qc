@@ -27,8 +27,8 @@ pip3_check_list=()
 
 # install the Virtualenv to manage Python versions
 # use system pip3 to install virtualenv to .local/bin
-# use virtualenv to install .venv and local pip
-# activate .venv before installing local pips
+# use virtualenv to install cli-ve and local pip
+# activate cli-ve before installing local pips
 qc_virtualenv() {
   # make sure dependencies are installed
   sudo apt update
@@ -39,20 +39,20 @@ qc_virtualenv() {
   pip install --user virtualenv
 
   # install PIP, wheel and Python
-  virtualenv ~/.venv
+  virtualenv ~/cli-ve
 
   # source virtualenv
   # shellcheck disable=SC2016
   lkm_set_source_cmd      "$HOME/.bashrc" \
                           'venv/bin:' \
-                          '[[ ":$PATH:" =~ ":$HOME/.venv/bin:" ]] || PATH="$HOME/.venv/bin:$PATH"'
+                          '[[ ":$PATH:" =~ ":$HOME/cli-ve/bin:" ]] || PATH="$HOME/cli-ve/bin:$PATH"'
 
   # shellcheck source=/dev/null
   source ~/.bashrc
 
-  # activate .venv
+  # activate cli-ve
   # shellcheck source=/dev/null
-  source ~/.venv/bin/activate
+  source ~/cli-ve/bin/activate
 
   # check which pip
   command -v pip
@@ -61,7 +61,7 @@ qc_virtualenv() {
   virtualenv --version
   pip -V
 
-  # deactivate .venv
+  # deactivate cli-ve
   deactivate
 
   RET="$?"
