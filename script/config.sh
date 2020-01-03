@@ -14,13 +14,11 @@
 
 [ -z "$QC_CONFIG" ] && QC_CONFIG="$HOME/.qc"
 [ -z "$QC_BACKUP" ] && QC_BACKUP="$QC_CONFIG/backup"
-[ -z "$QC_SYNCED" ] && read -rep "Directory to store/sync Sublime Text config: " -i "$QC_CONFIG/config" QC_SYNCED
 [ -z "$QC_SYNCED" ] && QC_SYNCED="$QC_CONFIG/config"
 
 # system and program config files
 CONF1="$HOME/.bashrc"
 CONF2="$HOME/.inputrc"
-CONF3="$QC_SYNCED/subl/User/Preferences.sublime-settings"
 CONF4="$HOME/.muttrc"
 CONF5="$HOME/.vimrc"
 CONF6="$HOME/.gitignore_global"
@@ -30,7 +28,6 @@ CONF8="$HOME/.bash_aliases"
 # config files copied from repositories
 #REPO1="$QC_CONFIG/aliases/bash_aliases.conf"
 REPO2="$QC_CONFIG/zlua/zlua.conf"
-REPO3="$QC_CONFIG/subl/Preferences.sublime-settings"
 REPO4="$QC_CONFIG/mutt/colors/mutt-colors-solarized-dark-16.muttrc"
 REPO5="$QC_CONFIG/vim/vim.conf"
 REPO6="$QC_CONFIG/git/gitignore_global"
@@ -133,63 +130,6 @@ qc_set_byobu_prompt() {
       byobu-prompt
       lkm_success "configured: $conf_file"
     fi
-  fi
-
-  RET="$?"
-  lkm_debug
-}
-
-# --------------------------  SUBL CONFIG
-
-# clone or pull git repo and copy repo files into proper places
-qc_set_subl_config() {
-  local repo_url="$1"
-  local conf_file="$CONF3"
-  local repo_file="$REPO3"
-  local conf_dir
-  local conf_parent_dir
-  local repo_dir
-  local cloned=1
-  local user_dir="$HOME/.config/sublime-text-3/Packages/User"
-  local user_dir_parent="$HOME/.config/sublime-text-3/Packages"
-
-  conf_dir=$(lkm_trim_shortest_right_pattern "$CONF3" "/")
-  conf_parent_dir=$(lkm_trim_shortest_right_pattern "$conf_dir" "/")
-  repo_dir=$(lkm_trim_shortest_right_pattern "$REPO3" "/")
-
-  echo "conf_dir: $conf_dir"
-  echo "conf_parent_dir: $conf_parent_dir"
-  echo "repo_dir: $repo_dir"
-
-  # make sure directory exists for symlink
-  echo "attempting to make $user_dir"
-  mkdir -p "$user_dir"
-
-  # check if $conf_dir exists, else create parent and move $user_dir to $conf_parent_dir
-  echo "checking if $conf_dir exists"
-  [ -d "$conf_dir" ] || { echo "making $conf_parent_dir" ; mkdir -p "$conf_parent_dir" ; echo "moving $user_dir to $conf_parent_dir" ; mv "$user_dir" "$conf_parent_dir" ; }
-
-  # remove default user directory if not already a symlink
-  echo "checking for symlink at $user_dir"
-  [ -L "$user_dir" ] || { mv "$user_dir" "$user_dir".bak ; echo "creating symlink from $user_dir_parent to $conf_dir" ; ln -s "$conf_dir" "$user_dir_parent" ; }
-
-  # update or clone repository if symbolic link exists for User directory
-  if [ -d "$repo_dir" ]; then
-    (
-      cd "$repo_dir" || exit
-      echo "checking for updates: Keegoid's Sublime Text preferences"
-      git pull
-    )
-  else
-    git clone "$repo_url" "$repo_dir" && cloned=0
-  fi
-
-  # copy config file to proper location
-  echo -e "copying $repo_file to \n$conf_file"
-  cp -i "$repo_file" "$conf_file"
-  RET="$?"
-  if [ $RET -eq 0 ] && [ "$cloned" -eq 0 ]; then
-    lkm_success "configured: $conf_file"
   fi
 
   RET="$?"
@@ -374,13 +314,13 @@ qc_reset() {
 
 lkm_pause "" true
 
-qc_do_backup            "$CONF1 $CONF2 $CONF3 $CONF4 $CONF5 $CONF6 $CONF8"
+qc_do_backup            "$CONF1 $CONF2 $CONF4 $CONF5 $CONF6 $CONF8"
 
 # bash aliases
-# lkm_set_sourced_config  "https://gist.github.com/9d74e08779c1db6cb7b7.git" \
-#                         "$CONF1" \
-#                         "$REPO1" \
-#                         "\n# source alias file\nif [ -f $REPO1 ]; then\n   . $REPO1\nfi"
+lkm_set_sourced_config  "https://gist.github.com/9d74e08779c1db6cb7b7.git" \
+                        "$CONF1" \
+                        "$REPO1" \
+                        "\n# source alias file\nif [ -f $REPO1 ]; then\n   . $REPO1\nfi"
 
 # mutt config
 lkm_set_sourced_config  "https://github.com/altercation/mutt-colors-solarized.git" \
@@ -401,9 +341,6 @@ qc_set_inotify_max      "/etc/sysctl.conf"
 qc_set_tilix            "$CONF1"
 
 qc_set_byobu_prompt     "$CONF1"
-
-# sublime text 3
-qc_set_subl_config      "https://gist.github.com/6628da9ad09cf0eff9427c6dfdca6e5f.git"
 
 qc_set_git_config       "https://gist.github.com/efa547b362910ac7077c.git"
 
