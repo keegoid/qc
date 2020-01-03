@@ -16,7 +16,7 @@ Quickly configures a fresh install of [Ubuntu 19.10 64-bit][ee] on a workstation
 ## What qc can do
 
 - update [Ubuntu][ubuntu] and install some useful packages
-- setup standard developement environment utilizing package managers: [rbenv][rbenv], [nvm][nvm], [virtualenv][venv]
+- setup standard developement environment utilizing package managers: [rbenv][rbenv], [nvm][nvm], [virtualenv][cli-ve]
 - install gem, npm, and pip packages using appropriate package managers
 - generate an [RSA key][sshkey] for remote [SSH sessions][ssh]
 - make the [terminal][gt] easier to read and use with:
@@ -66,5 +66,5 @@ SEE: http://keegoid.mit-license.org
 [lp]:               https://lastpass.com/f?3202156
 [rbenv]:            https://github.com/rbenv/rbenv
 [nvm]:              https://github.com/creationix/nvm
-[venv]:             https://github.com/pypa/virtualenv
+[cli-ve]:             https://github.com/pypa/virtualenv
 [ps1]:              https://gist.github.com/keegoid/13482742b6140ec0ffbc818173805889
