@@ -15,7 +15,7 @@
 { # this ensures the entire script is downloaded #
 
 # --------------------------  SETUP PARAMETERS
-[ -z "$NVM_V" ] && read -rep "NVM version to use: " -i "0.35.2" NVM_V
+[ -z "$NVM_V" ] && read -rep "NVM version to use: " -i "0.35.3" NVM_V
 
 # --------------------------  MISSING PROGRAM CHECKS
 
@@ -135,7 +135,7 @@ echo
 echo "NODE.JS"
 echo
 lkm_notify "Packages to install with npm"
-read -rep "   : " -i 'browser-sync coffeescript csslint doctoc gulp jshint prettier' NPMS
+read -rep "   : " -i 'browser-sync coffeescript csslint doctoc gulp jshint npm-completion prettier' NPMS
 
 # --------------------------  ARRAY ASSIGNMENTS
 
