@@ -61,12 +61,11 @@ qc_display_menu() {
   echo "2.  RUBY & RUBYGEMS VIA RBENV"
   echo "3.  NODEJS & NPMS VIA NVM"
   echo "4.  PYTHON & PIP VIA VIRTUALENV"
-  echo "5.  SUBLIME TEXT 3"
-  echo "6.  KEYBASE"
-  echo "7.  SYSTEM CONFIG"
-  echo "8.  SSH KEY"
-  echo "9.  FIX HOME OWNERSHIP"
-  echo "10. QUIT"
+  echo "5.  KEYBASE"
+  echo "6.  SYSTEM CONFIG"
+  echo "7.  SSH KEY"
+  echo "8.  FIX HOME OWNERSHIP"
+  echo "9.  QUIT"
 }
 
 # --------------------------  USER SELECTION
@@ -81,12 +80,11 @@ qc_select_options() {
     2) lkm_run_script gems.sh "script";;
     3) lkm_run_script npms.sh "script";;
     4) lkm_run_script pips.sh "script";;
-    5) lkm_run_script subl.sh "script";;
-    6) lkm_run_script keybase.sh "script";;
-    7) lkm_run_script config.sh "script";;
-    8) lkm_run_script sshkey.sh "script";;
-    9) qc_fix_permissions;;
-    10) qc_exit_msg && exit 0;;
+    5) lkm_run_script keybase.sh "script";;
+    6) lkm_run_script config.sh "script";;
+    7) lkm_run_script sshkey.sh "script";;
+    8) qc_fix_permissions;;
+    9) qc_exit_msg && exit 0;;
     *)  lkm_alert "Error..." && sleep 1
   esac
 
