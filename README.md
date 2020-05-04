@@ -1,6 +1,6 @@
 # Quick Config
 
-Quickly configures a fresh install of [Ubuntu 19.10 64-bit][ee] on a workstation.
+Quickly configures a fresh install of [Ubuntu 20.04 64-bit][ff] on a workstation.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -16,7 +16,7 @@ Quickly configures a fresh install of [Ubuntu 19.10 64-bit][ee] on a workstation
 ## What qc can do
 
 - update [Ubuntu][ubuntu] and install some useful packages
-- setup standard developement environment utilizing package managers: [rbenv][rbenv], [nvm][nvm], [virtualenv][cli-ve]
+- setup standard development environment utilizing package managers: [rbenv][rbenv], [nvm][nvm], [virtualenv][cli-ve]
 - install gem, npm, and pip packages using appropriate package managers
 - generate an [RSA key][sshkey] for remote [SSH sessions][ssh]
 - make the [terminal][gt] easier to read and use with:
@@ -49,7 +49,7 @@ SEE: http://keegoid.mit-license.org
 
 
 [ubuntu]:           https://ubuntu.com/
-[ee]:               https://wiki.ubuntu.com/EoanErmine/ReleaseNotes
+[ff]:               https://releases.ubuntu.com/20.04/
 [subl]:             https://www.sublimetext.com/
 [vim]:              http://www.vim.org/
 [gt]:               http://manpages.ubuntu.com/manpages/hardy/man1/gnome-terminal.1.html
