@@ -245,12 +245,11 @@ qc_set_zlua_config() {
 
   if grep -q "z.lua enhanced matching" "$CONF1" >/dev/null 2>&1; then
     echo "already added z.lua config to $CONF1"
-  # else
-  #FIXME: update commands for .bashrc file
-  #   lkm_pause "Press [Enter] to configure z.lua for bash" true
-  #   # shellcheck disable=SC1090
-  #   cat "$REPO2" >> "$CONF1" && lkm_success "configured: $CONF1 with z.lua (usage: z foo)" \
-  #   && lkm_success "Close and reopen the terminal to start using z"
+  else
+    lkm_pause "Press [Enter] to configure z.lua for bash" true
+    # shellcheck disable=SC1090
+    cat "$REPO2" >> "$CONF1" && lkm_success "configured: $CONF1 with z.lua (usage: z foo)" \
+    && lkm_success "Close and reopen the terminal to start using z"
   fi
 
   # shellcheck disable=SC2034
