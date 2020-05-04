@@ -172,7 +172,7 @@ qc_set_git_config() {
   if ! git config --list | grep -q "user.name"; then
     read -rep "your name for git commit logs: " -i 'Keegan Mullaney' real_name
     read -rep "your email for git commit logs: " -i 'keegan@kmauthorized.com' email_address
-    read -rep "your preferred text editor for git commits: " -i 'subl --wait' git_editor
+    read -rep "your preferred text editor for git commits: " -i 'vi' git_editor
     read -rep "your GPG signing key to sign git commits: " -i '0D8F7627F4E5B8C0' gpg_key
     lkm_configure_git "$real_name" "$email_address" "$git_editor" "$gpg_key" && lkm_success "configured: $CONF6"
   fi
@@ -349,7 +349,7 @@ qc_set_terminal_history "$CONF2"
 qc_set_zlua_config      "https://github.com/skywind3000/z.lua.git" \
                         "https://gist.github.com/cbd2ac6f2be16266aba0e1554a93f759.git"
 
-qc_set_ps1              "https://gist.github.com/13482742b6140ec0ffbc818173805889.git" \
+qc_set_ps1              "https://gist.github.com/keegoid-nr/3648cd615741224a253349ac517c4703" \
                         "# source PS1 file\n    if [ -f $REPO7 ]; then\n       . $REPO7\n    fi"
 
 qc_reset
