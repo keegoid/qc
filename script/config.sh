@@ -240,16 +240,17 @@ qc_set_zlua_config() {
   git clone "$src_repo_url" /tmp/zlua
 
   # update or clone repository for conf file
-  mkdir -p "$QC_CONFIG/z"
-  cp -f /tmp/zlua/z.lua "$QC_CONFIG/z/"
+  mkdir -p "$HOME/bin"
+  cp -f /tmp/zlua/z.lua "$HOME/bin/"
 
   if grep -q "z.lua enhanced matching" "$CONF1" >/dev/null 2>&1; then
     echo "already added z.lua config to $CONF1"
-  else
-    lkm_pause "Press [Enter] to configure z.lua for bash" true
-    # shellcheck disable=SC1090
-    cat "$REPO2" >> "$CONF1" && lkm_success "configured: $CONF1 with z.lua (usage: z foo)" \
-    && lkm_success "Close and reopen the terminal to start using z"
+  # else
+  #FIXME: update commands for .bashrc file
+  #   lkm_pause "Press [Enter] to configure z.lua for bash" true
+  #   # shellcheck disable=SC1090
+  #   cat "$REPO2" >> "$CONF1" && lkm_success "configured: $CONF1 with z.lua (usage: z foo)" \
+  #   && lkm_success "Close and reopen the terminal to start using z"
   fi
 
   # shellcheck disable=SC2034
@@ -285,10 +286,11 @@ qc_set_ps1() {
   # check if already added, else set source command in conf_file
   if grep -q "bashrc/ps1.conf" "$conf_file" >/dev/null 2>&1; then
     echo "already added custom PS1 file"
-  else
-    lkm_pause "Press [Enter] to configure PS1 variable for gnome-terminal" true
+  # else
+    # lkm_pause "Press [Enter] to configure PS1 variable for gnome-terminal" true
     # shellcheck disable=SC1090
-    sed -i.bak -e '0,/PS1/s//#PS1/' -e "/\"\$color_prompt\" = yes/ a $src_cmd" "$conf_file" && configured=0
+    #FIXME: use EOF to insert block of text where needed
+    # sed -i.bak -e '0,/PS1=/s//#PS1=/' -e "/\"\$color_prompt\" = yes/ a $src_cmd" "$conf_file" && configured=0
   fi
 
   RET="$?"
@@ -307,7 +309,7 @@ qc_set_ps1() {
 
 # unset the various functions defined during execution of the script
 qc_reset() {
-  unset -f qc_do_backup qc_set_inotify_max qc_set_tilix qc_set_byobu_prompt qc_set_subl_config qc_set_git_config qc_set_terminal_history qc_set_zlua_config qc_set_ps1
+  unset -f qc_do_backup qc_set_inotify_max qc_set_tilix qc_set_byobu_prompt qc_set_git_config qc_set_terminal_history qc_set_zlua_config qc_set_ps1
 }
 
 # --------------------------  MAIN
@@ -350,7 +352,7 @@ qc_set_zlua_config      "https://github.com/skywind3000/z.lua.git" \
                         "https://gist.github.com/cbd2ac6f2be16266aba0e1554a93f759.git"
 
 qc_set_ps1              "https://gist.github.com/keegoid-nr/3648cd615741224a253349ac517c4703" \
-                        "# source PS1 file\n    if [ -f $REPO7 ]; then\n       . $REPO7\n    fi"
+                        "# source PS1 file\n  if [ -f $REPO7 ]; then\n    . $REPO7\n  fi"
 
 qc_reset
 
